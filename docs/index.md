@@ -3,7 +3,7 @@
   <a href="https://github.com/Yuri-SVB/Great_Wall">
 	<img alt="Great Wall Logo" src="images/logo_big.jpg" height="160" />
   </a>
-  <h3 align="center">Great Wall</h3>
+  <h3 align="center">GreatWall</h3>
   <p align="center">Protocol and application for providing Kerckhoffian, 0-trust, deviceless coercion-resistance in self-custody. For details, see <a href="index.md">docs</a>. To understand the protocol, refer to the <a href="white_paper_executive_summary/white_paper_executive_summary.md">white paper and executive summary</a>.
   </p>
    
@@ -20,11 +20,8 @@
 ## Table of Contents
 1. [About](#about)
 2. [Demo](#demo)
-3. [Getting Started](#getting-started)
-    * [Dependencies](#dependencies)
-    * [Installation](#installation)
-    * [Using In Beta](#using-in-beta)
-4. [Usage](#usage)
+3. [Installation](#installation)
+4. [Usage](#using-in-beta)
 5. [Contact Us](#contact-us)
 6. [Contributing](#contributing)
 
@@ -48,54 +45,34 @@ The following steps will allow an easy memorization of the path demonstrated in 
 9. Just like the seed, all the addresses derived from it are **improper** and, therefore should not be used. One of them, obtained upon loading wallet with the seed in previous item, will be `bc1q3qjatkwlrxvkah0uphr2vj3lqqd73l22n7djl9`. In your favorite blockchain explorer, you can confirm that it's first two transactions were, respectively, receiving 198964 Sats, and then having them removed back (before publication). Obs.: in cases like that, it's advisable to utilize a coinjoin service to preserve privacy.
 
 
-<!-- Getting Started -->
-## Getting Started
-This section will provide you by a quick guide to start.
-
-### Dependencies
-This project depends on the following packages:
-1. argon2-cffi = 23.1.0
-2. argon2-cffi-bindings = 21.2.0
-3. cffi = 1.16.0
-4. numpy = 1.25.0
-5. Pillow = 10.1.0
-6. pycparser = 2.21
-7. PyQt5 = 5.15.10
-8. PyQt5-Qt5 = 5.15.2
-9. PyQt5-sip = 12.13.0
-
 ### Installation
-Follow the following to get your environment ready:
-1. Install system package requirements:
-```sh
-sudo apt install python3-setuptools python3-virtualenv qtbase5-dev qt5-qmake cmake
-```
-2. Set up a python virtual environment and activate it:
-```sh
-python3 -m venv .venv
-source .venv/bin/activate
-```
-3. Install the requirements:
-```sh
-pip install -r requirements.txt
-```
-4. Now, you can run the app using the following:
 
-```sh
-cd Great_Wall/src/greatwall/
-python3 gui.py
-```
-> **_NOTE:_** The previously described method to run app is not the recommend one, but as we still in the development cycle this is the simplest way to get things ready :).
+To get started with `GreatWall`, ensure you have [Flutter](https://flutter.dev/docs/get-started/install) and [Dart](https://dart.dev/get-dart) installed on your machine.
+
+Once you have Flutter and Dart set up, follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/T3-InfoSec/great-wall-dart.git
+   ```
+2. Change directory to this GitHub repo:
+   ```bash
+   cd great-wall-dart
+   ```
+3. Install dependencies:
+    ```bash
+   flutter pub get
+   ```
+4. Run locally:
+    ```bash
+   flutter run
+   ```
+   Note: If you're using an emulator, start it before running the flutter run command. If you're running on a physical device, make sure it is connected to your machine.
 
 ### Using in Beta
 Coming soon. An advanced, knowledgeable, tech-savvy reader, will, at this point, have understood what is to come and can improvise the steps by themselves. In a nutshell, all you have to do is to securely manage[^1] a brute-force resistant `SA0`, true-randomly generate a path vector of `L_i`'s, and memorize them procedurally as explained in the session above. For better effect, user can implement non-trivial **T**ime-**L**ock **P**uzzle, to impose desired time on derivation of `SA3` from `SA0`. To prevent leakage of critical content through Anki, a simple scheme with salt and pepper can be done so to avoid the need to modify Anki, but we'll leave this for a next time.
 
 [^1]: That is, either memorize it, or deterministically derive it from other brute-force resistant secret information, or symmetrically encrypt it with a master key falling back in one of 2 previous cases and manage well the encrypted database.
-
-
-<!-- Usage -->
-## Usage
-Coming soon...
 
 
 <!-- Contact Us -->
@@ -107,6 +84,6 @@ We encourage and foster a welcoming and respectful community as we describe in o
 
 <!-- Contributing -->
 ## Contributing
-If you'd like to contribute to GreatWall development, please read first our [contributing guide](./.github/CONTRIBUTING.md).
+If you'd like to contribute to `GreatWall - Dart` development, please read first our [contributing guide](./.github/CONTRIBUTING.md).
 
-If you experience problems with GreatWall, you can contribute by [log them on GitHub](https://github.com/Yuri-SVB/Great_Wall/issues). If you want to contribute in code, please fork the code and submit a [pull request](https://github.com/Yuri-SVB/Great_Wall/pulls) in new branch.
+If you experience problems with `GreatWall - Dart`, you can contribute by [log them on GitHub](https://github.com/T3-InfoSec/great-wall-dart/issues). If you want to contribute in code, please fork the code and submit a [pull request](https://github.com/T3-InfoSec/great-wall-dart/pulls) in new branch.

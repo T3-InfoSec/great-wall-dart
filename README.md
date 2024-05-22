@@ -19,22 +19,21 @@
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 1. [About](#about)
-3. [Installation](#installation)
-2. [Documentation](#documentation)
-3. [Contact Us](#contact-us)
-4. [Contributing](#contributing)
+2. [Installation](#installation)
+3. [Usage](#usage)
+4. [Contact Us](#improvement)
 
 
 <!-- About -->
 ## About
-Protocol and application for providing Kerckhoffian, 0-trust, deviceless coercion-resistance in self-custody. To understand the protocol, refer to the [white paper and executive summary.](docs/white_paper_executive_summary/white_paper_executive_summary.md)
+GreatWall Protocol for providing Kerckhoffian, 0-trust, deviceless coercion-resistance in self-custody.
 
 <!-- Installation -->
 ## Installation
 
-To get started with `GreatWall`, ensure you have [Flutter](https://flutter.dev/docs/get-started/install) and [Dart](https://dart.dev/get-dart) installed on your machine.
+To get started with `GreatWall`, ensure you have [Dart](https://dart.dev/get-dart) installed in your system.
 
-Once you have Flutter and Dart set up, follow these steps:
+Before this protocol package is published on pub.dev, you can try the protocol locally as:
 
 1. Clone the repository:
    ```bash
@@ -46,28 +45,28 @@ Once you have Flutter and Dart set up, follow these steps:
    ```
 3. Install dependencies:
     ```bash
-   flutter pub get
+   dart pub get
    ```
 4. Run locally:
     ```bash
-   flutter run
+   dart run
    ```
-   Note: If you're using an emulator, start it before running the flutter run command. If you're running on a physical device, make sure it is connected to your machine.
+  Note: Here we use `dart pub get` to fetch dependencies and `dart run` to run the module.
 
-<!-- Documentation -->
-## Documentation
-Documentation for `GreatWall` can be found [here](./docs/index.md).
+<!-- Usage -->
+## Usage
+
+Put the `great_wall` in you `pubspec.yaml` file to be able to use this, or simply clone it for testing it before it has been published in pub.dev
+
+```dart
+import 'package:great_wall/great_wall.dart';
+
+void main() {
+  // Unimplemented
+}
+```
 
 
-<!-- Contact Us -->
-## Contact Us
-Coming soon...
+## Improvement
 
-We encourage and foster a welcoming and respectful community as we describe in our [code of conduct](./.github/CODE_OF_CONDUCT.md). This is our Pledge to anyone need to be one of our community.
-
-
-<!-- Contributing -->
-## Contributing
-If you'd like to contribute to `GreatWall - Dart` development, please read first our [contributing guide](./.github/CONTRIBUTING.md).
-
-If you experience problems with `GreatWall - Dart`, you can contribute by [log them on GitHub](https://github.com/T3-InfoSec/great-wall-dart/issues). If you want to contribute in code, please fork the code and submit a [pull request](https://github.com/T3-InfoSec/great-wall-dart/pulls) in new branch.
+If you experience problems with `GreatWall - Dart Protocol`, you can open an issue [here](https://github.com/T3-InfoSec/great-wall-dart/issues).

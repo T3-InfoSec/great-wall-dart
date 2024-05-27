@@ -1,6 +1,6 @@
 name: great_wall
 description: A protocol for providing Kerckhoffian, 0-trust, deviceless coercion-resistance in self-custody.
-version: 1.0.0
+version: 0.1.0-dev
 homepage: https://t3informationsecurity.com
 
 environment:

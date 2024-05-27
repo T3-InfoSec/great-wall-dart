@@ -11,8 +11,8 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-# Great-Wall Protocol:
-A Dart Implementation of the protocol for providing Kerckhoffian, 0-trust,
+# Great-Wall Protocol
+A Dart Implementation of a protocol that provides Kerckhoffian, 0-trust,
 deviceless coercion-resistance in self-custody.
 
 ## Features

@@ -1,0 +1,10 @@
+name: great-wall
+description: Protocol and application for providing Kerckhoffian, 0-trust, deviceless coercion-resistance in self-custody. 
+version: 0.1.0-dev
+homepage: http://t3infosecurity.com/
+environment:
+  sdk: ^3.4.0
+dependencies:
+  vector_math: ^2.1.0
+dev_dependencies:
+  test: ^1.24.0

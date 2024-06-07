@@ -1,5 +1,6 @@
-// TODO: Complete the copyright.
-// Copyright (c) 2024, ...
+// Copyright (c) 2024, Yuri S Villas Boas.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 /// A core implementation of the Great-Wall protocol.
 ///

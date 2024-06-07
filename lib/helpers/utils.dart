@@ -64,12 +64,12 @@ class TacitKnowledgeParam {
     adjustmentParams.forEach((param, tacitKnowledgeParamBytes) {
       nextStateCandidate = argon2HashRaw(
         Argon2Parameters(
+          _salt: ARGON2_SALT,
           argon2Type: Argon2Type.i,
           version: Argon2Version.V13,
-          memoryPowerOf2: 10, // 1024 memory_cost
+          meoryPowerOf2: 10, // 1024 memory_cost
           parallelism: 1,
           iterations: 32,
-          salt: ARGON2_SALT,
           hashLength: 128,
         ),
         nextStateCandidate + tacitKnowledgeParamBytes,

@@ -4,9 +4,8 @@
 
 const String FRACTAL = "Fractal";
 const String FORMOSA = "Formosa";
-const String SHAPE = "Shape";
 
-const List<String> AVAILABLE_TACIT_KNOWLEDGE_TYPES = [FRACTAL, FORMOSA, SHAPE];
+const List<String> AVAILABLE_TACIT_KNOWLEDGE_TYPES = [FRACTAL, FORMOSA];
 
 ///////////////////////////////////////////////////////////////////////////////
 // Available Color Palettes
@@ -61,6 +60,5 @@ const List<String> FORMOSA_THEMES = [
 ///////////////////////////////////////////////////////////////////////////////
 
 const String MANDELBROT = "mandelbrot";
-const String BURNING_SHIP = "burningship";
 
-const List<String> FRACTAL_FUNCTIONS = [MANDELBROT, BURNING_SHIP];
+const List<String> FRACTAL_FUNCTIONS = [MANDELBROT];

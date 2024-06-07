@@ -6,8 +6,7 @@ import 'dart:typed_data';
 import 'utils.dart';
 import 'knowledges.dart';
 
-// TODO: Add comment documentations.
-/// Checks if you are awesome. Spoiler: you are.
+/// This class manages cryptographic operations and protocol parameters.
 class GreatWall {
   static final argon2Salt = Uint8List(32);
   static final int bytesCount = 4;

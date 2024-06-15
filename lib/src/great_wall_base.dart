@@ -96,11 +96,11 @@ class GreatWall {
     }
   }
 
-  void initializingDerivationHashing() {}
+  void initializeDerivationHash() {}
   void updateWithQuickHash() {}
   void updateWithLongHash() {}
 
-  void timeIntensiveDerivation() {
+  void deriveHashInIntensiveTime() {
     print("Initializing SA0");
     currentState = seed0;
     if (isCanceled) {

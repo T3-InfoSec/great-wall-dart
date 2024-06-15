@@ -19,7 +19,7 @@ class DerivationPath {
 
   int operator [](int index) => _path[index];
 
-  DerivationPath append(int choice) => DerivationPath.from(_path..add(choice));
+  DerivationPath add(int choice) => DerivationPath.from(_path..add(choice));
 }
 
 class TacitKnowledgeParam {

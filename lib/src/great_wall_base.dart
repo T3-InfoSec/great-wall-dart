@@ -1,10 +1,11 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
+import 'dart:math';
 import 'dart:typed_data';
 
-import 'utils.dart';
 import 'knowledges.dart';
+import 'utils.dart';
 
 // TODO: Add comment documentations.
 class GreatWall {
@@ -22,7 +23,7 @@ class GreatWall {
 
   String? _derivationKnowledgeType;
   final DerivationPath _derivationPath = DerivationPath();
-  final Map<DerivationPath, List<int>> _savedDerivationStates = {};
+  final Map<DerivationPath, Uint8List> _savedDerivationStates = {};
   final Map<DerivationPath, List<dynamic>> _savedPathKnowledge = {};
 
   final List<MemoCard> _memoCards = [];
@@ -38,7 +39,7 @@ class GreatWall {
   late Uint8List seed3;
   late Uint8List currentState;
   late int currentLevel;
-  late List<int> _shuffledArityIndices;
+  late List<int> _shuffledArityIndexes;
 
   GreatWall() {
     initProtocolValues();
@@ -51,7 +52,7 @@ class GreatWall {
     seed3 = seed2;
     currentState = seed3;
     currentLevel = 0;
-    _shuffledArityIndices = <int>[];
+    _shuffledArityIndexes = <int>[];
   }
 
   bool setThemedMnemonic(String theme) {
@@ -105,14 +106,14 @@ class GreatWall {
     currentState = seed0;
     if (isCanceled) {
       print("Task canceled");
-      return;  // Exit the task if canceled
+      return;
     }
     print("Deriving SA0 -> SA1");
     updateWithQuickHash();
     seed1 = currentState;
     if (isCanceled) {
       print("Task canceled");
-      return;  // Exit the task if canceled
+      return;
     }
     print("Deriving SA1 -> SA2");
     updateWithLongHash();
@@ -120,11 +121,19 @@ class GreatWall {
     currentState = Uint8List.fromList(seed0 + currentState);
     if (isCanceled) {
       print("Task canceled");
-      return;  // Exit the task if canceled
+      return;
     }
     print("Deriving SA2 -> SA3");
     updateWithQuickHash();
     seed3 = currentState;
 
     _savedDerivationStates[_derivationPath] = currentState;
+  }
+
+  /// Fill and shuffles a list of numbers in range [GreatWall.treeArity].
+  void _shuffleArityIndexes() {
+    _shuffledArityIndexes = [for (var idx = 0; idx <= treeArity; idx++) idx];
+
+    _shuffledArityIndexes.shuffle(Random.secure());
+  }
 }

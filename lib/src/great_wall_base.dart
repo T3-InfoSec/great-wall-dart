@@ -136,6 +136,11 @@ class GreatWall {
 
     _shuffledArityIndexes.shuffle(Random.secure());
   }
+
+  /// Drive the protocol state from the user choice index.
+  ///
+  /// If [idx] is 0, the protocol will go back one level to its previous state,
+  /// If it is greater 0 the protocol will update the state depending on this choice.
   void deriveFromUserChoice(int idx) {
     if (idx > 0) {
       currentLevel += 1;

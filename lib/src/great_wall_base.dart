@@ -136,4 +136,21 @@ class GreatWall {
 
     _shuffledArityIndexes.shuffle(Random.secure());
   }
+  void deriveFromUserChoice(int idx) {
+    if (idx > 0) {
+      currentLevel += 1;
+      _derivationPath.add(idx);
+
+      if (_savedDerivationStates.containsKey(_derivationPath)) {
+        currentState = _savedDerivationStates[_derivationPath]!;
+      } else {
+        currentState.add(_shuffledArityIndexes[idx - 1]);
+        updateWithQuickHash();
+        _savedDerivationStates[_derivationPath] = currentState;
+      }
+
+    } else {
+      returnLevel();
+    }
+  }
 }

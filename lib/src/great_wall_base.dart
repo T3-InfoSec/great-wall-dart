@@ -91,7 +91,40 @@ class GreatWall {
       return true;
     } on Exception catch (e) {
       // Handle error appropriately (e.g., print message)
+      print(e);
       return false;
     }
   }
+
+  void initializingDerivationHashing() {}
+  void updateWithQuickHash() {}
+  void updateWithLongHash() {}
+
+  void timeIntensiveDerivation() {
+    print("Initializing SA0");
+    currentState = seed0;
+    if (isCanceled) {
+      print("Task canceled");
+      return;  // Exit the task if canceled
+    }
+    print("Deriving SA0 -> SA1");
+    updateWithQuickHash();
+    seed1 = currentState;
+    if (isCanceled) {
+      print("Task canceled");
+      return;  // Exit the task if canceled
+    }
+    print("Deriving SA1 -> SA2");
+    updateWithLongHash();
+    seed2 = currentState;
+    currentState = Uint8List.fromList(seed0 + currentState);
+    if (isCanceled) {
+      print("Task canceled");
+      return;  // Exit the task if canceled
+    }
+    print("Deriving SA2 -> SA3");
+    updateWithQuickHash();
+    seed3 = currentState;
+
+    _savedDerivationStates[_derivationPath] = currentState;
 }

@@ -83,7 +83,7 @@ class GreatWall {
     treeArity = arity;
   }
 
-  bool setSa0(String mnemonic) {
+  bool setSeed0(String mnemonic) {
     isCanceled = false;
     try {
       initProtocolValues();

@@ -7,14 +7,18 @@ import 'utils.dart';
 import 'knowledges.dart';
 
 // TODO: Add comment documentations.
-/// Checks if you are awesome. Spoiler: you are.
 class GreatWall {
-  static final argon2Salt = Uint8List(32);
+  static final Uint8List argon2Salt = Uint8List(32);
   static final int bytesCount = 4;
 
+  // Protocol and derivation control fields
   bool isFinished = false;
   bool isCanceled = false;
   bool isInitialized = false;
+
+  int treeDepth = 0;
+  int treeArity = 0;
+  int tlpParam = 0;
 
   String? _derivationKnowledgeType;
   final DerivationPath _derivationPath = DerivationPath();
@@ -24,21 +28,17 @@ class GreatWall {
   final List<MemoCard> _memoCards = [];
 
   // Palettes
-  Mnemonic mnemonic = Mnemonic();
+  Mnemonic formosa = Mnemonic();
   Fractal fractal = Fractal();
 
-  // Initializing derivation parameters
-  int treeDepth = 0;
-  int treeArity = 0;
-  int tlpParam = 0;
-
-  // Initializing protocol parameters
+  // Protocol parameters declaration
   late Uint8List seed0;
   late Uint8List seed1;
   late Uint8List seed2;
   late Uint8List seed3;
   late Uint8List currentState;
   late int currentLevel;
+  late List<int> _shuffledArityIndices;
 
   GreatWall() {
     initProtocolValues();
@@ -51,11 +51,12 @@ class GreatWall {
     seed3 = seed2;
     currentState = seed3;
     currentLevel = 0;
+    _shuffledArityIndices = <int>[];
   }
 
   bool setThemedMnemonic(String theme) {
     try {
-      mnemonic.expandPassword(theme.split('\n')[0]);
+      formosa.expandPassword(theme.split('\n')[0]);
       return true;
     } on Exception catch (e) {
       // Handle error appropriately (e.g., print message)

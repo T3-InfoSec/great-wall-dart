@@ -19,7 +19,7 @@ class GreatWall {
 
   int treeDepth = 0;
   int treeArity = 0;
-  int tlpParam = 0;
+  int timeLockPuzzleParam = 0;
 
   String? _derivationKnowledgeType;
   final DerivationPath _derivationPath = DerivationPath();
@@ -60,7 +60,7 @@ class GreatWall {
       formosa.expandPassword(theme.split('\n')[0]);
       return true;
     } on Exception catch (e) {
-      // Handle error appropriately (e.g., print message)
+      // TODO: Handle error appropriately (e.g., print message)
       return false;
     }
   }
@@ -70,17 +70,17 @@ class GreatWall {
   }
 
   void setTlpParam(int iterNum) {
-    // Consider input validation for iterNum
-    tlpParam = iterNum;
+    // TODO: Consider input validation for iterNum
+    timeLockPuzzleParam = iterNum;
   }
 
   void setDepth(int depth) {
-    // Consider input validation for depth
+    // TODO: Consider input validation for depth
     treeDepth = depth;
   }
 
   void setArity(int arity) {
-    // Consider input validation for arity
+    // TODO: Consider input validation for arity
     treeArity = arity;
   }
 
@@ -91,7 +91,7 @@ class GreatWall {
       currentState = Uint8List.fromList(mnemonic.codeUnits);
       return true;
     } on Exception catch (e) {
-      // Handle error appropriately (e.g., print message)
+      // TODO: Handle error appropriately (e.g., print message)
       print(e);
       return false;
     }

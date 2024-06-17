@@ -11,4 +11,4 @@ dev_dependencies:
   test: ^1.24.0
 
 dependencies:
-  pointycastle: ^3.9.1
+  hashlib: ^1.16.0

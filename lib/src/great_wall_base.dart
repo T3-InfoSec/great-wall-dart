@@ -97,7 +97,20 @@ class GreatWall {
     }
   }
 
-  void initializeDerivationHash() {}
+  void startHashDerivation() {
+    currentState = seed0;
+    currentLevel = 0;
+
+    _derivationKnowledgeType = null;
+    _derivationPath.clear();
+    _savedDerivationStates.clear();
+    _savedPathKnowledge.clear();
+
+    // Actual work
+    deriveHashInIntensiveTime();
+    isInitialized = true;
+  }
+
   void updateWithQuickHash() {}
   void updateWithLongHash() {}
 

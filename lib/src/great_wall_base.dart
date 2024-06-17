@@ -4,6 +4,8 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:hashlib/hashlib.dart';
+
 import 'knowledges.dart';
 import 'utils.dart';
 
@@ -111,8 +113,35 @@ class GreatWall {
     isInitialized = true;
   }
 
-  void updateWithQuickHash() {}
-  void updateWithLongHash() {}
+  /// Update the state with its hash taking presumably a long time.
+  void updateWithLongHash() {
+    var argon2Algorithm = Argon2(
+      version: Argon2Version.v13,
+      type: Argon2Type.argon2i,
+      hashLength: 128,
+      iterations: 3,
+      parallelism: 1,
+      memorySizeKB: 1024*1024*1024,
+      salt: argon2Salt,
+    );
+
+    currentState = argon2Algorithm.convert(currentState);
+  }
+
+  /// Update the state with its hash taking presumably a quick time.
+  void updateWithQuickHash() {
+    var argon2Algorithm = Argon2(
+      version: Argon2Version.v13,
+      type: Argon2Type.argon2i,
+      hashLength: 128,
+      iterations: 3,
+      parallelism: 1,
+      memorySizeKB: 1024*1024,
+      salt: argon2Salt,
+    );
+
+    currentState = argon2Algorithm.convert(currentState);
+  }
 
   void deriveHashInIntensiveTime() {
     print("Initializing SA0");

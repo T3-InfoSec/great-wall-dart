@@ -71,7 +71,7 @@ class GreatWall {
     fractal.funcType = funcType;
   }
 
-  void setTlpParam(int iterNum) {
+  void setTimeLockPuzzleParam(int iterNum) {
     // TODO: Consider input validation for iterNum
     timeLockPuzzleParam = iterNum;
   }

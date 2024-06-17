@@ -125,7 +125,7 @@ class GreatWall {
       salt: argon2Salt,
     );
 
-    currentState = argon2Algorithm.convert(currentState);
+    currentState = argon2Algorithm.convert(currentState).bytes;
   }
 
   /// Update the state with its hash taking presumably a quick time.
@@ -140,7 +140,7 @@ class GreatWall {
       salt: argon2Salt,
     );
 
-    currentState = argon2Algorithm.convert(currentState);
+    currentState = argon2Algorithm.convert(currentState).bytes;
   }
 
   void deriveHashInIntensiveTime() {

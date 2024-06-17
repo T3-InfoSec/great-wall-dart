@@ -12,18 +12,19 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Dart
       uses: dart-lang/setup-dart@v1
-      with:
-        sdk: "stable"
 
     - name: Install dependencies
       run: dart pub get
 
     - name: Run Linter
       run: dart analyze
+
+    - name: Format code
+      run: dart format --output=none --set-exit-if-changed .
 
     - name: Run Unit Tests
       run: dart test

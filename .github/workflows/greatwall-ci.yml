@@ -1,1 +1,29 @@
-# TODO: Implement greatwall pipeline
+name: Greatwall CI
+
+on:
+  pull_request:
+    branches:
+      - master
+      - development
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Dart
+      uses: dart-lang/setup-dart@v1
+      with:
+        sdk: "stable"
+
+    - name: Install dependencies
+      run: dart pub get
+
+    - name: Run Linter
+      run: dart analyze
+
+    - name: Run Unit Tests
+      run: dart test

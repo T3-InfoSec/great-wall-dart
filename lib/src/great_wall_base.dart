@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:hashlib/hashlib.dart';
 
-import 'knowledges.dart';
+import 'knowledge.dart';
 import 'utils.dart';
 
 // TODO: Add comment documentations.
@@ -32,10 +32,10 @@ class GreatWall {
   int treeArity = 0;
   int timeLockPuzzleParam = 0;
 
-  String? _derivationKnowledgeType;
+  KnowledgeType? _derivationKnowledgeType;
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, List<dynamic>> _savedDerivedPathKnowledge = {};
+  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
 
   // Palettes
   Formosa formosa = Formosa();
@@ -85,7 +85,7 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a long time.
-  void updateWithLongHashing() {
+  void _updateWithLongHashing() {
     var argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -100,7 +100,7 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a quick time.
-  void updateWithQuickHashing() {
+  void _updateWithQuickHashing() {
     var argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -116,14 +116,14 @@ class GreatWall {
 
   void _deriveHashInIntensiveTime() {
     print("Deriving Seed0 -> Seed1");
-    updateWithQuickHashing();
+    _updateWithQuickHashing();
     _seed1 = _currentState;
     if (isCanceled) {
       print("Derivation canceled");
       return;
     }
     print("Deriving Seed1 -> Seed2");
-    updateWithLongHashing();
+    _updateWithLongHashing();
     _seed2 = _currentState;
     _currentState = Uint8List.fromList(_seed0 + _currentState);
     if (isCanceled) {
@@ -131,7 +131,7 @@ class GreatWall {
       return;
     }
     print("Deriving Seed2 -> Seed3");
-    updateWithQuickHashing();
+    _updateWithQuickHashing();
     _seed3 = _currentState;
 
     _savedDerivedStates[_derivationPath] = _currentState;
@@ -155,12 +155,38 @@ class GreatWall {
         _currentState = _savedDerivedStates[_derivationPath]!;
       } else {
         _currentState.add(_shuffledArityIndexes[idx - 1]);
-        updateWithQuickHashing();
+        _updateWithQuickHashing();
         _savedDerivedStates[_derivationPath] = _currentState;
       }
 
     } else {
       returnLevel();
     }
+  }
+
+  List<TacitKnowledge>? generateknowledgePalettes(KnowledgeType knowledgeType) {
+    _derivationKnowledgeType = knowledgeType;
+    _shuffleArityIndexes();
+
+    List<TacitKnowledge>? shuffledPalettes;
+    if (_savedDerivedPathKnowledge.containsKey(_derivationPath)) {
+        shuffledPalettes = _savedDerivedPathKnowledge[_derivationPath];
+        return shuffledPalettes;
+    } else {
+      switch (knowledgeType) {
+        case KnowledgeType.formosa:
+          List<Formosa> shuffledFormosaPalettes = [];
+          shuffledPalettes = shuffledFormosaPalettes;
+          break;
+        case KnowledgeType.fractal:
+          List<Fractal> shuffledFractalPalettes = [];
+          shuffledPalettes = shuffledFractalPalettes;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return shuffledPalettes;
   }
 }

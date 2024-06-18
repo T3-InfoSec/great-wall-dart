@@ -1,10 +1,7 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
-import 'knowledges.dart';
-
-// Argon2 parameters
-enum Argon2Config { salt }
+import 'knowledge.dart';
 
 // Class representing derivation path
 class DerivationPath {
@@ -19,23 +16,20 @@ class DerivationPath {
 
   int operator [](int index) => _path[index];
 
-  /// Add [node] to the derivation path
+  /// Add [node] to the end of this [DerivationPath], extending the
+  /// length by one.
   DerivationPath add(int node) => DerivationPath.from(_path..add(node));
 
-  /// Clear all nodes from the derivation path.
-  DerivationPath clear() => DerivationPath.from(_path..clear());
-}
+  /// Removes all nodes from this [DerivationPath]; the length of the
+  /// [DerivationPath] becomes zero.
+  void clear() => DerivationPath.from(_path..clear());
 
-class TacitKnowledgeParam {
-  // ... define properties and methods for FormosaTacitKnowledgeParam
-}
-
-class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
-  // ... define properties and methods for FormosaTacitKnowledgeParam
-}
-
-class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
-  // ... define properties and methods for FractalTacitKnowledgeParam
+  /// Whether the collection contains an element equal to [element].
+  ///
+  /// This operation will check each element in order for being equal to
+  /// [element], unless it has a more efficient way to find an element
+  /// equal to [element].
+  bool contains(Object? element) => _path.contains(element);
 }
 
 // Class representing a memo card

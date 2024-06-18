@@ -31,7 +31,7 @@ class GreatWall {
   final List<MemoCard> _memoCards = [];
 
   // Palettes
-  Mnemonic formosa = Mnemonic();
+  Formosa formosa = Formosa();
   Fractal fractal = Fractal();
 
   // Protocol parameters declaration
@@ -114,7 +114,7 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a long time.
-  void updateWithLongHash() {
+  void updateWithLongHashing() {
     var argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -129,7 +129,7 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a quick time.
-  void updateWithQuickHash() {
+  void updateWithQuickHashing() {
     var argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -151,14 +151,14 @@ class GreatWall {
       return;
     }
     print("Deriving SA0 -> SA1");
-    updateWithQuickHash();
+    updateWithQuickHashing();
     seed1 = currentState;
     if (isCanceled) {
       print("Task canceled");
       return;
     }
     print("Deriving SA1 -> SA2");
-    updateWithLongHash();
+    updateWithLongHashing();
     seed2 = currentState;
     currentState = Uint8List.fromList(seed0 + currentState);
     if (isCanceled) {
@@ -166,7 +166,7 @@ class GreatWall {
       return;
     }
     print("Deriving SA2 -> SA3");
-    updateWithQuickHash();
+    updateWithQuickHashing();
     seed3 = currentState;
 
     _savedDerivationStates[_derivationPath] = currentState;
@@ -192,7 +192,7 @@ class GreatWall {
         currentState = _savedDerivationStates[_derivationPath]!;
       } else {
         currentState.add(_shuffledArityIndexes[idx - 1]);
-        updateWithQuickHash();
+        updateWithQuickHashing();
         _savedDerivationStates[_derivationPath] = currentState;
       }
 

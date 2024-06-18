@@ -4,15 +4,8 @@
 // Available knowledge types
 enum KnowledgeType { formosa, fractal, hashviz }
 
-// Class for generating fractals (consider using an existing library)
-class Fractal {
-  String funcType = "burningship";
-
-  // Add methods for updating fractals based on parameters
-}
-
 // Class for generating mnemonics (consider using an existing library)
-class Mnemonic {
+class Formosa {
   String expandPassword(String password) {
     // Implement password expansion logic
     return password;
@@ -24,4 +17,11 @@ class Mnemonic {
   }
 
   // Add methods for other mnemonic functionalities
+}
+
+// Class for generating fractals (consider using an existing library)
+class Fractal {
+  String funcType = "burningship";
+
+  // Add methods for updating fractals based on parameters
 }

@@ -32,10 +32,10 @@ sealed class TacitKnowledgeParam {
   // ... define properties and methods for FormosaTacitKnowledgeParam
 }
 
-class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
+class FormosaTacitKnowledgeParam implements TacitKnowledgeParam {
   // ... define properties and methods for FormosaTacitKnowledgeParam
 }
 
-class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
+class FractalTacitKnowledgeParam implements TacitKnowledgeParam {
   // ... define properties and methods for FractalTacitKnowledgeParam
 }

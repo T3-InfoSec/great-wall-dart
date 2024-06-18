@@ -41,10 +41,14 @@ class GreatWall {
   Formosa formosa = Formosa();
   Fractal fractal = Fractal();
 
+  /// Get the result of the protocol derivation operation.
   Uint8List get hashResult => _currentState;
 
+  /// Get the current level of the protocol derivation operation.
   int get derivationLevel => _currentLevel;
 
+  /// Set the value of the [password] that you need to hash it by using
+  /// [GreatWall] protocol.
   set seed0(String password) {
     initialProtocol();
     _currentState = _seed0 = Uint8List.fromList(password.codeUnits);
@@ -54,6 +58,7 @@ class GreatWall {
     initialProtocol();
   }
 
+  /// Reset the [GreatWall] protocol and its attributes to its initial state.
   void initialProtocol() {
     _seed0 = Uint8List(128);
     _seed1 = Uint8List(128);

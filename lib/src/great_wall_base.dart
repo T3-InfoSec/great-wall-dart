@@ -47,6 +47,10 @@ class GreatWall {
   /// Get the current level of the protocol derivation operation.
   int get derivationLevel => _currentLevel;
 
+  /// Get the type of tacit knowledge that is used to generating
+  /// [GreatWall.hashResult].
+  TacitKnowledge? get derivationTacitKnowledge => _derivationTacitKnowledge;
+
   /// Set the value of the [password] that you need to hash it by using
   /// [GreatWall] protocol.
   set seed0(String password) {

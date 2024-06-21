@@ -82,13 +82,13 @@ class GreatWall {
 
   List<TacitKnowledge> generateKnowledgePalettes(TacitKnowledge tacitKnowledge) {
     _derivationTacitKnowledge = tacitKnowledge;
-    _shuffleArityIndexes();
 
     List<TacitKnowledge> shuffledPalettes;
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath)) {
         shuffledPalettes = _savedDerivedPathKnowledge[_derivationPath]!;
         return shuffledPalettes;
     } else {
+      _shuffleArityIndexes();
       switch (tacitKnowledge) {
         case Formosa():
           List<Formosa> shuffledFormosaPalettes = [];
@@ -152,7 +152,7 @@ class GreatWall {
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].
   void _shuffleArityIndexes() {
-    _shuffledArityIndexes = [for (var idx = 0; idx <= treeArity; idx++) idx];
+    _shuffledArityIndexes = [for (var idx = 0; idx < treeArity; idx++) idx];
 
     _shuffledArityIndexes.shuffle(Random.secure());
   }

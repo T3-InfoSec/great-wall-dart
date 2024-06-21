@@ -77,7 +77,7 @@ class GreatWall {
     isInitialized = true;
   }
 
-  /// Fill and shuffles a list of numbers in range [GreatWall.treeArity].
+  /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].
   void _shuffleArityIndexes() {
     _shuffledArityIndexes = [for (var idx = 0; idx <= treeArity; idx++) idx];
 

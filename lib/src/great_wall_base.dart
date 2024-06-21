@@ -164,7 +164,7 @@ class GreatWall {
     }
   }
 
-  List<TacitKnowledge>? generateknowledgePalettes(KnowledgeType knowledgeType) {
+  List<TacitKnowledge>? generateKnowledgePalettes(KnowledgeType knowledgeType) {
     _derivationKnowledgeType = knowledgeType;
     _shuffleArityIndexes();
 

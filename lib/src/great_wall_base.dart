@@ -98,6 +98,10 @@ class GreatWall {
           List<Fractal> shuffledFractalPalettes = [];
           shuffledPalettes = shuffledFractalPalettes;
           break;
+        case HashViz():
+          List<Fractal> shuffledFractalPalettes = [];
+          shuffledPalettes = shuffledFractalPalettes;
+          break;
       }
       return shuffledPalettes;
     }

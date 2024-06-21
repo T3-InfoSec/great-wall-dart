@@ -32,14 +32,14 @@ class GreatWall {
   int treeArity = 0;
   int timeLockPuzzleParam = 0;
 
-  KnowledgeType? _derivationKnowledgeType;
+  TacitKnowledge? _derivationTacitKnowledge;
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
   final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
 
-  // Palettes
-  Formosa formosa = Formosa();
-  Fractal fractal = Fractal();
+  GreatWall() {
+    initialProtocol();
+  }
 
   /// Get the result of the protocol derivation operation.
   Uint8List get hashResult => _currentState;
@@ -54,8 +54,9 @@ class GreatWall {
     _currentState = _seed0 = Uint8List.fromList(password.codeUnits);
   }
 
-  GreatWall() {
+  void startDerivation() {
     initialProtocol();
+    _deriveHashInIntensiveTime();
   }
 
   /// Reset the [GreatWall] protocol and its attributes to its initial state.
@@ -69,12 +70,57 @@ class GreatWall {
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
 
-    _derivationKnowledgeType = null;
+    _derivationTacitKnowledge = null;
     _derivationPath.clear();
     _savedDerivedStates.clear();
     _savedDerivedPathKnowledge.clear();
 
     isInitialized = true;
+  }
+
+  /// Drive the [GreatWall.hashResult] from the user choice [idx].
+  ///
+  /// If [idx] is 0, the protocol will go back one level to its previous state,
+  /// If it is greater 0 the protocol will update the state depending on this choice.
+  void deriveFromUserChoice(int idx) {
+    if (idx > 0) {
+      _currentLevel += 1;
+      _derivationPath.add(idx);
+
+      if (_savedDerivedStates.containsKey(_derivationPath)) {
+        _currentState = _savedDerivedStates[_derivationPath]!;
+      } else {
+        _currentState.add(_shuffledArityIndexes[idx - 1]);
+        _updateWithQuickHashing();
+        _savedDerivedStates[_derivationPath] = _currentState;
+      }
+
+    } else {
+      returnLevel();
+    }
+  }
+
+  List<TacitKnowledge> generateKnowledgePalettes(TacitKnowledge tacitKnowledge) {
+    _derivationTacitKnowledge = tacitKnowledge;
+    _shuffleArityIndexes();
+
+    List<TacitKnowledge> shuffledPalettes;
+    if (_savedDerivedPathKnowledge.containsKey(_derivationPath)) {
+        shuffledPalettes = _savedDerivedPathKnowledge[_derivationPath]!;
+        return shuffledPalettes;
+    } else {
+      switch (tacitKnowledge) {
+        case Formosa():
+          List<Formosa> shuffledFormosaPalettes = [];
+          shuffledPalettes = shuffledFormosaPalettes;
+          break;
+        case Fractal():
+          List<Fractal> shuffledFractalPalettes = [];
+          shuffledPalettes = shuffledFractalPalettes;
+          break;
+      }
+      return shuffledPalettes;
+    }
   }
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].
@@ -135,58 +181,5 @@ class GreatWall {
     _seed3 = _currentState;
 
     _savedDerivedStates[_derivationPath] = _currentState;
-  }
-
-  void startDerivation() {
-    initialProtocol();
-    _deriveHashInIntensiveTime();
-  }
-
-  /// Drive the [GreatWall.hashResult] from the user choice [idx].
-  ///
-  /// If [idx] is 0, the protocol will go back one level to its previous state,
-  /// If it is greater 0 the protocol will update the state depending on this choice.
-  void deriveFromUserChoice(int idx) {
-    if (idx > 0) {
-      _currentLevel += 1;
-      _derivationPath.add(idx);
-
-      if (_savedDerivedStates.containsKey(_derivationPath)) {
-        _currentState = _savedDerivedStates[_derivationPath]!;
-      } else {
-        _currentState.add(_shuffledArityIndexes[idx - 1]);
-        _updateWithQuickHashing();
-        _savedDerivedStates[_derivationPath] = _currentState;
-      }
-
-    } else {
-      returnLevel();
-    }
-  }
-
-  List<TacitKnowledge>? generateKnowledgePalettes(KnowledgeType knowledgeType) {
-    _derivationKnowledgeType = knowledgeType;
-    _shuffleArityIndexes();
-
-    List<TacitKnowledge>? shuffledPalettes;
-    if (_savedDerivedPathKnowledge.containsKey(_derivationPath)) {
-        shuffledPalettes = _savedDerivedPathKnowledge[_derivationPath];
-        return shuffledPalettes;
-    } else {
-      switch (knowledgeType) {
-        case KnowledgeType.formosa:
-          List<Formosa> shuffledFormosaPalettes = [];
-          shuffledPalettes = shuffledFormosaPalettes;
-          break;
-        case KnowledgeType.fractal:
-          List<Fractal> shuffledFractalPalettes = [];
-          shuffledPalettes = shuffledFractalPalettes;
-          break;
-        default:
-          break;
-      }
-    }
-
-    return shuffledPalettes;
   }
 }

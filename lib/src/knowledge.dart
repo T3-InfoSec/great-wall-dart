@@ -1,13 +1,23 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
-// Available knowledge types
-enum KnowledgeType { formosa, fractal, hashviz }
+sealed class TacitKnowledgeParam {
+  // ... define properties and methods for FormosaTacitKnowledgeParam
+}
 
+class FormosaTacitKnowledgeParam implements TacitKnowledgeParam {
+  // ... define properties and methods for FormosaTacitKnowledgeParam
+}
+
+class FractalTacitKnowledgeParam implements TacitKnowledgeParam {
+  // ... define properties and methods for FractalTacitKnowledgeParam
+}
+
+// Class for 
 sealed class TacitKnowledge {}
 
 // Class for generating mnemonics (consider using an existing library)
-class Formosa implements TacitKnowledge {
+final class Formosa implements TacitKnowledge {
   String expandPassword(String password) {
     // Implement password expansion logic
     return password;
@@ -22,20 +32,8 @@ class Formosa implements TacitKnowledge {
 }
 
 // Class for generating fractals (consider using an existing library)
-class Fractal implements TacitKnowledge {
+final class Fractal implements TacitKnowledge {
   String funcType = "burningship";
 
   // Add methods for updating fractals based on parameters
-}
-
-sealed class TacitKnowledgeParam {
-  // ... define properties and methods for FormosaTacitKnowledgeParam
-}
-
-class FormosaTacitKnowledgeParam implements TacitKnowledgeParam {
-  // ... define properties and methods for FormosaTacitKnowledgeParam
-}
-
-class FractalTacitKnowledgeParam implements TacitKnowledgeParam {
-  // ... define properties and methods for FractalTacitKnowledgeParam
 }

@@ -41,9 +41,6 @@ class GreatWall {
     initialProtocol();
   }
 
-  /// Get the result of the protocol derivation operation.
-  Uint8List get hashResult => _currentState;
-
   /// Get the current level of the protocol derivation operation.
   int get derivationLevel => _currentLevel;
 
@@ -51,35 +48,14 @@ class GreatWall {
   /// [GreatWall.hashResult].
   TacitKnowledge? get derivationTacitKnowledge => _derivationTacitKnowledge;
 
+  /// Get the result of the protocol derivation operation.
+  Uint8List get hashResult => _currentState;
+
   /// Set the value of the [password] that you need to hash it by using
   /// [GreatWall] protocol.
   set seed0(String password) {
     initialProtocol();
     _currentState = _seed0 = Uint8List.fromList(password.codeUnits);
-  }
-
-  void startDerivation() {
-    initialProtocol();
-    _deriveHashInIntensiveTime();
-  }
-
-  /// Reset the [GreatWall] protocol and its attributes to its initial state.
-  void initialProtocol() {
-    _seed0 = Uint8List(128);
-    _seed1 = Uint8List(128);
-    _seed2 = Uint8List(128);
-    _seed3 = Uint8List(128);
-    _currentState = _seed0;
-
-    _currentLevel = 0;
-    _shuffledArityIndexes = <int>[];
-
-    _derivationTacitKnowledge = null;
-    _derivationPath.clear();
-    _savedDerivedStates.clear();
-    _savedDerivedPathKnowledge.clear();
-
-    isInitialized = true;
   }
 
   /// Drive the [GreatWall.hashResult] from the user choice [idx].
@@ -127,6 +103,53 @@ class GreatWall {
     }
   }
 
+  /// Reset the [GreatWall] protocol and its attributes to its initial state.
+  void initialProtocol() {
+    _seed0 = Uint8List(128);
+    _seed1 = Uint8List(128);
+    _seed2 = Uint8List(128);
+    _seed3 = Uint8List(128);
+    _currentState = _seed0;
+
+    _currentLevel = 0;
+    _shuffledArityIndexes = <int>[];
+
+    _derivationTacitKnowledge = null;
+    _derivationPath.clear();
+    _savedDerivedStates.clear();
+    _savedDerivedPathKnowledge.clear();
+
+    isInitialized = true;
+  }
+
+  void startDerivation() {
+    initialProtocol();
+    _deriveHashInIntensiveTime();
+  }
+
+  void _deriveHashInIntensiveTime() {
+    print("Deriving Seed0 -> Seed1");
+    _updateWithQuickHashing();
+    _seed1 = _currentState;
+    if (isCanceled) {
+      print("Derivation canceled");
+      return;
+    }
+    print("Deriving Seed1 -> Seed2");
+    _updateWithLongHashing();
+    _seed2 = _currentState;
+    _currentState = Uint8List.fromList(_seed0 + _currentState);
+    if (isCanceled) {
+      print("Derivation canceled");
+      return;
+    }
+    print("Deriving Seed2 -> Seed3");
+    _updateWithQuickHashing();
+    _seed3 = _currentState;
+
+    _savedDerivedStates[_derivationPath] = _currentState;
+  }
+
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].
   void _shuffleArityIndexes() {
     _shuffledArityIndexes = [for (var idx = 0; idx <= treeArity; idx++) idx];
@@ -162,28 +185,5 @@ class GreatWall {
     );
 
     _currentState = argon2Algorithm.convert(_currentState).bytes;
-  }
-
-  void _deriveHashInIntensiveTime() {
-    print("Deriving Seed0 -> Seed1");
-    _updateWithQuickHashing();
-    _seed1 = _currentState;
-    if (isCanceled) {
-      print("Derivation canceled");
-      return;
-    }
-    print("Deriving Seed1 -> Seed2");
-    _updateWithLongHashing();
-    _seed2 = _currentState;
-    _currentState = Uint8List.fromList(_seed0 + _currentState);
-    if (isCanceled) {
-      print("Derivation canceled");
-      return;
-    }
-    print("Deriving Seed2 -> Seed3");
-    _updateWithQuickHashing();
-    _seed3 = _currentState;
-
-    _savedDerivedStates[_derivationPath] = _currentState;
   }
 }

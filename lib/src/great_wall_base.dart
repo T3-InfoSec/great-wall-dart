@@ -32,7 +32,7 @@ class GreatWall {
   int treeArity = 0;
   int timeLockPuzzleParam = 0;
 
-  TacitKnowledge? _derivationTacitKnowledge;
+  TacitKnowledge derivationTacitKnowledge = Formosa();
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
   final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
@@ -43,10 +43,6 @@ class GreatWall {
 
   /// Get the current level of the protocol derivation operation.
   int get derivationLevel => _currentLevel;
-
-  /// Get the type of tacit knowledge that is used to generating
-  /// [GreatWall.hashResult].
-  TacitKnowledge? get derivationTacitKnowledge => _derivationTacitKnowledge;
 
   /// Get the result of the protocol derivation operation.
   Uint8List get hashResult => _currentState;
@@ -80,31 +76,30 @@ class GreatWall {
     }
   }
 
-  List<TacitKnowledge> generateKnowledgePalettes(TacitKnowledge tacitKnowledge) {
-    _derivationTacitKnowledge = tacitKnowledge;
-
+  List<TacitKnowledge> generateKnowledgePalettes() {
+    TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
     List<TacitKnowledge> shuffledPalettes;
+
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath)) {
-        shuffledPalettes = _savedDerivedPathKnowledge[_derivationPath]!;
-        return shuffledPalettes;
+      shuffledPalettes = _savedDerivedPathKnowledge[_derivationPath]!;
     } else {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {
         case Formosa():
-          List<Formosa> shuffledFormosaPalettes = [];
+          List<Formosa> shuffledFormosaPalettes = [
+            for (var arityIdx = 0; arityIdx < treeArity; arityIdx++)
+              tacitKnowledge.toMnemonic(arityIdx)
+          ];
           shuffledPalettes = shuffledFormosaPalettes;
-          break;
         case Fractal():
           List<Fractal> shuffledFractalPalettes = [];
           shuffledPalettes = shuffledFractalPalettes;
-          break;
         case HashViz():
           List<Fractal> shuffledFractalPalettes = [];
           shuffledPalettes = shuffledFractalPalettes;
-          break;
       }
-      return shuffledPalettes;
     }
+    return shuffledPalettes;
   }
 
   /// Reset the [GreatWall] protocol and its attributes to its initial state.
@@ -118,7 +113,7 @@ class GreatWall {
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
 
-    _derivationTacitKnowledge = null;
+    derivationTacitKnowledge = Formosa();
     _derivationPath.clear();
     _savedDerivedStates.clear();
     _savedDerivedPathKnowledge.clear();

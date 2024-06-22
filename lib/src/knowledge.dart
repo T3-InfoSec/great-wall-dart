@@ -63,7 +63,7 @@ final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
   double _computeImaginaryParamValue(Uint8List value) {
     // NOTE: We inverting the order of digits by operation [::-1] on string,
     // to minimize Benford's law bias.
-    String imaginaryParam = '0.$int.parse(value.reversed.join()).toString()';
+    String imaginaryParam = '0.${int.parse(value.reversed.join()).toString()}';
     return double.parse(imaginaryParam);
   }
 

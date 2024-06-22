@@ -12,15 +12,11 @@ sealed class TacitKnowledgeParam {
 
   final Uint8List state;
   final Map<String, Uint8List> adjustmentParams;
-  Uint8List? _value;
 
   TacitKnowledgeParam(this.state, this.adjustmentParams);
 
-  /// Get the value of the .
-  List<int>? get value {
-    _value = _computeValue();
-    return _value;
-  }
+  /// Get the value that represents the param.
+  Object? get value => _computeValue();
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
@@ -45,7 +41,10 @@ sealed class TacitKnowledgeParam {
           Uint8List.fromList(nextStateCandidate + tacitKnowledgeParamBytes);
     });
 
-    return argon2Algorithm.convert(nextStateCandidate).bytes;
+    return argon2Algorithm
+        .convert(nextStateCandidate)
+        .bytes
+        .sublist(0, bytesCount);
   }
 }
 
@@ -53,35 +52,36 @@ sealed class TacitKnowledgeParam {
 final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
   FractalTacitKnowledgeParam(super.state, super.adjustmentParams);
 
-  double _computeRealParamValue(Uint8List value) {
-    // NOTE: We inverting the order of digits by operation [::-1] on string,
-    // to minimize Benford's law bias.
-    String realP = '2.${int.parse(value.reversed.join())}';
-    return double.parse(realP);
-  }
-
-  double _computeImaginaryParamValue(Uint8List value) {
-    // NOTE: We inverting the order of digits by operation [::-1] on string,
-    // to minimize Benford's law bias.
-    String imaginaryParam = '0.${int.parse(value.reversed.join()).toString()}';
-    return double.parse(imaginaryParam);
-  }
-
   @override
-  Uint8List _computeValue() {
+  num? get value {
     if (adjustmentParams.containsKey('real_p')) {
-      return _computeRealParamValue(super._computeValue());
+      return _computeRealParam(super._computeValue());
     } else if (adjustmentParams.containsKey('imag_p')) {
-      return _computeImaginaryParamValue(super._computeValue());
+      return _computeImaginaryParam(super._computeValue());
     } else {
-      return super._computeValue();
+      return _computeRealParam(super._computeValue());
     }
+  }
+
+  double _computeRealParam(Uint8List param) {
+    // NOTE: Inverting the order of digits to minimize Benford's law bias.
+    String realParam = '2.${int.parse(param.reversed.join())}';
+    return double.parse(realParam);
+  }
+
+  double _computeImaginaryParam(Uint8List param) {
+    // NOTE: Inverting the order of digits to minimize Benford's law bias.
+    String imaginaryParam = '0.${int.parse(param.reversed.join())}';
+    return double.parse(imaginaryParam);
   }
 }
 
 /// A representation of the formosa tacit knowledge param.
 final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
   FormosaTacitKnowledgeParam(super.state, super.adjustmentParams);
+
+  @override
+  Uint8List? get value => _computeValue();
 }
 
 /// A sealed and abstract class for tacit knowledge implementation

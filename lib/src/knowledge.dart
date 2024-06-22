@@ -16,7 +16,7 @@ sealed class TacitKnowledgeParam {
   TacitKnowledgeParam(this.state, this.adjustmentParams);
 
   /// Get the value that represents the param.
-  Object? get value => _computeValue();
+  Object get value => _computeValue();
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
@@ -53,7 +53,7 @@ final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
   FractalTacitKnowledgeParam(super.state, super.adjustmentParams);
 
   @override
-  num? get value {
+  num get value {
     if (adjustmentParams.containsKey('real_p')) {
       return _computeRealParam(super._computeValue());
     } else if (adjustmentParams.containsKey('imag_p')) {
@@ -81,7 +81,7 @@ final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
   FormosaTacitKnowledgeParam(super.state, super.adjustmentParams);
 
   @override
-  Uint8List? get value => _computeValue();
+  Uint8List get value => _computeValue();
 }
 
 /// A sealed and abstract class for tacit knowledge implementation

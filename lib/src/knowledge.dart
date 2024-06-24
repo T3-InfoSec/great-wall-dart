@@ -19,7 +19,6 @@ sealed class TacitKnowledgeParam {
   TacitKnowledgeParam(this.state, this.adjustmentParams);
 
   /// Get the value that represents the param.
-  // TODO: convert it to void.
   void get value;
 
   /// Get a valid tacit knowledge value from provided adjustment params.

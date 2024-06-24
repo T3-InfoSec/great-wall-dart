@@ -193,8 +193,8 @@ final class FractalTacitKnowledge extends TacitKnowledge {
   @override
   void updateParams(Map<String, FractalTacitKnowledgeParam> params) {
     knowledgeGenerator.imagePixels = knowledgeGenerator.update(
-      real_p: params["real_p"]?.value,
-      imaginary_p: params["imaginary_p"]?.value,
+      realParam: params["realParam"]?.value,
+      imaginaryParam: params["imaginaryParam"]?.value,
     );
   }
 }

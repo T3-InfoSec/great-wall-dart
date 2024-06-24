@@ -32,7 +32,10 @@ class GreatWall {
   int treeArity = 0;
   int timeLockPuzzleParam = 0;
 
-  TacitKnowledge derivationTacitKnowledge = Formosa();
+  TacitKnowledge derivationTacitKnowledge = FormosaTacitKnowledge(
+    {"theme": "BiP39"},
+    FormosaTacitKnowledgeParam(Uint8List(128), {}),
+  );
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
   final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
@@ -85,18 +88,18 @@ class GreatWall {
     } else {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {
-        case Formosa():
-          List<Formosa> shuffledFormosaPalettes = [
+        case FormosaTacitKnowledge():
+          List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
             for (var arityIdx = 0; arityIdx < treeArity; arityIdx++)
               tacitKnowledge.toMnemonic(arityIdx)
           ];
           shuffledPalettes = shuffledFormosaPalettes;
-        case Fractal():
-          List<Fractal> shuffledFractalPalettes = [];
+        case FractalTacitKnowledge():
+          List<FractalTacitKnowledge> shuffledFractalPalettes = [];
           shuffledPalettes = shuffledFractalPalettes;
-        case HashViz():
-          List<Fractal> shuffledFractalPalettes = [];
-          shuffledPalettes = shuffledFractalPalettes;
+        // case HashVizTacitKnowledge():
+        //   List<FractalTacitKnowledge> shuffledFractalPalettes = [];
+        //   shuffledPalettes = shuffledFractalPalettes;
       }
     }
     return shuffledPalettes;
@@ -113,7 +116,10 @@ class GreatWall {
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
 
-    derivationTacitKnowledge = Formosa();
+    derivationTacitKnowledge = FormosaTacitKnowledge(
+      {"theme": "BiP39"},
+      FormosaTacitKnowledgeParam(Uint8List(128), {}),
+    );
     _derivationPath.clear();
     _savedDerivedStates.clear();
     _savedDerivedPathKnowledge.clear();

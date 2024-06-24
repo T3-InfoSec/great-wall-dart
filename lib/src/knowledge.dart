@@ -4,6 +4,9 @@
 import 'dart:typed_data';
 
 import 'package:hashlib/hashlib.dart';
+// import 'package:formosa/formosa.dart';
+// import 'package:fractal/fractal.dart';
+// import 'package:hashviz/hashviz.dart';
 
 /// A sealed and abstract class for tacit knowledge param implementation
 sealed class TacitKnowledgeParam {
@@ -16,7 +19,8 @@ sealed class TacitKnowledgeParam {
   TacitKnowledgeParam(this.state, this.adjustmentParams);
 
   /// Get the value that represents the param.
-  Object get value => _computeValue();
+  // TODO: convert it to void.
+  void get value;
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
@@ -81,40 +85,141 @@ final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
   FormosaTacitKnowledgeParam(super.state, super.adjustmentParams);
 
   @override
-  Uint8List get value => _computeValue();
+  Uint8List get value => super._computeValue();
 }
 
 /// A sealed and abstract class for tacit knowledge implementation
-sealed class TacitKnowledge {}
+sealed class TacitKnowledge {
+  final Object knowledgeGenerator;
+  Map<String, Object> configs;
+  TacitKnowledgeParam initState;
+
+  TacitKnowledge(this.knowledgeGenerator, this.configs, this.initState);
+
+  void get knowledge;
+
+  void updateConfigs(Map<String, Object> configs);
+
+  void generateSampleFrom(covariant List<TacitKnowledgeParam> params);
+}
 
 // Class for generating mnemonics (consider using an existing library)
-final class Formosa implements TacitKnowledge {
-  String expandPassword(String password) {
-    // Implement password expansion logic
-    return password;
+final class FormosaTacitKnowledge extends TacitKnowledge {
+  FormosaTacitKnowledge._internal(
+    super.knowledgeGenerator,
+    super.configs,
+    super.initState,
+  );
+
+  factory FormosaTacitKnowledge(
+    Map<String, Object> configs,
+    FormosaTacitKnowledgeParam initState,
+  ) {
+    // TODO: implement the logic.
+    Formosa knowledgeGenerator = Formosa(configs["theme"]);
+
+    return FormosaTacitKnowledge._internal(
+      knowledgeGenerator,
+      configs,
+      initState,
+    );
   }
 
-  String toMnemonic(String data) {
-    // Implement logic to convert data to mnemonic
-    return data;
+  @override
+  String get knowledge {
+    return knowledgeGenerator.toMnemonic();
+  }
+
+  @override
+  void updateConfigs(Map<String, Object> configs) {}
+
+  @override
+  FormosaTacitKnowledge generateSampleFrom(
+    List<FormosaTacitKnowledgeParam> params,
+  ) {
+    return this;
   }
 
   // Add methods for other mnemonic functionalities
 }
 
 // Class for generating fractals (consider using an existing library)
-final class Fractal implements TacitKnowledge {
-  String funcType = "burningship";
+final class FractalTacitKnowledge extends TacitKnowledge {
+  FractalTacitKnowledge._internal(
+    super.knowledgeGenerator,
+    super.configs,
+    super.initState,
+  );
 
-  // Add methods for updating fractals based on parameters
-}
+  factory FractalTacitKnowledge(
+    Map<String, Object> configs,
+    FractalTacitKnowledgeParam initState,
+  ) {
+    // TODO: implement the logic.
+    Fractal knowledgeGenerator = Fractal(configs["fractalSet"]);
 
-// Class for generating mnemonics (consider using an existing library)
-final class HashViz implements TacitKnowledge {
-  String expandPassword(String password) {
-    // Implement password expansion logic
-    return password;
+    return FractalTacitKnowledge._internal(
+      knowledgeGenerator,
+      configs,
+      initState,
+    );
+  }
+
+  @override
+  String get knowledge {
+    return knowledgeGenerator.toMnemonic();
+  }
+
+  @override
+  void updateConfigs(Map<String, Object> configs) {}
+
+  @override
+  FractalTacitKnowledge generateSampleFrom(
+    List<FractalTacitKnowledgeParam> params,
+  ) {
+    return this;
   }
 
   // Add methods for other mnemonic functionalities
 }
+
+// TODO: Implement Hashviz tacit knowledge.
+/// Class for generating hashviz (consider using an existing library)
+// final class HashVizTacitKnowledge extends TacitKnowledge {
+//   HashVizTacitKnowledge._internal(
+//     super.knowledgeGenerator,
+//     super.configs,
+//     super.initState,
+//   );
+//
+//   factory HashVizTacitKnowledge(
+//     Map<String, Object> configs,
+//     HashVizTacitKnowledgeParam initState,
+//   ) {
+//     // TODO: implement the logic.
+//     HashViz knowledgeGenerator = HashViz(configs["size"]);
+//
+//     return HashVizTacitKnowledge._internal(
+//       knowledgeGenerator,
+//       configs,
+//       initState,
+//     );
+//   }
+//
+//   @override
+//   String get knowledge {
+//     return knowledgeGenerator.toMnemonic();
+//   }
+//
+//   @override
+//   void updateConfigs(Map<String, Object> configs) {}
+//
+//   @override
+//   HashVizTacitKnowledge generateSampleFrom(
+//     List<HashVizTacitKnowledgeParam> params,
+//   ) {
+//     return this;
+//   }
+//
+//   // Add methods for other mnemonic functionalities
+// }

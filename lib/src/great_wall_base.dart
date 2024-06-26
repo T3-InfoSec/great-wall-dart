@@ -90,8 +90,16 @@ class GreatWall {
       switch (tacitKnowledge) {
         case FormosaTacitKnowledge():
           List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
-            for (var arityIdx = 0; arityIdx < treeArity; arityIdx++)
-              tacitKnowledge.toMnemonic(arityIdx)
+            for (final arityIdx in _shuffledArityIndexes)
+              tacitKnowledge
+                ..configs = {
+                  'formosaParam': FormosaTacitKnowledgeParam(
+                    _currentState,
+                    {
+                      "formosaParam": Uint8List.fromList([arityIdx])
+                    },
+                  )
+                }
           ];
           shuffledPalettes = shuffledFormosaPalettes;
         case FractalTacitKnowledge():

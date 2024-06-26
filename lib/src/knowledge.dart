@@ -83,6 +83,7 @@ final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
 final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
   FormosaTacitKnowledgeParam(super.state, super.adjustmentParams);
 
+  // TODO: Using adjustmentParams to compute the value parameter.
   @override
   Uint8List get value => super._computeValue();
 }

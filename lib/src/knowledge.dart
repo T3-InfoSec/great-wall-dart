@@ -130,6 +130,7 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
     var knowledge = _knowledgeGenerator.toMnemonic(
       formosaParam: params["formosaParam"]?.value,
     );
+
     return knowledge;
   }
 }
@@ -161,14 +162,10 @@ final class FractalTacitKnowledge extends TacitKnowledge {
 
   /// Returns a 1D or 3D fractal image.
   ///
-  /// This returned image represents the actual tacit knowledge of the
+  /// Returns the image that represents the actual tacit knowledge of the
   /// [FractalTacitKnowledge] tacit knowledge.
   @override
-  List<dynamic> get knowledge => _knowledgeGenerator.imagePixels;
-
-  /// Update the configs of the tacit knowledge generator.
-  @override
-  void updateConfigs(Map<String, Object> configs) {
+  List<dynamic> get knowledge {
     _knowledgeGenerator.imagePixels = _knowledgeGenerator.update(
       fractalSet: configs["fractalSet"],
       colorScheme: configs["colorScheme"],
@@ -176,20 +173,15 @@ final class FractalTacitKnowledge extends TacitKnowledge {
       xMax: configs["xMax"],
       yMin: configs["yMin"],
       yMax: configs["yMax"],
+      realParam: params["realParam"]?.value,
+      imaginaryParam: params["imaginaryParam"]?.value,
       width: configs["width"],
       height: configs["height"],
       escapeRadius: configs["escapeRadius"],
       maxIteration: configs["maxIteration"],
     );
-  }
 
-  /// Update the params of the tacit knowledge generator.
-  @override
-  void updateParams(Map<String, FractalTacitKnowledgeParam> params) {
-    _knowledgeGenerator.imagePixels = _knowledgeGenerator.update(
-      realParam: params["realParam"]?.value,
-      imaginaryParam: params["imaginaryParam"]?.value,
-    );
+    return _knowledgeGenerator.imagePixels;
   }
 }
 

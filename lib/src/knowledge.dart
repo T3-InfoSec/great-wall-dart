@@ -38,10 +38,10 @@ sealed class TacitKnowledgeParam {
       salt: argon2Salt,
     );
 
-    adjustmentParams.forEach((param, tacitKnowledgeParamBytes) {
-      nextStateCandidate = argon2Algorithm.convert(nextStateCandidate).bytes;
-      nextStateCandidate =
-          Uint8List.fromList(nextStateCandidate + tacitKnowledgeParamBytes);
+    adjustmentParams.forEach((paramName, tacitKnowledgeParamBytes) {
+      nextStateCandidate = Uint8List.fromList(
+          argon2Algorithm.convert(nextStateCandidate).bytes +
+              tacitKnowledgeParamBytes);
     });
 
     return argon2Algorithm

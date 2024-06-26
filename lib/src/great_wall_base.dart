@@ -34,7 +34,7 @@ class GreatWall {
 
   TacitKnowledge derivationTacitKnowledge = FormosaTacitKnowledge(
     {"theme": "BiP39"},
-    FormosaTacitKnowledgeParam(Uint8List(128), {}),
+    {"formosaParam": FormosaTacitKnowledgeParam(Uint8List(128), {})},
   );
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
@@ -118,7 +118,7 @@ class GreatWall {
 
     derivationTacitKnowledge = FormosaTacitKnowledge(
       {"theme": "BiP39"},
-      FormosaTacitKnowledgeParam(Uint8List(128), {}),
+      {"formosaParam": FormosaTacitKnowledgeParam(Uint8List(128), {})},
     );
     _derivationPath.clear();
     _savedDerivedStates.clear();

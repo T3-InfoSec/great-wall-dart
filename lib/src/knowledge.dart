@@ -89,23 +89,19 @@ final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
 
 /// A sealed and abstract class for tacit knowledge implementation
 sealed class TacitKnowledge {
-  final Object knowledgeGenerator;
+  Object _knowledgeGenerator;
   Map<String, Object> configs;
   Map<String, TacitKnowledgeParam> params;
 
-  TacitKnowledge(this.knowledgeGenerator, this.configs, this.params);
+  TacitKnowledge(this._knowledgeGenerator, this.configs, this.params);
 
   void get knowledge;
-
-  void updateConfigs(Map<String, Object> configs);
-
-  void updateParams(covariant Map<String, TacitKnowledgeParam> params);
 }
 
 // Class for generating mnemonics (consider using an existing library)
 final class FormosaTacitKnowledge extends TacitKnowledge {
   FormosaTacitKnowledge._internal(
-    super.knowledgeGenerator,
+    super._knowledgeGenerator,
     super.configs,
     super.params,
   );
@@ -126,18 +122,16 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
 
   /// Returns a mnemonic string.
   ///
-  /// This returned mnemonic string represents the actual tacit knowledge of
-  //// the [FormosaTacitKnowledge] tacit knowledge.
+  /// Returns the mnemonic string that represents the actual tacit knowledge of
+  /// the [FormosaTacitKnowledge] tacit knowledge.
   @override
-  String get knowledge => knowledgeGenerator.toMnemonic();
-
-  /// Update the configs of the tacit knowledge generator.
-  @override
-  void updateConfigs(Map<String, Object> configs) {}
-
-  /// Update the params of the tacit knowledge generator.
-  @override
-  void updateParams(Map<String, FormosaTacitKnowledgeParam> params) {}
+  String get knowledge {
+    _knowledgeGenerator = Formosa(configs["theme"]);
+    var knowledge = _knowledgeGenerator.toMnemonic(
+      formosaParam: params["formosaParam"]?.value,
+    );
+    return knowledge;
+  }
 }
 
 // Class for generating fractals (consider using an existing library)
@@ -170,12 +164,12 @@ final class FractalTacitKnowledge extends TacitKnowledge {
   /// This returned image represents the actual tacit knowledge of the
   /// [FractalTacitKnowledge] tacit knowledge.
   @override
-  List<dynamic> get knowledge => knowledgeGenerator.imagePixels;
+  List<dynamic> get knowledge => _knowledgeGenerator.imagePixels;
 
   /// Update the configs of the tacit knowledge generator.
   @override
   void updateConfigs(Map<String, Object> configs) {
-    knowledgeGenerator.imagePixels = knowledgeGenerator.update(
+    _knowledgeGenerator.imagePixels = _knowledgeGenerator.update(
       fractalSet: configs["fractalSet"],
       colorScheme: configs["colorScheme"],
       xMin: configs["xMin"],
@@ -192,7 +186,7 @@ final class FractalTacitKnowledge extends TacitKnowledge {
   /// Update the params of the tacit knowledge generator.
   @override
   void updateParams(Map<String, FractalTacitKnowledgeParam> params) {
-    knowledgeGenerator.imagePixels = knowledgeGenerator.update(
+    _knowledgeGenerator.imagePixels = _knowledgeGenerator.update(
       realParam: params["realParam"]?.value,
       imaginaryParam: params["imaginaryParam"]?.value,
     );

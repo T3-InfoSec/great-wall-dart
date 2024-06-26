@@ -189,7 +189,7 @@ final class FractalTacitKnowledge extends TacitKnowledge {
 /// Class for generating hashviz (consider using an existing library)
 // final class HashVizTacitKnowledge extends TacitKnowledge {
 //   HashVizTacitKnowledge._internal(
-//     super.knowledgeGenerator,
+//     super._knowledgeGenerator,
 //     super.configs,
 //     super.initState,
 //   );
@@ -210,16 +210,10 @@ final class FractalTacitKnowledge extends TacitKnowledge {
 //
 //   /// Returns a 3D visualization image of the hash.
 //   ///
-//   /// This returned image represents the actual tacit knowledge of the
+//   /// Returns image that represents the actual tacit knowledge of the
 //   /// [HashVizTacitKnowledge] tacit knowledge.
 //   @override
-//   List<dynamic> get knowledge => knowledgeGenerator.imagePixels;
+//   List<dynamic> get knowledge {
 //
-//   /// Update the configs of the tacit knowledge generator.
-//   @override
-//   void updateConfigs(Map<String, Object> configs) {}
-//
-//   /// Update the params of the tacit knowledge generator.
-//   @override
-//   void updateParams(Map<String, HashVizTacitKnowledgeParam> params) {}
+//   }
 // }

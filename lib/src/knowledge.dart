@@ -138,7 +138,7 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
 // Class for generating fractals (consider using an existing library)
 final class FractalTacitKnowledge extends TacitKnowledge {
   FractalTacitKnowledge._internal(
-    super.knowledgeGenerator,
+    super._knowledgeGenerator,
     super.configs,
     super.params,
   );

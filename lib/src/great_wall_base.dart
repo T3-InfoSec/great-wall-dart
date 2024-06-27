@@ -166,7 +166,7 @@ class GreatWall {
     _deriveHashInIntensiveTime();
   }
 
-  void finishDerivation() {
+  Uint8List finishDerivation() {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
     switch (tacitKnowledge) {
@@ -198,6 +198,10 @@ class GreatWall {
       //     tempPath.add(node);
       //   }
     }
+
+    print('Key = ${_currentState.buffer}');
+    isFinished = true;
+    return _currentState;
   }
 
   /// Go back to the previous state hash.

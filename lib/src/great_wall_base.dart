@@ -204,6 +204,10 @@ class GreatWall {
     return _currentState;
   }
 
+  void cancelDerivation() {
+    isCanceled = true;
+  }
+
   /// Go back to the previous state hash.
   void returnLevel() {
     if (_currentLevel == 0) return;

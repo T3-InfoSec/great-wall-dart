@@ -108,7 +108,22 @@ class GreatWall {
           ];
           shuffledPalettes = shuffledFormosaPalettes;
         case FractalTacitKnowledge():
-          List<FractalTacitKnowledge> shuffledFractalPalettes = [];
+          List<FractalTacitKnowledge> shuffledFractalPalettes = [
+            for (final arityIdx in _shuffledArityIndexes)
+              tacitKnowledge
+                ..params = {
+                  'realParam': FractalTacitKnowledgeParam(
+                    'realParam',
+                    _currentState,
+                    Uint8List.fromList([arityIdx]),
+                  ),
+                  'imaginaryParam': FractalTacitKnowledgeParam(
+                    'imaginaryParam',
+                    _currentState,
+                    Uint8List.fromList([arityIdx]),
+                  )
+                }
+          ];
           shuffledPalettes = shuffledFractalPalettes;
         // case HashVizTacitKnowledge():
         //   List<FractalTacitKnowledge> shuffledFractalPalettes = [];

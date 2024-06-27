@@ -118,7 +118,7 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
     Map<String, TacitKnowledgeParam> params,
   ) {
     // TODO: implement the logic.
-    Formosa knowledgeGenerator = Formosa(configs["theme"]);
+    Formosa knowledgeGenerator = Formosa(configs['theme']);
 
     return FormosaTacitKnowledge._internal(
       knowledgeGenerator,
@@ -133,9 +133,9 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
   /// the [FormosaTacitKnowledge] tacit knowledge.
   @override
   String get knowledge {
-    _knowledgeGenerator = Formosa(configs["theme"]);
+    _knowledgeGenerator = Formosa(configs['theme']);
     var knowledge = _knowledgeGenerator.toMnemonic(
-      formosaParam: params["formosaParam"]?.value,
+      formosaParam: params['formosaParam']?.value,
     );
 
     return knowledge;
@@ -156,8 +156,8 @@ final class FractalTacitKnowledge extends TacitKnowledge {
   ) {
     // TODO: implement the logic.
     Fractal knowledgeGenerator = Fractal(
-      configs["fractalSet"],
-      configs["colorScheme"],
+      configs['fractalSet'],
+      configs['colorScheme'],
     );
 
     return FractalTacitKnowledge._internal(
@@ -174,18 +174,18 @@ final class FractalTacitKnowledge extends TacitKnowledge {
   @override
   List<dynamic> get knowledge {
     _knowledgeGenerator.imagePixels = _knowledgeGenerator.update(
-      fractalSet: configs["fractalSet"],
-      colorScheme: configs["colorScheme"],
-      xMin: configs["xMin"],
-      xMax: configs["xMax"],
-      yMin: configs["yMin"],
-      yMax: configs["yMax"],
-      realParam: params["realParam"]?.value,
-      imaginaryParam: params["imaginaryParam"]?.value,
-      width: configs["width"],
-      height: configs["height"],
-      escapeRadius: configs["escapeRadius"],
-      maxIteration: configs["maxIteration"],
+      fractalSet: configs['fractalSet'],
+      colorScheme: configs['colorScheme'],
+      xMin: configs['xMin'],
+      xMax: configs['xMax'],
+      yMin: configs['yMin'],
+      yMax: configs['yMax'],
+      realParam: params['realParam']?.value,
+      imaginaryParam: params['imaginaryParam']?.value,
+      width: configs['width'],
+      height: configs['height'],
+      escapeRadius: configs['escapeRadius'],
+      maxIteration: configs['maxIteration'],
     );
 
     return _knowledgeGenerator.imagePixels;
@@ -206,7 +206,7 @@ final class FractalTacitKnowledge extends TacitKnowledge {
 //     Map<String, HashVizTacitKnowledgeParam> params,
 //   ) {
 //     // TODO: implement the logic.
-//     HashViz knowledgeGenerator = HashViz(configs["size"]);
+//     HashViz knowledgeGenerator = HashViz(configs['size']);
 //
 //     return HashVizTacitKnowledge._internal(
 //       knowledgeGenerator,

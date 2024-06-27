@@ -33,8 +33,14 @@ class GreatWall {
   int timeLockPuzzleParam = 0;
 
   TacitKnowledge derivationTacitKnowledge = FormosaTacitKnowledge(
-    {"theme": "BiP39"},
-    {"formosaParam": FormosaTacitKnowledgeParam(Uint8List(128), {})},
+    {'theme': 'BiP39'},
+    {
+      'formosaParam': FormosaTacitKnowledgeParam(
+        'formosaParam',
+        Uint8List(128),
+        Uint8List.fromList([]),
+      )
+    },
   );
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
@@ -94,10 +100,9 @@ class GreatWall {
               tacitKnowledge
                 ..configs = {
                   'formosaParam': FormosaTacitKnowledgeParam(
+                    'formosaParam',
                     _currentState,
-                    {
-                      "formosaParam": Uint8List.fromList([arityIdx])
-                    },
+                    Uint8List.fromList([arityIdx]),
                   )
                 }
           ];
@@ -125,8 +130,14 @@ class GreatWall {
     _shuffledArityIndexes = <int>[];
 
     derivationTacitKnowledge = FormosaTacitKnowledge(
-      {"theme": "BiP39"},
-      {"formosaParam": FormosaTacitKnowledgeParam(Uint8List(128), {})},
+      {'theme': 'BiP39'},
+      {
+        'formosaParam': FormosaTacitKnowledgeParam(
+          'formosaParam',
+          Uint8List(128),
+          Uint8List.fromList([]),
+        )
+      },
     );
     _derivationPath.clear();
     _savedDerivedStates.clear();
@@ -141,22 +152,22 @@ class GreatWall {
   }
 
   void _deriveHashInIntensiveTime() {
-    print("Deriving Seed0 -> Seed1");
+    print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();
     _seed1 = _currentState;
     if (isCanceled) {
-      print("Derivation canceled");
+      print('Derivation canceled');
       return;
     }
-    print("Deriving Seed1 -> Seed2");
+    print('Deriving Seed1 -> Seed2');
     _updateWithLongHashing();
     _seed2 = _currentState;
     _currentState = Uint8List.fromList(_seed0 + _currentState);
     if (isCanceled) {
-      print("Derivation canceled");
+      print('Derivation canceled');
       return;
     }
-    print("Deriving Seed2 -> Seed3");
+    print('Deriving Seed2 -> Seed3');
     _updateWithQuickHashing();
     _seed3 = _currentState;
 

@@ -67,7 +67,7 @@ class GreatWall {
   ///
   /// If [idx] is 0, the protocol will go back one level to its previous state,
   /// If it is greater 0 the protocol will update the state depending on this choice.
-  void deriveFromUserChoice(int idx) {
+  void tacitDerivation(int idx) {
     if (idx > 0) {
       _currentLevel += 1;
       _derivationPath.add(idx);
@@ -163,7 +163,7 @@ class GreatWall {
 
   void startDerivation() {
     initialProtocol();
-    _deriveHashInIntensiveTime();
+    _explicitDerivation();
   }
 
   Uint8List finishDerivation() {
@@ -220,7 +220,7 @@ class GreatWall {
     _currentState = _savedDerivedStates[_derivationPath]!;
   }
 
-  void _deriveHashInIntensiveTime() {
+  void _explicitDerivation() {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();
     _seed1 = _currentState;

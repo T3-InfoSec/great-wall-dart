@@ -166,6 +166,40 @@ class GreatWall {
     _deriveHashInIntensiveTime();
   }
 
+  void finishDerivation() {
+    TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
+
+    switch (tacitKnowledge) {
+      case FormosaTacitKnowledge():
+        DerivationPath tempPath = DerivationPath();
+        List<TacitKnowledge> chosenKnowledgeList = [];
+        for (int node in _derivationPath) {
+          TacitKnowledge chosenKnowledge =
+              _savedDerivedPathKnowledge[tempPath]![node];
+          chosenKnowledgeList.add(chosenKnowledge);
+          tempPath.add(node);
+        }
+      case FractalTacitKnowledge():
+        DerivationPath tempPath = DerivationPath();
+        List<TacitKnowledge> chosenKnowledgeList = [];
+        for (int node in _derivationPath) {
+          TacitKnowledge chosenKnowledge =
+              _savedDerivedPathKnowledge[tempPath]![node];
+          chosenKnowledgeList.add(chosenKnowledge);
+          tempPath.add(node);
+        }
+      // case HashVizTacitKnowledge():
+      //   DerivationPath tempPath = DerivationPath();
+      //   List<TacitKnowledge> chosenKnowledgeList = [];
+      //   for (int node in _derivationPath) {
+      //     TacitKnowledge chosenKnowledge =
+      //         _savedDerivedPathKnowledge[tempPath]![node];
+      //     chosenKnowledgeList.add(chosenKnowledge);
+      //     tempPath.add(node);
+      //   }
+    }
+  }
+
   /// Go back to the previous state hash.
   void returnLevel() {
     if (_currentLevel == 0) return;

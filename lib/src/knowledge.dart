@@ -117,8 +117,7 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
     Map<String, Object> configs,
     Map<String, TacitKnowledgeParam> params,
   ) {
-    // TODO: implement the logic.
-    Formosa knowledgeGenerator = Formosa(configs['theme']);
+    Formosa knowledgeGenerator = Formosa(theme: 'BiP39');
 
     return FormosaTacitKnowledge._internal(
       knowledgeGenerator,
@@ -129,13 +128,23 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
 
   /// Returns a mnemonic string.
   ///
-  /// Returns the mnemonic string that represents the actual tacit knowledge of
-  /// the [FormosaTacitKnowledge] tacit knowledge.
+  /// Returns the mnemonic string that represents the actual tacit knowledge
+  /// of the [FormosaTacitKnowledge] tacit knowledge. Throws on [Exception]
+  /// if the [TacitKnowledge.configs] or [TacitKnowledge.params] or both
+  /// are empty because this will generate an insecure [TacitKnowledge].
   @override
   String get knowledge {
+    if (configs.isEmpty || params.isEmpty) {
+      throw Exception(
+        'The configs or params or both are empty which is insecure arguments.'
+        ' Please, to get a correct and secure tacit knowledge provides'
+        ' the TacitKnowledge implementation with the correct arguments.',
+      );
+    }
+
     _knowledgeGenerator = Formosa(configs['theme']);
     var knowledge = _knowledgeGenerator.toMnemonic(
-      formosaParam: params['formosaParam']?.value,
+      formosaParam: params['formosaParam']!.value,
     );
 
     return knowledge;
@@ -154,7 +163,10 @@ final class FractalTacitKnowledge extends TacitKnowledge {
     Map<String, Object> configs,
     Map<String, FractalTacitKnowledgeParam> params,
   ) {
-    // TODO: implement the logic.
+    if (configs.isEmpty || params.isEmpty) {
+      throw Exception('Empty Maps of configs or params or both.');
+    }
+
     Fractal knowledgeGenerator = Fractal(
       configs['fractalSet'],
       configs['colorScheme'],
@@ -170,9 +182,19 @@ final class FractalTacitKnowledge extends TacitKnowledge {
   /// Returns a 1D or 3D fractal image.
   ///
   /// Returns the image that represents the actual tacit knowledge of the
-  /// [FractalTacitKnowledge] tacit knowledge.
+  /// [FractalTacitKnowledge] tacit knowledge. Throws on [Exception]
+  /// if the [TacitKnowledge.configs] or [TacitKnowledge.params] or both
+  /// are empty because this will generate an insecure [TacitKnowledge].
   @override
-  List<dynamic> get knowledge {
+  String get knowledge {
+    if (configs.isEmpty || params.isEmpty) {
+      throw Exception(
+        'The configs or params or both are empty which is insecure arguments.'
+        ' Please, to get a correct and secure tacit knowledge provides'
+        ' the TacitKnowledge implementation with the correct arguments.',
+      );
+    }
+
     _knowledgeGenerator.imagePixels = _knowledgeGenerator.update(
       fractalSet: configs['fractalSet'],
       colorScheme: configs['colorScheme'],

@@ -3,8 +3,6 @@
 
 import 'dart:collection';
 
-import 'knowledge.dart';
-
 /// A path representation of a traversed nodes in a tree.
 class DerivationPath extends ListBase<int> {
   final List<int> _pathList = [];
@@ -31,12 +29,4 @@ class DerivationPath extends ListBase<int> {
   void pop() {
     _pathList.removeAt(_pathList.length - 1);
   }
-}
-
-// Class representing a memo card
-class MemoCard {
-  final List<String> knowledge;
-  final KnowledgeType type;
-
-  MemoCard(this.knowledge, this.type);
 }

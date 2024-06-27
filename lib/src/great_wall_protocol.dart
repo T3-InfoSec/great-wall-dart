@@ -6,10 +6,16 @@ import 'dart:typed_data';
 
 import 'package:hashlib/hashlib.dart';
 
-import 'knowledge.dart';
+import 'tacit_knowledge.dart';
 import 'utils.dart';
 
-// TODO: Add comment documentations.
+/// The core implementation of the [GreatWall] protocol.
+///
+/// [GreatWall] is an innovative protocol for providing Kerckhoffian, 0-trust
+/// and deviceless coercion-resistance in self-custody. See the protocol white
+/// paper for more details.
+///
+// TODO: Complete the library-level documentation comments.
 class GreatWall {
   static final Uint8List argon2Salt = Uint8List(32);
   static final int bytesCount = 4;

@@ -166,6 +166,18 @@ class GreatWall {
     _deriveHashInIntensiveTime();
   }
 
+  /// Go back to the previous state hash.
+  void returnLevel() {
+    if (_currentLevel == 0) return;
+
+    if (isFinished) isFinished = false;
+
+    _currentLevel -= 1;
+    _derivationPath.pop();
+
+    _currentState = _savedDerivedStates[_derivationPath]!;
+  }
+
   void _deriveHashInIntensiveTime() {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();

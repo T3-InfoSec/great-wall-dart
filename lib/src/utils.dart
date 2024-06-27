@@ -20,6 +20,10 @@ class DerivationPath {
   /// length by one.
   DerivationPath add(int node) => DerivationPath.from(_path..add(node));
 
+  /// Pop out the last node of the [DerivationPath].
+  DerivationPath pop() =>
+      DerivationPath.from(_path..removeAt(_path.length - 1));
+
   /// Removes all nodes from this [DerivationPath]; the length of the
   /// [DerivationPath] becomes zero.
   void clear() => DerivationPath.from(_path..clear());

@@ -13,10 +13,11 @@ sealed class TacitKnowledgeParam {
   static final Uint8List argon2Salt = Uint8List(32);
   static final int bytesCount = 4;
 
-  final Uint8List state;
-  final Map<String, Uint8List> adjustmentParams;
+  final String name;
+  final Uint8List initialState;
+  final Uint8List adjustmentValue;
 
-  TacitKnowledgeParam(this.state, this.adjustmentParams);
+  TacitKnowledgeParam(this.name, this.initialState, this.adjustmentValue);
 
   /// Get the value that represents the param.
   void get value;
@@ -27,7 +28,7 @@ sealed class TacitKnowledgeParam {
   /// (here, branch_idx_bytes to current state L_i and hashing it)
   // TODO: Enhance the docs.
   Uint8List _computeValue() {
-    Uint8List nextStateCandidate = state;
+    Uint8List nextStateCandidate = initialState;
     var argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -38,11 +39,9 @@ sealed class TacitKnowledgeParam {
       salt: argon2Salt,
     );
 
-    adjustmentParams.forEach((paramName, tacitKnowledgeParamBytes) {
-      nextStateCandidate = Uint8List.fromList(
-          argon2Algorithm.convert(nextStateCandidate).bytes +
-              tacitKnowledgeParamBytes);
-    });
+    nextStateCandidate = Uint8List.fromList(
+      argon2Algorithm.convert(nextStateCandidate).bytes + adjustmentValue,
+    );
 
     return argon2Algorithm
         .convert(nextStateCandidate)
@@ -53,13 +52,17 @@ sealed class TacitKnowledgeParam {
 
 /// A representation of the fractal tacit knowledge param.
 final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
-  FractalTacitKnowledgeParam(super.state, super.adjustmentParams);
+  FractalTacitKnowledgeParam(
+    super.name,
+    super.initialState,
+    super.adjustmentValue,
+  );
 
   @override
   num get value {
-    if (adjustmentParams.containsKey('real_p')) {
+    if (super.name == 'realParam') {
       return _computeRealParam(super._computeValue());
-    } else if (adjustmentParams.containsKey('imag_p')) {
+    } else if (super.name == 'imaginaryParam') {
       return _computeImaginaryParam(super._computeValue());
     } else {
       return _computeRealParam(super._computeValue());
@@ -81,9 +84,12 @@ final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
 
 /// A representation of the formosa tacit knowledge param.
 final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
-  FormosaTacitKnowledgeParam(super.state, super.adjustmentParams);
+  FormosaTacitKnowledgeParam(
+    super.name,
+    super.initialState,
+    super.adjustmentValue,
+  );
 
-  // TODO: Using adjustmentParams to compute the value parameter.
   @override
   Uint8List get value => super._computeValue();
 }

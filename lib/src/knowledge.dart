@@ -163,10 +163,6 @@ final class FractalTacitKnowledge extends TacitKnowledge {
     Map<String, Object> configs,
     Map<String, FractalTacitKnowledgeParam> params,
   ) {
-    if (configs.isEmpty || params.isEmpty) {
-      throw Exception('Empty Maps of configs or params or both.');
-    }
-
     Fractal knowledgeGenerator = Fractal(
       configs['fractalSet'],
       configs['colorScheme'],

@@ -24,12 +24,12 @@ void main() {
       expect(derivationPath, [1, 2, 3, 4]);
     });
 
-    test('First DerivationPath creation', () {
+    test('Pop node from path', () {
       derivationPath.pop();
       expect(derivationPath, [1, 2]);
     });
 
-    test('First DerivationPath creation', () {
+    test('Clear nodes from path', () {
       derivationPath.clear();
       expect(derivationPath, <int>[]);
     });

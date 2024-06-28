@@ -4,29 +4,36 @@
 import 'dart:collection';
 
 /// A path representation of a traversed nodes in a tree.
-class DerivationPath extends ListBase<int> {
-  final List<int> _pathList = [];
+class DerivationPath<E extends int> extends ListBase<E> {
+  final List<E> _nodesList;
 
-  DerivationPath();
+  DerivationPath({
+    List<E> nodesList = const [],
+  }) : _nodesList = nodesList;
 
   @override
   set length(int newLength) {
-    _pathList.length = newLength;
+    _nodesList.length = newLength;
   }
 
   @override
-  int get length => _pathList.length;
+  int get length => _nodesList.length;
 
   @override
-  int operator [](int index) => _pathList[index];
+  E operator [](int index) => _nodesList[index];
 
   @override
-  void operator []=(int index, int value) {
-    _pathList[index] = value;
+  void operator []=(int index, E value) {
+    _nodesList[index] = value;
+  }
+
+  @override
+  void add(E element) {
+    _nodesList.add(element);
   }
 
   /// Pop out the last node of the [DerivationPath].
   void pop() {
-    _pathList.removeAt(_pathList.length - 1);
+    _nodesList.removeAt(_nodesList.length - 1);
   }
 }

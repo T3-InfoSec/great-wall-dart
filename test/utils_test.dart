@@ -2,7 +2,7 @@ import 'package:great_wall/src/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('A group of utils tests', () {
+  group('utils tests', () {
     late DerivationPath derivationPath;
 
     setUp(() {
@@ -10,8 +10,12 @@ void main() {
     });
 
     test('Constructor', () {
-      DerivationPath derivationPath1 = DerivationPath(nodesList: [1, 2, 3]);
-      expect(derivationPath, derivationPath1);
+      expect(derivationPath.isEmpty, isFalse);
+      expect(derivationPath.first, 1);
+      expect(derivationPath.last, 3);
+      expect(derivationPath[0], 1);
+      expect(derivationPath[1], 2);
+      expect(derivationPath[2], 3);
     });
 
     test('Length', () {

@@ -1,35 +1,42 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
-import 'dart:collection';
-
 /// A path representation of a traversed nodes in a tree.
-class DerivationPath<E extends int> extends ListBase<E> {
-  final List<E> _nodesList;
+class DerivationPath<N extends int> extends Iterable<int> {
+  final List<N> _nodesList;
 
   DerivationPath({
-    List<E> nodesList = const [],
+    List<N> nodesList = const [],
   }) : _nodesList = nodesList;
 
   @override
-  set length(int newLength) {
-    _nodesList.length = newLength;
-  }
+  Iterator<N> get iterator => _nodesList.iterator;
 
   @override
   int get length => _nodesList.length;
 
-  @override
-  E operator [](int index) => _nodesList[index];
-
-  @override
-  void operator []=(int index, E value) {
-    _nodesList[index] = value;
+  /// The number of nodes in this [DerivationPath].
+  ///
+  /// The valid indices for a [DerivationPath] are 0 through length - 1.
+  set length(int newLength) {
+    _nodesList.length = newLength;
   }
 
-  @override
-  void add(E element) {
-    _nodesList.add(element);
+  N operator [](int index) => _nodesList[index];
+
+  void operator []=(int index, N node) {
+    _nodesList[index] = node;
+  }
+
+  /// Adds [node] to the end of [DerivationPath].
+  void add(N node) {
+    _nodesList.add(node);
+  }
+
+  /// Removes all nodes from [DerivationPath]; the length of the
+  /// [DerivationPath] becomes zero.
+  void clear() {
+    _nodesList.clear();
   }
 
   /// Pop out the last node of the [DerivationPath].

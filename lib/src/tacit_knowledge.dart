@@ -94,39 +94,6 @@ final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
   }
 }
 
-class Mnemonic {
-  Mnemonic({required String theme});
-
-  String toMnemonic({required Uint8List formosaParam}) {
-    return '';
-  }
-}
-
-class Fractal {
-  Fractal({required String fractalSet, required String colorScheme});
-
-  List<dynamic> get imagePixels => [1, 2, 3];
-
-  set imagePixels(List<dynamic> image) {}
-
-  List<dynamic> update({
-    fractalSet,
-    colorScheme,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    realParam,
-    imaginaryParam,
-    width,
-    height,
-    escapeRadius,
-    maxIteration,
-  }) {
-    return [1, 2, 3];
-  }
-}
-
 /// A sealed and abstract class for tacit knowledge implementation
 sealed class TacitKnowledge {
   void get knowledge;

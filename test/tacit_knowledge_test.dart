@@ -84,15 +84,80 @@ void main() {
     });
   });
 
-  group('Tacit knowledge tests', () {
-    // late FormosaTacitKnowledge formosaTacitKnowledge;
-    // late FractalTacitKnowledge fractalTacitKnowledge;
-    // // late HashVizTacitKnowledge hashvizTacitKnowledge;
-    //
-    // late DerivationPath derivationPath;
-    //
-    // setUp(() {
-    //   derivationPath = DerivationPath(nodesList: [1, 2, 3]);
-    // });
-  });
+  // TODO: Importing the knowledge generator to run the tests.
+  group(
+    'Tacit knowledge tests',
+    () {
+      late Map<String, dynamic> formosaExpectedConfigs;
+      late Map<String, FormosaTacitKnowledgeParam> formosaExpectedParams;
+      late Map<String, dynamic> fractalExpectedConfigs;
+      late Map<String, FractalTacitKnowledgeParam> fractalExpectedParams;
+      // late Map<String, dynamic> hashvizExpectedConfigs;
+      // late Map<String, HahVizTacitKnowledgeParam> hashvizExpectedParams;
+
+      late FormosaTacitKnowledge formosaTacitKnowledge;
+      late FractalTacitKnowledge fractalTacitKnowledge;
+      // late HashVizTacitKnowledge hashvizTacitKnowledge;
+
+      setUp(() {
+        formosaExpectedConfigs = {'theme': 'BiP39'};
+        formosaExpectedParams = {
+          'formosaParam': FormosaTacitKnowledgeParam(
+            'formosaParam',
+            Uint8List(128),
+            Uint8List.fromList([0]),
+          )
+        };
+        fractalExpectedConfigs = {
+          'fractalSet': 'burningship',
+          'colorScheme': 'gray',
+          'xMin': 0,
+          'xMax': 0,
+          'yMin': 0,
+          'yMax': 0,
+          'width': 2,
+          'height': 2,
+          'escapeRadius': 4,
+          'maxIteration': 100,
+        };
+        fractalExpectedParams = {
+          'realParam': FractalTacitKnowledgeParam(
+            'realParam',
+            Uint8List(128),
+            Uint8List.fromList([0]),
+          ),
+          'imaginaryParam': FractalTacitKnowledgeParam(
+            'realParam',
+            Uint8List(128),
+            Uint8List.fromList([0]),
+          ),
+        };
+
+        formosaTacitKnowledge = FormosaTacitKnowledge(
+          formosaExpectedConfigs,
+          formosaExpectedParams,
+        );
+        fractalTacitKnowledge = FractalTacitKnowledge(
+          fractalExpectedConfigs,
+          fractalExpectedParams,
+        );
+      });
+
+      test('Constructors', () {
+        expect(formosaTacitKnowledge.configs, formosaExpectedConfigs);
+        expect(formosaTacitKnowledge.params, formosaExpectedParams);
+
+        expect(fractalTacitKnowledge.configs, fractalExpectedConfigs);
+        expect(fractalTacitKnowledge.params, fractalExpectedParams);
+      });
+
+      test('Get underline knowledge', () {
+        // TODO: Change the expected result to what actually produced by
+        // knowledge.
+        expect(formosaTacitKnowledge.knowledge, [57, 116, 180, 27].toString());
+        expect(fractalTacitKnowledge.knowledge, [1, 2, 3]);
+      });
+    },
+    skip: 'The implementation of knowledge generator still under development.',
+  );
 }

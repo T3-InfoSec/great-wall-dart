@@ -53,6 +53,14 @@ class GreatWall {
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
   final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
 
+  /// Create an instance of [GreatWall] protocol and initialized it.
+  ///
+  /// [treeArity], [treeDepth] and [timeLockPuzzleParam] are used to
+  /// initializing the protocol and only the absolute value of them will be
+  /// considered. [treeArity] refers to the number of artiy in each branch,
+  /// [treeDepth] refers to the number of branches that will be used in the
+  /// derivation process and [timeLockPuzzleParam] refers to the hardness
+  /// measure in the hard memory hashing process; big number means it's harder.
   GreatWall({
     required int treeArity,
     required int treeDepth,

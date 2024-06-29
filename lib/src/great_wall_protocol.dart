@@ -33,6 +33,7 @@ class GreatWall {
   bool _isFinished = false;
   bool _isCanceled = false;
   bool _isInitialized = false;
+  bool _isStarted = false;
 
   int treeDepth = 0;
   int treeArity = 0;
@@ -72,6 +73,9 @@ class GreatWall {
   /// completed correctly or not.
   bool get isInitialized => _isInitialized;
 
+  /// Check if the protocol derivation process started correctly.
+  bool get isStarted => _isStarted;
+
   /// Set the value of the [password] that you need to hash it by using
   /// [GreatWall] protocol.
   set seed0(String password) {
@@ -80,45 +84,54 @@ class GreatWall {
   }
 
   void cancelDerivation() {
-    _isCanceled = true;
+    if (isStarted) {
+      _isCanceled = true;
+    } else {
+      print('The derivation is not running currently.');
+      _isCanceled = false;
+    }
   }
 
-  Uint8List finishDerivation() {
-    TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
+  void finishDerivation() {
+    if (isStarted) {
+      TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
-    switch (tacitKnowledge) {
-      case FormosaTacitKnowledge():
-        DerivationPath tempPath = DerivationPath();
-        List<TacitKnowledge> chosenKnowledgeList = [];
-        for (int node in _derivationPath) {
-          TacitKnowledge chosenKnowledge =
-              _savedDerivedPathKnowledge[tempPath]![node];
-          chosenKnowledgeList.add(chosenKnowledge);
-          tempPath.add(node);
-        }
-      case FractalTacitKnowledge():
-        DerivationPath tempPath = DerivationPath();
-        List<TacitKnowledge> chosenKnowledgeList = [];
-        for (int node in _derivationPath) {
-          TacitKnowledge chosenKnowledge =
-              _savedDerivedPathKnowledge[tempPath]![node];
-          chosenKnowledgeList.add(chosenKnowledge);
-          tempPath.add(node);
-        }
-      // case HashVizTacitKnowledge():
-      //   DerivationPath tempPath = DerivationPath();
-      //   List<TacitKnowledge> chosenKnowledgeList = [];
-      //   for (int node in _derivationPath) {
-      //     TacitKnowledge chosenKnowledge =
-      //         _savedDerivedPathKnowledge[tempPath]![node];
-      //     chosenKnowledgeList.add(chosenKnowledge);
-      //     tempPath.add(node);
-      //   }
+      switch (tacitKnowledge) {
+        case FormosaTacitKnowledge():
+          DerivationPath tempPath = DerivationPath();
+          List<TacitKnowledge> chosenKnowledgeList = [];
+          for (int node in _derivationPath) {
+            TacitKnowledge chosenKnowledge =
+                _savedDerivedPathKnowledge[tempPath]![node];
+            chosenKnowledgeList.add(chosenKnowledge);
+            tempPath.add(node);
+          }
+        case FractalTacitKnowledge():
+          DerivationPath tempPath = DerivationPath();
+          List<TacitKnowledge> chosenKnowledgeList = [];
+          for (int node in _derivationPath) {
+            TacitKnowledge chosenKnowledge =
+                _savedDerivedPathKnowledge[tempPath]![node];
+            chosenKnowledgeList.add(chosenKnowledge);
+            tempPath.add(node);
+          }
+        // case HashVizTacitKnowledge():
+        //   DerivationPath tempPath = DerivationPath();
+        //   List<TacitKnowledge> chosenKnowledgeList = [];
+        //   for (int node in _derivationPath) {
+        //     TacitKnowledge chosenKnowledge =
+        //         _savedDerivedPathKnowledge[tempPath]![node];
+        //     chosenKnowledgeList.add(chosenKnowledge);
+        //     tempPath.add(node);
+        //   }
+      }
+
+      print('Key = ${_currentState.buffer}');
+      _isFinished = true;
+    } else {
+      print('Derivation does not started yet.');
+      _isFinished = false;
     }
-
-    print('Key = ${_currentState.buffer}');
-    _isFinished = true;
-    return _currentState;
   }
 
   List<TacitKnowledge> generateKnowledgePalettes() {
@@ -210,8 +223,13 @@ class GreatWall {
   }
 
   void startDerivation() {
-    initialProtocol();
-    _explicitDerivation();
+    if (isInitialized) {
+      _explicitDerivation();
+      _isStarted = true;
+    } else {
+      print('Derivation does not initialized yet.');
+      _isStarted = false;
+    }
   }
 
   /// Drive the [GreatWall.hashResult] from the user choice [idx].
@@ -219,20 +237,27 @@ class GreatWall {
   /// If [idx] is 0, the protocol will go back one level to its previous state,
   /// If it is greater 0 the protocol will update the state depending on this choice.
   void tacitDerivation(int idx) {
-    if (idx > 0) {
-      _currentLevel += 1;
-      _derivationPath.add(idx);
+    if (isStarted && !isCanceled) {
+      if (idx > 0) {
+        _currentLevel += 1;
+        _derivationPath.add(idx);
 
-      if (_savedDerivedStates.containsKey(_derivationPath)) {
-        _currentState = _savedDerivedStates[_derivationPath]!;
+        if (_savedDerivedStates.containsKey(_derivationPath)) {
+          _currentState = _savedDerivedStates[_derivationPath]!;
+        } else {
+          _currentState.add(_shuffledArityIndexes[idx - 1]);
+          _updateWithQuickHashing();
+          _savedDerivedStates[_derivationPath] = _currentState;
+        }
+
       } else {
-        _currentState.add(_shuffledArityIndexes[idx - 1]);
-        _updateWithQuickHashing();
-        _savedDerivedStates[_derivationPath] = _currentState;
+        returnLevel();
       }
-
     } else {
-      returnLevel();
+      print(
+        'Derivation does not started yet. Please, start the derivation'
+        ' process first.',
+      );
     }
   }
 

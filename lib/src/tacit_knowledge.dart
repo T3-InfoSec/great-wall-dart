@@ -50,6 +50,18 @@ sealed class TacitKnowledgeParam {
   }
 }
 
+/// A representation of the formosa tacit knowledge param.
+final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
+  FormosaTacitKnowledgeParam(
+    super.name,
+    super.initialState,
+    super.adjustmentValue,
+  );
+
+  @override
+  Uint8List get value => super._computeValue();
+}
+
 /// A representation of the fractal tacit knowledge param.
 final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
   FractalTacitKnowledgeParam(
@@ -82,49 +94,55 @@ final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
   }
 }
 
-/// A representation of the formosa tacit knowledge param.
-final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
-  FormosaTacitKnowledgeParam(
-    super.name,
-    super.initialState,
-    super.adjustmentValue,
-  );
+class Mnemonic {
+  Mnemonic({required String theme});
 
-  @override
-  Uint8List get value => super._computeValue();
+  String toMnemonic({required Uint8List formosaParam}) {
+    return '';
+  }
+
+}
+
+class Fractal {
+  Fractal({required String fractalSet, required String colorScheme});
+
+  List<dynamic> get imagePixels => [1, 2, 3];
+
+  set imagePixels(List<dynamic> image) {}
+
+  List<dynamic> update({
+    fractalSet,
+    colorScheme,
+    xMin,
+    xMax,
+    yMin,
+    yMax,
+    realParam,
+    imaginaryParam,
+    width,
+    height,
+    escapeRadius,
+    maxIteration,
+  }) {
+    return [1, 2, 3];
+  }
 }
 
 /// A sealed and abstract class for tacit knowledge implementation
 sealed class TacitKnowledge {
-  Object _knowledgeGenerator;
-  Map<String, Object> configs;
-  Map<String, TacitKnowledgeParam> params;
-
-  TacitKnowledge(this._knowledgeGenerator, this.configs, this.params);
-
   void get knowledge;
 }
 
-// Class for generating mnemonics (consider using an existing library)
+/// A simple to use API for formosa tacit knowledge.
 final class FormosaTacitKnowledge extends TacitKnowledge {
-  FormosaTacitKnowledge._internal(
-    super._knowledgeGenerator,
-    super.configs,
-    super.params,
-  );
+  Mnemonic _knowledgeGenerator;
+  Map<String, dynamic> configs;
+  Map<String, FormosaTacitKnowledgeParam> params;
 
-  factory FormosaTacitKnowledge(
-    Map<String, Object> configs,
-    Map<String, TacitKnowledgeParam> params,
-  ) {
-    Formosa knowledgeGenerator = Formosa(theme: 'BiP39');
-
-    return FormosaTacitKnowledge._internal(
-      knowledgeGenerator,
-      configs,
-      params,
-    );
-  }
+  FormosaTacitKnowledge(
+    this.configs,
+    this.params,
+  )   : _knowledgeGenerator = Mnemonic(theme: 'BiP39');
 
   /// Returns a mnemonic string.
   ///
@@ -142,8 +160,8 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
       );
     }
 
-    _knowledgeGenerator = Formosa(configs['theme']);
-    var knowledge = _knowledgeGenerator.toMnemonic(
+    _knowledgeGenerator = Mnemonic(theme: configs['theme']!);
+    String knowledge = _knowledgeGenerator.toMnemonic(
       formosaParam: params['formosaParam']!.value,
     );
 
@@ -151,29 +169,19 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
   }
 }
 
-// Class for generating fractals (consider using an existing library)
+/// A simple to use API for fractal tacit knowledge.
 final class FractalTacitKnowledge extends TacitKnowledge {
-  FractalTacitKnowledge._internal(
-    super._knowledgeGenerator,
-    super.configs,
-    super.params,
-  );
+  Fractal _knowledgeGenerator;
+  Map<String, dynamic> configs;
+  Map<String, FractalTacitKnowledgeParam> params;
 
-  factory FractalTacitKnowledge(
-    Map<String, Object> configs,
-    Map<String, FractalTacitKnowledgeParam> params,
-  ) {
-    Fractal knowledgeGenerator = Fractal(
-      configs['fractalSet'],
-      configs['colorScheme'],
-    );
-
-    return FractalTacitKnowledge._internal(
-      knowledgeGenerator,
-      configs,
-      params,
-    );
-  }
+  FractalTacitKnowledge(
+    this.configs,
+    this.params,
+  )   : _knowledgeGenerator = Fractal(
+          fractalSet: configs['fractalSet']!,
+          colorScheme: configs['colorScheme']!,
+        );
 
   /// Returns a 1D or 3D fractal image.
   ///
@@ -182,7 +190,7 @@ final class FractalTacitKnowledge extends TacitKnowledge {
   /// if the [TacitKnowledge.configs] or [TacitKnowledge.params] or both
   /// are empty because this will generate an insecure [TacitKnowledge].
   @override
-  String get knowledge {
+  List<dynamic> get knowledge {
     if (configs.isEmpty || params.isEmpty) {
       throw Exception(
         'The configs or params or both are empty which is insecure arguments.'
@@ -220,7 +228,7 @@ final class FractalTacitKnowledge extends TacitKnowledge {
 //   );
 //
 //   factory HashVizTacitKnowledge(
-//     Map<String, Object> configs,
+//     Map<String, dynamic> configs,
 //     Map<String, HashVizTacitKnowledgeParam> params,
 //   ) {
 //     // TODO: implement the logic.

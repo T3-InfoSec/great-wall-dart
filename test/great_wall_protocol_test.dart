@@ -4,7 +4,7 @@ import 'package:great_wall/src/great_wall_protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Tacit knowledge params tests', () {
+  group('GreatWall protocol tests', () {
     late GreatWall greatwallProtocol;
 
     setUp(() {
@@ -16,11 +16,11 @@ void main() {
     });
 
     test('Constructor', () {
-      expect(greatwallProtocol.treeDepth, 5);
       expect(greatwallProtocol.treeArity, 3);
+      expect(greatwallProtocol.treeDepth, 5);
       expect(greatwallProtocol.timeLockPuzzleParam, 10);
       expect(greatwallProtocol.derivationLevel, 0);
-      expect(greatwallProtocol.hashResult, 0);
+      expect(greatwallProtocol.hashResult, Uint8List(128));
       expect(greatwallProtocol.isCanceled, isFalse);
       expect(greatwallProtocol.isStarted, isFalse);
       expect(greatwallProtocol.isFinished, isFalse);

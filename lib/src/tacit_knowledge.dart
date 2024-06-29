@@ -100,7 +100,6 @@ class Mnemonic {
   String toMnemonic({required Uint8List formosaParam}) {
     return '';
   }
-
 }
 
 class Fractal {
@@ -221,25 +220,17 @@ final class FractalTacitKnowledge extends TacitKnowledge {
 // TODO: Implement Hashviz tacit knowledge.
 /// Class for generating hashviz (consider using an existing library)
 // final class HashVizTacitKnowledge extends TacitKnowledge {
-//   HashVizTacitKnowledge._internal(
-//     super._knowledgeGenerator,
-//     super.configs,
-//     super.initState,
-//   );
+//   HashViz _knowledgeGenerator;
+//   Map<String, dynamic> configs;
+//   Map<String, HashVizTacitKnowledgeParam> params;
 //
-//   factory HashVizTacitKnowledge(
-//     Map<String, dynamic> configs,
-//     Map<String, HashVizTacitKnowledgeParam> params,
-//   ) {
-//     // TODO: implement the logic.
-//     HashViz knowledgeGenerator = HashViz(configs['size']);
-//
-//     return HashVizTacitKnowledge._internal(
-//       knowledgeGenerator,
-//       configs,
-//       params,
-//     );
-//   }
+//   HashVizTacitKnowledge(
+//     this.configs,
+//     this.params,
+//   )   : _knowledgeGenerator = HashViz(
+//           fractalSet: configs['fractalSet']!,
+//           colorScheme: configs['colorScheme']!,
+//         );
 //
 //   /// Returns a 3D visualization image of the hash.
 //   ///
@@ -247,6 +238,5 @@ final class FractalTacitKnowledge extends TacitKnowledge {
 //   /// [HashVizTacitKnowledge] tacit knowledge.
 //   @override
 //   List<dynamic> get knowledge {
-//
 //   }
 // }

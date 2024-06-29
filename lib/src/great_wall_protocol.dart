@@ -30,9 +30,9 @@ class GreatWall {
   late List<int> _shuffledArityIndexes;
 
   // Protocol control fields
-  bool isFinished = false;
-  bool isCanceled = false;
-  bool isInitialized = false;
+  bool _isFinished = false;
+  bool _isCanceled = false;
+  bool _isInitialized = false;
 
   int treeDepth = 0;
   int treeArity = 0;
@@ -55,6 +55,16 @@ class GreatWall {
   GreatWall() {
     initialProtocol();
   }
+
+  /// Check if the protocol derivation process finished normally.
+  bool get isFinished => _isFinished;
+
+  /// Check if the protocol derivation process canceled.
+  bool get isCanceled => _isCanceled;
+
+  /// Check if the initialization process of the protocol derivation has been
+  /// completed correctly or not.
+  bool get isInitialized => _isInitialized;
 
   /// Get the current level of the protocol derivation operation.
   int get derivationLevel => _currentLevel;
@@ -164,7 +174,7 @@ class GreatWall {
     _savedDerivedStates.clear();
     _savedDerivedPathKnowledge.clear();
 
-    isInitialized = true;
+    _isInitialized = true;
   }
 
   void startDerivation() {
@@ -206,19 +216,19 @@ class GreatWall {
     }
 
     print('Key = ${_currentState.buffer}');
-    isFinished = true;
+    _isFinished = true;
     return _currentState;
   }
 
   void cancelDerivation() {
-    isCanceled = true;
+    _isCanceled = true;
   }
 
   /// Go back to the previous state hash.
   void returnLevel() {
     if (_currentLevel == 0) return;
 
-    if (isFinished) isFinished = false;
+    if (_isFinished) _isFinished = false;
 
     _currentLevel -= 1;
     _derivationPath.pop();
@@ -230,7 +240,7 @@ class GreatWall {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();
     _seed1 = _currentState;
-    if (isCanceled) {
+    if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
@@ -238,7 +248,7 @@ class GreatWall {
     _updateWithLongHashing();
     _seed2 = _currentState;
     _currentState = Uint8List.fromList(_seed0 + _currentState);
-    if (isCanceled) {
+    if (_isCanceled) {
       print('Derivation canceled');
       return;
     }

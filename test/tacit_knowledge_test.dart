@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:great_wall/src/tacit_knowledge.dart';
-import 'package:great_wall/src/utils.dart';
 import 'package:test/test.dart';
 
 void main() {

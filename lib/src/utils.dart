@@ -41,6 +41,10 @@ class DerivationPath<N extends int> extends Iterable<int> {
 
   /// Pop out the last node of the [DerivationPath].
   void pop() {
-    _nodesList.removeAt(_nodesList.length - 1);
+    if (_nodesList.isNotEmpty) {
+      _nodesList.removeLast();
+    } else {
+      return;
+    }
   }
 }

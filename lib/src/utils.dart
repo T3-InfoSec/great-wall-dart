@@ -6,8 +6,8 @@ class DerivationPath<N extends int> extends Iterable<int> {
   final List<N> _nodesList;
 
   DerivationPath({
-    List<N> nodesList = const [],
-  }) : _nodesList = nodesList;
+    List<N>? nodesList,
+  }) : _nodesList = (nodesList == null) ? [] : nodesList;
 
   @override
   Iterator<N> get iterator => _nodesList.iterator;

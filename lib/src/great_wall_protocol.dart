@@ -56,21 +56,21 @@ class GreatWall {
     initialProtocol();
   }
 
-  /// Check if the protocol derivation process finished normally.
-  bool get isFinished => _isFinished;
-
-  /// Check if the protocol derivation process canceled.
-  bool get isCanceled => _isCanceled;
-
-  /// Check if the initialization process of the protocol derivation has been
-  /// completed correctly or not.
-  bool get isInitialized => _isInitialized;
-
   /// Get the current level of the protocol derivation operation.
   int get derivationLevel => _currentLevel;
 
   /// Get the result of the protocol derivation operation.
   Uint8List get hashResult => _currentState;
+
+  /// Check if the protocol derivation process canceled.
+  bool get isCanceled => _isCanceled;
+
+  /// Check if the protocol derivation process finished normally.
+  bool get isFinished => _isFinished;
+
+  /// Check if the initialization process of the protocol derivation has been
+  /// completed correctly or not.
+  bool get isInitialized => _isInitialized;
 
   /// Set the value of the [password] that you need to hash it by using
   /// [GreatWall] protocol.
@@ -79,26 +79,46 @@ class GreatWall {
     _currentState = _seed0 = Uint8List.fromList(password.codeUnits);
   }
 
-  /// Drive the [GreatWall.hashResult] from the user choice [idx].
-  ///
-  /// If [idx] is 0, the protocol will go back one level to its previous state,
-  /// If it is greater 0 the protocol will update the state depending on this choice.
-  void tacitDerivation(int idx) {
-    if (idx > 0) {
-      _currentLevel += 1;
-      _derivationPath.add(idx);
+  void cancelDerivation() {
+    _isCanceled = true;
+  }
 
-      if (_savedDerivedStates.containsKey(_derivationPath)) {
-        _currentState = _savedDerivedStates[_derivationPath]!;
-      } else {
-        _currentState.add(_shuffledArityIndexes[idx - 1]);
-        _updateWithQuickHashing();
-        _savedDerivedStates[_derivationPath] = _currentState;
-      }
+  Uint8List finishDerivation() {
+    TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
-    } else {
-      returnLevel();
+    switch (tacitKnowledge) {
+      case FormosaTacitKnowledge():
+        DerivationPath tempPath = DerivationPath();
+        List<TacitKnowledge> chosenKnowledgeList = [];
+        for (int node in _derivationPath) {
+          TacitKnowledge chosenKnowledge =
+              _savedDerivedPathKnowledge[tempPath]![node];
+          chosenKnowledgeList.add(chosenKnowledge);
+          tempPath.add(node);
+        }
+      case FractalTacitKnowledge():
+        DerivationPath tempPath = DerivationPath();
+        List<TacitKnowledge> chosenKnowledgeList = [];
+        for (int node in _derivationPath) {
+          TacitKnowledge chosenKnowledge =
+              _savedDerivedPathKnowledge[tempPath]![node];
+          chosenKnowledgeList.add(chosenKnowledge);
+          tempPath.add(node);
+        }
+      // case HashVizTacitKnowledge():
+      //   DerivationPath tempPath = DerivationPath();
+      //   List<TacitKnowledge> chosenKnowledgeList = [];
+      //   for (int node in _derivationPath) {
+      //     TacitKnowledge chosenKnowledge =
+      //         _savedDerivedPathKnowledge[tempPath]![node];
+      //     chosenKnowledgeList.add(chosenKnowledge);
+      //     tempPath.add(node);
+      //   }
     }
+
+    print('Key = ${_currentState.buffer}');
+    _isFinished = true;
+    return _currentState;
   }
 
   List<TacitKnowledge> generateKnowledgePalettes() {
@@ -177,53 +197,6 @@ class GreatWall {
     _isInitialized = true;
   }
 
-  void startDerivation() {
-    initialProtocol();
-    _explicitDerivation();
-  }
-
-  Uint8List finishDerivation() {
-    TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
-
-    switch (tacitKnowledge) {
-      case FormosaTacitKnowledge():
-        DerivationPath tempPath = DerivationPath();
-        List<TacitKnowledge> chosenKnowledgeList = [];
-        for (int node in _derivationPath) {
-          TacitKnowledge chosenKnowledge =
-              _savedDerivedPathKnowledge[tempPath]![node];
-          chosenKnowledgeList.add(chosenKnowledge);
-          tempPath.add(node);
-        }
-      case FractalTacitKnowledge():
-        DerivationPath tempPath = DerivationPath();
-        List<TacitKnowledge> chosenKnowledgeList = [];
-        for (int node in _derivationPath) {
-          TacitKnowledge chosenKnowledge =
-              _savedDerivedPathKnowledge[tempPath]![node];
-          chosenKnowledgeList.add(chosenKnowledge);
-          tempPath.add(node);
-        }
-      // case HashVizTacitKnowledge():
-      //   DerivationPath tempPath = DerivationPath();
-      //   List<TacitKnowledge> chosenKnowledgeList = [];
-      //   for (int node in _derivationPath) {
-      //     TacitKnowledge chosenKnowledge =
-      //         _savedDerivedPathKnowledge[tempPath]![node];
-      //     chosenKnowledgeList.add(chosenKnowledge);
-      //     tempPath.add(node);
-      //   }
-    }
-
-    print('Key = ${_currentState.buffer}');
-    _isFinished = true;
-    return _currentState;
-  }
-
-  void cancelDerivation() {
-    _isCanceled = true;
-  }
-
   /// Go back to the previous state hash.
   void returnLevel() {
     if (_currentLevel == 0) return;
@@ -234,6 +207,33 @@ class GreatWall {
     _derivationPath.pop();
 
     _currentState = _savedDerivedStates[_derivationPath]!;
+  }
+
+  void startDerivation() {
+    initialProtocol();
+    _explicitDerivation();
+  }
+
+  /// Drive the [GreatWall.hashResult] from the user choice [idx].
+  ///
+  /// If [idx] is 0, the protocol will go back one level to its previous state,
+  /// If it is greater 0 the protocol will update the state depending on this choice.
+  void tacitDerivation(int idx) {
+    if (idx > 0) {
+      _currentLevel += 1;
+      _derivationPath.add(idx);
+
+      if (_savedDerivedStates.containsKey(_derivationPath)) {
+        _currentState = _savedDerivedStates[_derivationPath]!;
+      } else {
+        _currentState.add(_shuffledArityIndexes[idx - 1]);
+        _updateWithQuickHashing();
+        _savedDerivedStates[_derivationPath] = _currentState;
+      }
+
+    } else {
+      returnLevel();
+    }
   }
 
   void _explicitDerivation() {

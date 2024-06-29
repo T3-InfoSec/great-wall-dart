@@ -84,7 +84,6 @@ void main() {
     });
   });
 
-  // TODO: Importing the knowledge generator to run the tests.
   group(
     'Tacit knowledge tests',
     () {

@@ -35,9 +35,9 @@ class GreatWall {
   bool _isInitialized = false;
   bool _isStarted = false;
 
-  int treeDepth = 0;
-  int treeArity = 0;
-  int timeLockPuzzleParam = 0;
+  final int _treeArity;
+  final int _treeDepth;
+  final int _timeLockPuzzleParam;
 
   TacitKnowledge derivationTacitKnowledge = FormosaTacitKnowledge(
     {'theme': 'BiP39'},
@@ -53,7 +53,13 @@ class GreatWall {
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
   final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
 
-  GreatWall() {
+  GreatWall({
+    required int treeArity,
+    required int treeDepth,
+    required int timeLockPuzzleParam,
+  })  : _treeArity = treeArity.abs(),
+        _treeDepth = treeDepth.abs(),
+        _timeLockPuzzleParam = timeLockPuzzleParam.abs() {
     initialProtocol();
   }
 
@@ -82,6 +88,15 @@ class GreatWall {
     initialProtocol();
     _currentState = _seed0 = Uint8List.fromList(password.codeUnits);
   }
+
+  /// Get the param of the memory hard hashing process.
+  int get timeLockPuzzleParam => _timeLockPuzzleParam;
+
+  /// Get the tree arity of the derivation process.
+  int get treeArity => _treeArity;
+
+  /// Get the tree depth of the derivation process.
+  int get treeDepth => _treeDepth;
 
   void cancelDerivation() {
     if (isStarted) {

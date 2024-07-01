@@ -5,7 +5,7 @@ import 'package:great_wall/src/tacit_knowledge.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('GreatWall protocol tests', () {
+  group('GreatWall protocol tests:', () {
     late GreatWall greatwallProtocol;
 
     late Map<String, dynamic> fractalExpectedConfigs;
@@ -89,11 +89,9 @@ void main() {
       ]);
     });
 
-    test('Tacit knowledge derivation', () {
+    test('Derivation using tacit knowledge', () {
       greatwallProtocol.startDerivation();
-      List<TacitKnowledge> knowledgePalettes =
-          greatwallProtocol.generateKnowledgePalettes();
-      // idx is the place of tacit knowledge in knowledgePalettes List.
+      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 0);
       expect(greatwallProtocol.currentState, [
         137, 143, 186, 18, 167, 0, 209, 173, 77, 196, 218, 89, 207, 51, 250,

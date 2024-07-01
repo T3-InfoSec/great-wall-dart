@@ -121,16 +121,18 @@ class GreatWall {
 
   // TODO: Add documentation comments.
   void finishDerivation() {
-    if (isStarted && _currentLevel == treeDepth) {
+    if (isStarted && _currentLevel == treeDepth + 1) {
       TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
       switch (tacitKnowledge) {
         case FormosaTacitKnowledge():
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
+              _savedDerivedPathKnowledge[tempPath]!;
           for (int node in _derivationPath) {
-            TacitKnowledge chosenKnowledge =
-                _savedDerivedPathKnowledge[tempPath]![node];
+            List<TacitKnowledge> levelKnowledgeList =
+                _savedDerivedPathKnowledge[tempPath]!;
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
@@ -138,8 +140,9 @@ class GreatWall {
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
           for (int node in _derivationPath) {
-            TacitKnowledge chosenKnowledge =
-                _savedDerivedPathKnowledge[tempPath]![node];
+            List<TacitKnowledge> levelKnowledgeList =
+                _savedDerivedPathKnowledge[tempPath]!;
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
@@ -154,7 +157,7 @@ class GreatWall {
         //   }
       }
 
-      print('Key = ${_currentState.buffer}');
+      print('Key = $_currentState');
       _isFinished = true;
     } else {
       print('Derivation does not started yet or not completed.');
@@ -167,7 +170,7 @@ class GreatWall {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
     List<TacitKnowledge> shuffledPalettes;
 
-    if (_savedDerivedPathKnowledge.containsKey(_derivationPath)) {
+    if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
       shuffledPalettes = _savedDerivedPathKnowledge[_derivationPath]!;
     } else {
       _shuffleArityIndexes();
@@ -184,6 +187,8 @@ class GreatWall {
                   )
                 }
           ];
+          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+              shuffledFormosaPalettes;
           shuffledPalettes = shuffledFormosaPalettes;
         case FractalTacitKnowledge():
           List<FractalTacitKnowledge> shuffledFractalPalettes = [
@@ -202,6 +207,8 @@ class GreatWall {
                   )
                 }
           ];
+          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+              shuffledFractalPalettes;
           shuffledPalettes = shuffledFractalPalettes;
         // case HashVizTacitKnowledge():
         //   List<FractalTacitKnowledge> shuffledFractalPalettes = [];
@@ -261,18 +268,14 @@ class GreatWall {
         _currentLevel += 1;
         _derivationPath.add(idx);
 
-        if (_savedDerivedStates.containsKey(
-          DerivationPath(nodesList: _derivationPath.toList(growable: true)),
-        )) {
+        if (_savedDerivedStates.containsKey(_derivationPath.copy())) {
           _currentState = _savedDerivedStates[_derivationPath]!;
         } else {
           _currentState = Uint8List.fromList(
             _currentState + [_shuffledArityIndexes[idx - 1]],
           );
           _updateWithQuickHashing();
-          _savedDerivedStates[DerivationPath(
-            nodesList: _derivationPath.toList(growable: true),
-          )] = _currentState;
+          _savedDerivedStates[_derivationPath.copy()] = _currentState;
         }
       } else {
         _returnDerivationOneLevelBack();
@@ -305,12 +308,13 @@ class GreatWall {
     _updateWithQuickHashing();
     _seed3 = _currentState;
 
-    _savedDerivedStates[_derivationPath] = _currentState;
+    _savedDerivedStates[_derivationPath.copy()] = _currentState;
+    _currentLevel += 1;
   }
 
   /// Go back one level to the previous derivation state.
   void _returnDerivationOneLevelBack() {
-    if (_currentLevel == 0) return;
+    if (_currentLevel == 0 || _currentLevel == 1) return;
 
     if (_isFinished) _isFinished = false;
 

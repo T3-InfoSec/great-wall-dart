@@ -54,6 +54,10 @@ class DerivationPath<N extends int> extends Iterable<int> {
     _nodesList.clear();
   }
 
+  DerivationPath copy() {
+    return DerivationPath(nodesList: _nodesList.toList(growable: true));
+  }
+
   /// Pop out the last node of the [DerivationPath].
   void pop() {
     if (_nodesList.isNotEmpty) {

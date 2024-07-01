@@ -10,6 +10,9 @@ class DerivationPath<N extends int> extends Iterable<int> {
   }) : _nodesList = (nodesList == null) ? [] : nodesList;
 
   @override
+  int get hashCode => Object.hashAll(_nodesList);
+
+  @override
   Iterator<N> get iterator => _nodesList.iterator;
 
   @override
@@ -20,6 +23,18 @@ class DerivationPath<N extends int> extends Iterable<int> {
   /// The valid indices for a [DerivationPath] are 0 through length - 1.
   set length(int newLength) {
     _nodesList.length = newLength;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is DerivationPath) {
+      if (_nodesList.length != other._nodesList.length) return false;
+      for (int i = 0; i < _nodesList.length; i++) {
+        if (_nodesList[i] != other._nodesList[i]) return false;
+      }
+      return true;
+    }
+    return false;
   }
 
   N operator [](int index) => _nodesList[index];

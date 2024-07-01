@@ -257,12 +257,18 @@ class GreatWall {
         _currentLevel += 1;
         _derivationPath.add(idx);
 
-        if (_savedDerivedStates.containsKey(_derivationPath)) {
+        if (_savedDerivedStates.containsKey(
+          DerivationPath(nodesList: _derivationPath.toList(growable: true)),
+        )) {
           _currentState = _savedDerivedStates[_derivationPath]!;
         } else {
-          _currentState.add(_shuffledArityIndexes[idx - 1]);
+          _currentState = Uint8List.fromList(
+            _currentState + [_shuffledArityIndexes[idx - 1]],
+          );
           _updateWithQuickHashing();
-          _savedDerivedStates[_derivationPath] = _currentState;
+          _savedDerivedStates[DerivationPath(
+            nodesList: _derivationPath.toList(growable: true),
+          )] = _currentState;
         }
       } else {
         _returnDerivationOneLevelBack();

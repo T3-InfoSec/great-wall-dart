@@ -54,6 +54,7 @@ class DerivationPath<N extends int> extends Iterable<int> {
     _nodesList.clear();
   }
 
+  /// Returns a copy of this [DerivationPath].
   DerivationPath copy() {
     return DerivationPath(nodesList: _nodesList.toList(growable: true));
   }

@@ -46,5 +46,23 @@ void main() {
       expect(derivationPath, <int>[]);
       expect(emptyDerivationPath, <int>[]);
     });
+
+    test('Equality of 2 paths', () {
+      DerivationPath newDerivationPath = DerivationPath(nodesList: [1, 2]);
+      DerivationPath sameDerivationPath = DerivationPath(nodesList: [1, 2, 3]);
+
+      expect(newDerivationPath, isA<DerivationPath>());
+      expect(sameDerivationPath, isA<DerivationPath>());
+
+      expect(derivationPath, isNot(newDerivationPath));
+      expect(derivationPath, sameDerivationPath);
+    });
+
+    test('Create new copy', () {
+      DerivationPath newDerivationPath = derivationPath.copy();
+      expect(newDerivationPath, isA<DerivationPath>());
+      expect(newDerivationPath, isNot(same(derivationPath)));
+      expect(newDerivationPath, derivationPath);
+    });
   });
 }

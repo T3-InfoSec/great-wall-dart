@@ -116,7 +116,7 @@ class GreatWall {
   }
 
   void finishDerivation() {
-    if (isStarted) {
+    if (isStarted && _currentLevel == treeDepth) {
       TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
       switch (tacitKnowledge) {
@@ -152,7 +152,7 @@ class GreatWall {
       print('Key = ${_currentState.buffer}');
       _isFinished = true;
     } else {
-      print('Derivation does not started yet.');
+      print('Derivation does not started yet or not completed.');
       _isFinished = false;
     }
   }

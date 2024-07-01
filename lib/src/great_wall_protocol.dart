@@ -75,7 +75,10 @@ class GreatWall {
   int get derivationLevel => _currentLevel;
 
   /// Get the result of the protocol derivation operation.
-  Uint8List get derivationResult => _currentState;
+  Uint8List? get derivationResult => (isFinished) ? _currentState : null;
+
+  /// Get the current hash state of the protocol derivation operation.
+  Uint8List get currentState => _currentState;
 
   /// Check if the protocol derivation process canceled.
   bool get isCanceled => _isCanceled;
@@ -170,7 +173,7 @@ class GreatWall {
           List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
             for (final arityIdx in _shuffledArityIndexes)
               tacitKnowledge
-                ..configs = {
+                ..params = {
                   'formosaParam': FormosaTacitKnowledgeParam(
                     'formosaParam',
                     _currentState,
@@ -260,7 +263,7 @@ class GreatWall {
   /// If [idx] is 0, the protocol will go back one level to its previous
   /// state, if it is greater 0 the protocol will update the state depending
   /// on this choice.
-  void tacitDerivation(int idx) {
+  void tacitDerivation({required int idx}) {
     if (isStarted && !isCanceled) {
       if (idx > 0) {
         _currentLevel += 1;
@@ -322,7 +325,7 @@ class GreatWall {
       hashLength: 128,
       iterations: timeLockPuzzleParam,
       parallelism: 1,
-      memorySizeKB: 1024*1024*1024,
+      memorySizeKB: 1024 * 1024,
       salt: argon2Salt,
     );
 
@@ -337,7 +340,7 @@ class GreatWall {
       hashLength: 128,
       iterations: 1,
       parallelism: 1,
-      memorySizeKB: 1024*1024,
+      memorySizeKB: 10 * 1024,
       salt: argon2Salt,
     );
 

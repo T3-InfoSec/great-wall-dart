@@ -96,19 +96,24 @@ final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
 
 /// A sealed and abstract class for tacit knowledge implementation
 sealed class TacitKnowledge {
-  void get knowledge;
+  covariant late Map<String, dynamic> configs;
+  covariant late Map<String, TacitKnowledgeParam> params;
+
+  Object get knowledge;
 }
 
 /// A simple to use API for formosa tacit knowledge.
-final class FormosaTacitKnowledge extends TacitKnowledge {
+final class FormosaTacitKnowledge implements TacitKnowledge {
   Mnemonic _knowledgeGenerator;
+  @override
   Map<String, dynamic> configs;
+  @override
   Map<String, FormosaTacitKnowledgeParam> params;
 
   FormosaTacitKnowledge(
     this.configs,
     this.params,
-  )   : _knowledgeGenerator = Mnemonic(theme: 'BiP39');
+  ) : _knowledgeGenerator = Mnemonic(theme: 'BiP39');
 
   /// Returns a mnemonic string.
   ///
@@ -136,15 +141,17 @@ final class FormosaTacitKnowledge extends TacitKnowledge {
 }
 
 /// A simple to use API for fractal tacit knowledge.
-final class FractalTacitKnowledge extends TacitKnowledge {
+final class FractalTacitKnowledge implements TacitKnowledge {
   Fractal _knowledgeGenerator;
+  @override
   Map<String, dynamic> configs;
+  @override
   Map<String, FractalTacitKnowledgeParam> params;
 
   FractalTacitKnowledge(
     this.configs,
     this.params,
-  )   : _knowledgeGenerator = Fractal(
+  ) : _knowledgeGenerator = Fractal(
           fractalSet: configs['fractalSet']!,
           colorScheme: configs['colorScheme']!,
         );
@@ -186,9 +193,11 @@ final class FractalTacitKnowledge extends TacitKnowledge {
 
 // TODO: Implement Hashviz tacit knowledge.
 /// Class for generating hashviz (consider using an existing library)
-// final class HashVizTacitKnowledge extends TacitKnowledge {
+// final class HashVizTacitKnowledge implements TacitKnowledge {
 //   HashViz _knowledgeGenerator;
+//   @override
 //   Map<String, dynamic> configs;
+//   @override
 //   Map<String, HashVizTacitKnowledgeParam> params;
 //
 //   HashVizTacitKnowledge(

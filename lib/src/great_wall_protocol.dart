@@ -75,7 +75,7 @@ class GreatWall {
   int get derivationLevel => _currentLevel;
 
   /// Get the result of the protocol derivation operation.
-  Uint8List get hashResult => _currentState;
+  Uint8List get derivationResult => _currentState;
 
   /// Check if the protocol derivation process canceled.
   bool get isCanceled => _isCanceled;
@@ -255,10 +255,11 @@ class GreatWall {
     }
   }
 
-  /// Drive the [GreatWall.hashResult] from the user choice [idx].
+  /// Drive the [GreatWall.derivationResult] from the user choice [idx].
   ///
-  /// If [idx] is 0, the protocol will go back one level to its previous state,
-  /// If it is greater 0 the protocol will update the state depending on this choice.
+  /// If [idx] is 0, the protocol will go back one level to its previous
+  /// state, if it is greater 0 the protocol will update the state depending
+  /// on this choice.
   void tacitDerivation(int idx) {
     if (isStarted && !isCanceled) {
       if (idx > 0) {
@@ -272,7 +273,6 @@ class GreatWall {
           _updateWithQuickHashing();
           _savedDerivedStates[_derivationPath] = _currentState;
         }
-
       } else {
         returnLevel();
       }

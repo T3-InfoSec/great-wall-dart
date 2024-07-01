@@ -28,7 +28,7 @@ void main() {
       expect(greatwallProtocol.treeDepth, 5);
       expect(greatwallProtocol.timeLockPuzzleParam, 10);
       expect(greatwallProtocol.derivationLevel, 0);
-      expect(greatwallProtocol.hashResult, Uint8List(128));
+      expect(greatwallProtocol.derivationResult, Uint8List(128));
       expect(greatwallProtocol.isCanceled, isFalse);
       expect(greatwallProtocol.isStarted, isFalse);
       expect(greatwallProtocol.isFinished, isFalse);

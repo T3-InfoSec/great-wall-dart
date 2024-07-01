@@ -109,6 +109,7 @@ class GreatWall {
   /// Get the tree depth of the derivation process.
   int get treeDepth => _treeDepth;
 
+  // TODO: Add documentation comments.
   void cancelDerivation() {
     if (isStarted) {
       _isCanceled = true;
@@ -118,6 +119,7 @@ class GreatWall {
     }
   }
 
+  // TODO: Add documentation comments.
   void finishDerivation() {
     if (isStarted && _currentLevel == treeDepth) {
       TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
@@ -160,6 +162,7 @@ class GreatWall {
     }
   }
 
+  // TODO: Add documentation comments.
   List<TacitKnowledge> generateKnowledgePalettes() {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
     List<TacitKnowledge> shuffledPalettes;
@@ -236,6 +239,7 @@ class GreatWall {
     _isInitialized = true;
   }
 
+  // TODO: Add documentation comments.
   void startDerivation() {
     if (isInitialized) {
       _explicitDerivation();

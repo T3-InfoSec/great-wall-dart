@@ -233,8 +233,8 @@ class GreatWall {
     _isInitialized = true;
   }
 
-  /// Go back to the previous state hash.
-  void returnLevel() {
+  /// Go back one level to the previous derivation state.
+  void _returnDerivationOneLevelBack() {
     if (_currentLevel == 0) return;
 
     if (_isFinished) _isFinished = false;
@@ -274,7 +274,7 @@ class GreatWall {
           _savedDerivedStates[_derivationPath] = _currentState;
         }
       } else {
-        returnLevel();
+        _returnDerivationOneLevelBack();
       }
     } else {
       print(

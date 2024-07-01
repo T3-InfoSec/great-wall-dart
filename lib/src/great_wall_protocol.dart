@@ -71,14 +71,14 @@ class GreatWall {
     initialProtocol();
   }
 
+  /// Get the current hash state of the protocol derivation operation.
+  Uint8List get currentState => _currentState;
+
   /// Get the current level of the protocol derivation operation.
   int get derivationLevel => _currentLevel;
 
   /// Get the result of the protocol derivation operation.
   Uint8List? get derivationResult => (isFinished) ? _currentState : null;
-
-  /// Get the current hash state of the protocol derivation operation.
-  Uint8List get currentState => _currentState;
 
   /// Check if the protocol derivation process canceled.
   bool get isCanceled => _isCanceled;
@@ -236,18 +236,6 @@ class GreatWall {
     _isInitialized = true;
   }
 
-  /// Go back one level to the previous derivation state.
-  void _returnDerivationOneLevelBack() {
-    if (_currentLevel == 0) return;
-
-    if (_isFinished) _isFinished = false;
-
-    _currentLevel -= 1;
-    _derivationPath.pop();
-
-    _currentState = _savedDerivedStates[_derivationPath]!;
-  }
-
   void startDerivation() {
     if (isInitialized) {
       _explicitDerivation();
@@ -308,6 +296,18 @@ class GreatWall {
     _seed3 = _currentState;
 
     _savedDerivedStates[_derivationPath] = _currentState;
+  }
+
+  /// Go back one level to the previous derivation state.
+  void _returnDerivationOneLevelBack() {
+    if (_currentLevel == 0) return;
+
+    if (_isFinished) _isFinished = false;
+
+    _currentLevel -= 1;
+    _derivationPath.pop();
+
+    _currentState = _savedDerivedStates[_derivationPath]!;
   }
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].

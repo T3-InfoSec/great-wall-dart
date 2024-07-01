@@ -114,5 +114,28 @@ void main() {
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationResult, isNull);
     });
+
+    test('Finish derivation success', () {
+      greatwallProtocol.startDerivation();
+      greatwallProtocol.generateKnowledgePalettes();
+      greatwallProtocol.tacitDerivation(idx: 0);
+      greatwallProtocol.generateKnowledgePalettes();
+      greatwallProtocol.tacitDerivation(idx: 1);
+      greatwallProtocol.generateKnowledgePalettes();
+      greatwallProtocol.tacitDerivation(idx: 2);
+      greatwallProtocol.generateKnowledgePalettes();
+      greatwallProtocol.tacitDerivation(idx: 3);
+      greatwallProtocol.generateKnowledgePalettes();
+      greatwallProtocol.tacitDerivation(idx: 1);
+      greatwallProtocol.generateKnowledgePalettes();
+      greatwallProtocol.tacitDerivation(idx: 2);
+      greatwallProtocol.finishDerivation();
+
+      expect(greatwallProtocol.isCanceled, isFalse);
+      expect(greatwallProtocol.isStarted, isTrue);
+      expect(greatwallProtocol.isFinished, isTrue);
+      expect(greatwallProtocol.isInitialized, isTrue);
+      expect(greatwallProtocol.derivationResult, isNotNull);
+    });
   });
 }

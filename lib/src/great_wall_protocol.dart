@@ -69,16 +69,16 @@ class GreatWall {
   })  : _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs() {
-    initialProtocol();
+    initialDerivation();
   }
 
-  /// Get the current hash state of the protocol derivation operation.
+  /// Get the current hash state of the protocol derivation process.
   Uint8List get currentHash => _currentHash;
 
-  /// Get the current level of the protocol derivation operation.
+  /// Get the current level of the protocol derivation process.
   int get derivationLevel => _currentLevel;
 
-  /// Get the result of the protocol derivation operation.
+  /// Get the result of the protocol derivation process.
   Uint8List? get derivationHashResult => (isFinished) ? _currentHash : null;
 
   /// Check if the protocol derivation process canceled.
@@ -87,8 +87,8 @@ class GreatWall {
   /// Check if the protocol derivation process finished normally.
   bool get isFinished => _isFinished;
 
-  /// Check if the initialization process of the protocol derivation has been
-  /// completed correctly or not.
+  /// Check if the protocol derivation process has been initialized
+  /// completely and correctly or not.
   bool get isInitialized => _isInitialized;
 
   /// Check if the protocol derivation process started correctly.
@@ -101,7 +101,7 @@ class GreatWall {
   /// Set the value of the [password] that you need to hash it by using
   /// [GreatWall] protocol.
   set seed0(String password) {
-    initialProtocol();
+    initialDerivation();
     _currentHash = _seed0 = Uint8List.fromList(password.codeUnits);
   }
 
@@ -115,7 +115,7 @@ class GreatWall {
   int get treeDepth => _treeDepth;
 
   // TODO: Add documentation comments.
-  void cancelDerivation() {
+  void cancel() {
     if (isStarted) {
       _isCanceled = true;
     } else {
@@ -124,6 +124,7 @@ class GreatWall {
     }
   }
 
+  /// Finish the protocol derivation process.
   // TODO: Add documentation comments.
   void finishDerivation() {
     if (isStarted && _currentLevel == treeDepth + 1) {
@@ -169,8 +170,8 @@ class GreatWall {
     }
   }
 
-  /// Reset the [GreatWall] protocol and its attributes to its initial state.
-  void initialProtocol() {
+  /// Reset the [GreatWall] protocol derivation process to its initial state.
+  void initialDerivation() {
     _seed0 = Uint8List(128);
     _seed1 = Uint8List(128);
     _seed2 = Uint8List(128);
@@ -200,7 +201,7 @@ class GreatWall {
   // TODO: Add documentation comments.
   void startDerivation() {
     if (isInitialized) {
-      _explicitDerivation();
+      _makeExplicitDerivation();
       _isStarted = true;
     } else {
       print('Derivation does not initialized yet.');
@@ -213,7 +214,7 @@ class GreatWall {
   /// If [choiceNumber] is 0, the protocol will go back one level to its
   /// previous state, if it is greater 0 the protocol will update the state
   /// depending on this choice.
-  void tacitDerivation({required int choiceNumber}) {
+  void makeTacitDerivation({required int choiceNumber}) {
     if (isStarted &&
         !isCanceled &&
         _savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
@@ -244,7 +245,8 @@ class GreatWall {
     }
   }
 
-  void _explicitDerivation() {
+  // TODO: Add documentation comments.
+  void _makeExplicitDerivation() {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();
     _seed1 = _currentHash;

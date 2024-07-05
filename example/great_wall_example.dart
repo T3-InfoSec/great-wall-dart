@@ -24,11 +24,11 @@ void main() {
   print(greatwallProtocol.currentLevelKnowledgePalettes);
   greatwallProtocol.tacitDerivation(
     choiceNumber: 1,
-  );
+  ); // Choose the first palette
   print(greatwallProtocol.currentLevelKnowledgePalettes);
   greatwallProtocol.tacitDerivation(
     choiceNumber: 2,
-  );
+  ); // Choose the second palette
 
   greatwallProtocol.finishDerivation();
 }

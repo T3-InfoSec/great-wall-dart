@@ -26,8 +26,8 @@ start using the package.
 
 ## Usage
 
-A minimal `GreatWall` protocol setting to drive a hash from using tacit
-knowledge. You can find more examples in `/example` folder.
+A minimal `GreatWall` protocol settings to drive a hash using default formosa
+tacit knowledge. You can find more examples in `/example` folder.
 
 ```dart
 import 'package:great_wall/great_wall.dart';

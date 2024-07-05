@@ -100,6 +100,7 @@ class GreatWall {
 
   /// Set the value of the [password] that you need to hash it by using
   /// [GreatWall] protocol.
+  // TODO: Make sure the password match one of the formosa theme.
   set seed0(String password) {
     initialDerivation();
     _currentHash = _seed0 = Uint8List.fromList(password.codeUnits);

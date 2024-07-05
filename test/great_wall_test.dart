@@ -27,9 +27,9 @@ void main() {
       expect(greatwallProtocol.treeArity, 3);
       expect(greatwallProtocol.treeDepth, 5);
       expect(greatwallProtocol.timeLockPuzzleParam, 10);
-      expect(greatwallProtocol.currentState, Uint8List(128));
+      expect(greatwallProtocol.currentHash, Uint8List(128));
       expect(greatwallProtocol.derivationLevel, 0);
-      expect(greatwallProtocol.derivationResult, isNull);
+      expect(greatwallProtocol.derivationHashResult, isNull);
       expect(greatwallProtocol.isCanceled, isFalse);
       expect(greatwallProtocol.isStarted, isFalse);
       expect(greatwallProtocol.isFinished, isFalse);
@@ -48,8 +48,8 @@ void main() {
       expect(greatwallProtocol.isStarted, isTrue);
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
-      expect(greatwallProtocol.derivationResult, isNull);
-      expect(greatwallProtocol.currentState, [
+      expect(greatwallProtocol.derivationHashResult, isNull);
+      expect(greatwallProtocol.currentHash, [
         137, 143, 186, 18, 167, 0, 209, 173, 77, 196, 218, 89, 207, 51, 250,
         144, 152, 162, 136, 237, 157, 39, 32, 136, 188, 239, 171, 44, 4, 129,
         22, 25, 119, 115, 153, 235, 115, 5, 16, 107, 83, 193, 136, 106, 32,
@@ -65,7 +65,7 @@ void main() {
     test('Generate knowledge palettes', () {
       greatwallProtocol.startDerivation();
       List<TacitKnowledge> knowledgePalettes =
-          greatwallProtocol.generateKnowledgePalettes();
+          greatwallProtocol.currentLevelKnowledgePalettes;
       expect(knowledgePalettes.length, greatwallProtocol.treeArity);
       expect(knowledgePalettes[0], isA<FormosaTacitKnowledge>());
       expect(knowledgePalettes[1], isA<FormosaTacitKnowledge>());
@@ -75,8 +75,8 @@ void main() {
       expect(greatwallProtocol.isStarted, isTrue);
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
-      expect(greatwallProtocol.derivationResult, isNull);
-      expect(greatwallProtocol.currentState, [
+      expect(greatwallProtocol.derivationHashResult, isNull);
+      expect(greatwallProtocol.currentHash, [
         137, 143, 186, 18, 167, 0, 209, 173, 77, 196, 218, 89, 207, 51, 250,
         144, 152, 162, 136, 237, 157, 39, 32, 136, 188, 239, 171, 44, 4, 129,
         22, 25, 119, 115, 153, 235, 115, 5, 16, 107, 83, 193, 136, 106, 32,
@@ -91,9 +91,8 @@ void main() {
 
     test('Derivation using tacit knowledge', () {
       greatwallProtocol.startDerivation();
-      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 0);
-      expect(greatwallProtocol.currentState, [
+      expect(greatwallProtocol.currentHash, [
         137, 143, 186, 18, 167, 0, 209, 173, 77, 196, 218, 89, 207, 51, 250,
         144, 152, 162, 136, 237, 157, 39, 32, 136, 188, 239, 171, 44, 4, 129,
         22, 25, 119, 115, 153, 235, 115, 5, 16, 107, 83, 193, 136, 106, 32,
@@ -112,22 +111,16 @@ void main() {
       expect(greatwallProtocol.isStarted, isTrue);
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
-      expect(greatwallProtocol.derivationResult, isNull);
+      expect(greatwallProtocol.derivationHashResult, isNull);
     });
 
     test('Finish derivation success', () {
       greatwallProtocol.startDerivation();
-      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 0);
-      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 1);
-      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 2);
-      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 3);
-      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 1);
-      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 2);
       greatwallProtocol.finishDerivation();
 
@@ -135,12 +128,11 @@ void main() {
       expect(greatwallProtocol.isStarted, isTrue);
       expect(greatwallProtocol.isFinished, isTrue);
       expect(greatwallProtocol.isInitialized, isTrue);
-      expect(greatwallProtocol.derivationResult, isNotNull);
+      expect(greatwallProtocol.derivationHashResult, isNotNull);
     });
 
     test('Finish derivation fails', () {
       greatwallProtocol.startDerivation();
-      greatwallProtocol.generateKnowledgePalettes();
       greatwallProtocol.tacitDerivation(idx: 0);
       greatwallProtocol.tacitDerivation(idx: 1);
       greatwallProtocol.tacitDerivation(idx: 2);
@@ -150,7 +142,7 @@ void main() {
       expect(greatwallProtocol.isStarted, isTrue);
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
-      expect(greatwallProtocol.derivationResult, isNull);
+      expect(greatwallProtocol.derivationHashResult, isNull);
     });
 
     test('Finish derivation fails', () {
@@ -160,7 +152,7 @@ void main() {
       expect(greatwallProtocol.isStarted, isFalse);
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
-      expect(greatwallProtocol.derivationResult, isNull);
+      expect(greatwallProtocol.derivationHashResult, isNull);
     });
   });
 }

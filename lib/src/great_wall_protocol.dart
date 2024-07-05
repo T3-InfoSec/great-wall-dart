@@ -208,24 +208,24 @@ class GreatWall {
     }
   }
 
-  /// Drive the [GreatWall.currentHash] from the user choice [idx].
+  /// Drive the [GreatWall.currentHash] from the user choice [choiceNumber].
   ///
-  /// If [idx] is 0, the protocol will go back one level to its previous
-  /// state, if it is greater 0 the protocol will update the state depending
-  /// on this choice.
-  void tacitDerivation({required int idx}) {
+  /// If [choiceNumber] is 0, the protocol will go back one level to its
+  /// previous state, if it is greater 0 the protocol will update the state
+  /// depending on this choice.
+  void tacitDerivation({required int choiceNumber}) {
     if (isStarted &&
         !isCanceled &&
         _savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
-      if (idx > 0) {
+      if (choiceNumber > 0) {
         _currentLevel += 1;
-        _derivationPath.add(idx);
+        _derivationPath.add(choiceNumber);
 
         if (_savedDerivedStates.containsKey(_derivationPath.copy())) {
           _currentHash = _savedDerivedStates[_derivationPath]!;
         } else {
           _currentHash = Uint8List.fromList(
-            _currentHash + [_shuffledArityIndexes[idx - 1]],
+            _currentHash + [_shuffledArityIndexes[choiceNumber - 1]],
           );
           _updateWithQuickHashing();
           _savedDerivedStates[_derivationPath.copy()] = _currentHash;

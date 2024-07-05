@@ -91,7 +91,7 @@ void main() {
 
     test('Derivation using tacit knowledge', () {
       greatwallProtocol.startDerivation();
-      greatwallProtocol.tacitDerivation(idx: 0);
+      greatwallProtocol.tacitDerivation(choiceNumber: 0);
       expect(greatwallProtocol.currentHash, [
         137, 143, 186, 18, 167, 0, 209, 173, 77, 196, 218, 89, 207, 51, 250,
         144, 152, 162, 136, 237, 157, 39, 32, 136, 188, 239, 171, 44, 4, 129,
@@ -103,9 +103,9 @@ void main() {
         117, 102, 99, 248, 36, 144, 144, 148, 92, 54, 7, 249, 82, 80, 79, 251,
         41, 211, 155, 130, 154, 192, // Current state of the derivation.
       ]);
-      greatwallProtocol.tacitDerivation(idx: 1);
-      greatwallProtocol.tacitDerivation(idx: 2);
-      greatwallProtocol.tacitDerivation(idx: 3);
+      greatwallProtocol.tacitDerivation(choiceNumber: 1);
+      greatwallProtocol.tacitDerivation(choiceNumber: 2);
+      greatwallProtocol.tacitDerivation(choiceNumber: 3);
 
       expect(greatwallProtocol.isCanceled, isFalse);
       expect(greatwallProtocol.isStarted, isTrue);
@@ -116,12 +116,12 @@ void main() {
 
     test('Finish derivation success', () {
       greatwallProtocol.startDerivation();
-      greatwallProtocol.tacitDerivation(idx: 0);
-      greatwallProtocol.tacitDerivation(idx: 1);
-      greatwallProtocol.tacitDerivation(idx: 2);
-      greatwallProtocol.tacitDerivation(idx: 3);
-      greatwallProtocol.tacitDerivation(idx: 1);
-      greatwallProtocol.tacitDerivation(idx: 2);
+      greatwallProtocol.tacitDerivation(choiceNumber: 0);
+      greatwallProtocol.tacitDerivation(choiceNumber: 1);
+      greatwallProtocol.tacitDerivation(choiceNumber: 2);
+      greatwallProtocol.tacitDerivation(choiceNumber: 3);
+      greatwallProtocol.tacitDerivation(choiceNumber: 1);
+      greatwallProtocol.tacitDerivation(choiceNumber: 2);
       greatwallProtocol.finishDerivation();
 
       expect(greatwallProtocol.isCanceled, isFalse);
@@ -133,9 +133,9 @@ void main() {
 
     test('Finish derivation fails', () {
       greatwallProtocol.startDerivation();
-      greatwallProtocol.tacitDerivation(idx: 0);
-      greatwallProtocol.tacitDerivation(idx: 1);
-      greatwallProtocol.tacitDerivation(idx: 2);
+      greatwallProtocol.tacitDerivation(choiceNumber: 0);
+      greatwallProtocol.tacitDerivation(choiceNumber: 1);
+      greatwallProtocol.tacitDerivation(choiceNumber: 2);
       greatwallProtocol.finishDerivation();
 
       expect(greatwallProtocol.isCanceled, isFalse);

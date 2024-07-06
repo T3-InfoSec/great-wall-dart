@@ -2,7 +2,7 @@ import 'package:great_wall/src/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('utils tests', () {
+  group('DerivationPath', () {
     late DerivationPath derivationPath;
     late DerivationPath emptyDerivationPath;
 
@@ -11,7 +11,7 @@ void main() {
       emptyDerivationPath = DerivationPath();
     });
 
-    test('Constructor', () {
+    test('could use constructor', () {
       expect(derivationPath.isEmpty, isFalse);
       expect(emptyDerivationPath.isEmpty, isTrue);
       expect(derivationPath.first, 1);
@@ -21,33 +21,33 @@ void main() {
       expect(derivationPath[2], 3);
     });
 
-    test('Length', () {
+    test('could get its length', () {
       int derivationPathLength = derivationPath.length;
       int emptyDerivationPathLength = emptyDerivationPath.length;
       expect(derivationPathLength, 3);
       expect(emptyDerivationPathLength, 0);
     });
 
-    test('Add node to path', () {
+    test('could add node path to its path', () {
       derivationPath.add(4);
       expect(derivationPath, [1, 2, 3, 4]);
     });
 
-    test('Pop node from path', () {
+    test('could pop last node path from its path', () {
       derivationPath.pop();
       emptyDerivationPath.pop();
       expect(derivationPath, [1, 2]);
       expect(emptyDerivationPath, []);
     });
 
-    test('Clear nodes from path', () {
+    test('could clear all nodes in path', () {
       derivationPath.clear();
       emptyDerivationPath.clear();
       expect(derivationPath, <int>[]);
       expect(emptyDerivationPath, <int>[]);
     });
 
-    test('Equality of 2 paths', () {
+    test('could equal another paths with same value nodes', () {
       DerivationPath newDerivationPath = DerivationPath(nodesList: [1, 2]);
       DerivationPath sameDerivationPath = DerivationPath(nodesList: [1, 2, 3]);
 
@@ -58,7 +58,7 @@ void main() {
       expect(derivationPath, sameDerivationPath);
     });
 
-    test('Create new copy', () {
+    test('could create new path copy of its path', () {
       DerivationPath newDerivationPath = derivationPath.copy();
       expect(newDerivationPath, isA<DerivationPath>());
       expect(newDerivationPath, isNot(same(derivationPath)));

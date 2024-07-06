@@ -5,7 +5,7 @@ import 'package:great_wall/src/tacit_knowledge.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('GreatWall protocol tests:', () {
+  group('GreatWall()', () {
     late GreatWall greatwallProtocol;
 
     late Map<String, dynamic> fractalExpectedConfigs;
@@ -20,7 +20,7 @@ void main() {
       );
     });
 
-    test('Constructor', () {
+    test('should use constructor', () {
       expect(GreatWall.argon2Salt, Uint8List(32));
       expect(GreatWall.bytesCount, 4);
 
@@ -41,7 +41,7 @@ void main() {
       );
     });
 
-    test('Starting protocol derivation', () {
+    test('flow could be start', () {
       greatwallProtocol.startDerivation();
 
       expect(greatwallProtocol.isCanceled, isFalse);
@@ -62,7 +62,7 @@ void main() {
       ]);
     });
 
-    test('Generate knowledge palettes', () {
+    test('could get generated level knowledge palettes', () {
       greatwallProtocol.startDerivation();
       List<TacitKnowledge> knowledgePalettes =
           greatwallProtocol.currentLevelKnowledgePalettes;
@@ -89,7 +89,7 @@ void main() {
       ]);
     });
 
-    test('Derivation using tacit knowledge', () {
+    test('could using tacit knowledge derivation', () {
       greatwallProtocol.startDerivation();
       greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
       expect(greatwallProtocol.currentHash, [
@@ -114,7 +114,19 @@ void main() {
       expect(greatwallProtocol.derivationHashResult, isNull);
     });
 
-    test('Finish derivation success', () {
+    test('flow could cancel the current running derivation', () {
+      greatwallProtocol.startDerivation();
+      greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
+      greatwallProtocol.cancelDerivation();
+
+      expect(greatwallProtocol.isCanceled, isTrue);
+      expect(greatwallProtocol.isStarted, isFalse);
+      expect(greatwallProtocol.isFinished, isFalse);
+      expect(greatwallProtocol.isInitialized, isTrue);
+      expect(greatwallProtocol.derivationHashResult, isNotNull);
+    });
+
+    test('flow could be finish derivation successfully', () {
       greatwallProtocol.startDerivation();
       greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
       greatwallProtocol.makeTacitDerivation(choiceNumber: 1);
@@ -131,7 +143,7 @@ void main() {
       expect(greatwallProtocol.derivationHashResult, isNotNull);
     });
 
-    test('Finish derivation fails', () {
+    test('flow could handle finish incomplete derivation', () {
       greatwallProtocol.startDerivation();
       greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
       greatwallProtocol.makeTacitDerivation(choiceNumber: 1);
@@ -145,7 +157,7 @@ void main() {
       expect(greatwallProtocol.derivationHashResult, isNull);
     });
 
-    test('Finish derivation fails', () {
+    test('flow could handle finish did not started tacit derivation', () {
       greatwallProtocol.finishDerivation();
 
       expect(greatwallProtocol.isCanceled, isFalse);

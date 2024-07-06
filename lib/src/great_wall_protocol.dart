@@ -115,9 +115,11 @@ class GreatWall {
   /// Get the tree depth of the derivation process.
   int get treeDepth => _treeDepth;
 
+  /// Cancel the current running derivation process.
   // TODO: Add documentation comments.
-  void cancel() {
+  void cancelDerivation() {
     if (isStarted) {
+      _isStarted = false;
       _isCanceled = true;
     } else {
       print('The derivation is not running currently.');

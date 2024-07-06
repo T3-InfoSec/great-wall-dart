@@ -2,7 +2,7 @@ import 'package:great_wall/src/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('DerivationPath', () {
+  group('DerivationPath()', () {
     late DerivationPath derivationPath;
     late DerivationPath emptyDerivationPath;
 

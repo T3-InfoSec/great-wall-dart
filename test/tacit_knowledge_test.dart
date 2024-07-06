@@ -4,7 +4,7 @@ import 'package:great_wall/src/tacit_knowledge.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Tacit knowledge params tests', () {
+  group('TacitKnowledgeParam()', () {
     late FormosaTacitKnowledgeParam formosaTacitKnowledgeParam;
     late FractalTacitKnowledgeParam realFractalTacitKnowledgeParam;
     late FractalTacitKnowledgeParam imaginaryFractalTacitKnowledgeParam;
@@ -37,7 +37,7 @@ void main() {
       );
     });
 
-    test('Formosa Param Constructor', () {
+    test('could construct Formosa param', () {
       expect(formosaTacitKnowledgeParam.name, 'arityIdx');
       expect(formosaTacitKnowledgeParam.initialState, Uint8List(128));
       expect(
@@ -46,7 +46,7 @@ void main() {
       );
     });
 
-    test('Fractal Param Constructor', () {
+    test('could construct Fractal param', () {
       expect(realFractalTacitKnowledgeParam.name, 'realParam');
       expect(realFractalTacitKnowledgeParam.initialState, Uint8List(128));
       expect(
@@ -69,14 +69,14 @@ void main() {
       );
     });
 
-    test('Formosa Param value', () {
+    test('could return Formosa param value', () {
       expect(
         formosaTacitKnowledgeParam.value,
         Uint8List.fromList([57, 116, 180, 27]),
       );
     });
 
-    test('Fractal Param value', () {
+    test('could return Fractal param value', () {
       expect(realFractalTacitKnowledgeParam.value, 2.993161161);
       expect(imaginaryFractalTacitKnowledgeParam.value, 0.993161161);
       expect(generalFractalTacitKnowledgeParam.value, 2.993161161);
@@ -84,7 +84,7 @@ void main() {
   });
 
   group(
-    'Tacit knowledge tests',
+    'TacitKnowledge()',
     () {
       late Map<String, dynamic> formosaExpectedConfigs;
       late Map<String, FormosaTacitKnowledgeParam> formosaExpectedParams;
@@ -141,7 +141,7 @@ void main() {
         );
       });
 
-      test('Constructors', () {
+      test('could use constructors', () {
         expect(formosaTacitKnowledge.configs, formosaExpectedConfigs);
         expect(formosaTacitKnowledge.params, formosaExpectedParams);
 
@@ -149,7 +149,7 @@ void main() {
         expect(fractalTacitKnowledge.params, fractalExpectedParams);
       });
 
-      test('Get underline knowledge', () {
+      test('could be able to return underline knowledge', () {
         // TODO: Change the expected result to what actually produced by
         // knowledge.
         expect(formosaTacitKnowledge.knowledge, [57, 116, 180, 27].toString());

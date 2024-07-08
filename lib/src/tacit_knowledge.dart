@@ -28,8 +28,8 @@ sealed class TacitKnowledgeParam {
   /// (here, branch_idx_bytes to current state L_i and hashing it)
   // TODO: Enhance the docs.
   Uint8List _computeValue() {
-    Uint8List nextStateCandidate = initialState;
-    var argon2Algorithm = Argon2(
+    Uint8List nextStateCandidate;
+    Argon2 argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
       hashLength: 128,
@@ -40,7 +40,7 @@ sealed class TacitKnowledgeParam {
     );
 
     nextStateCandidate = Uint8List.fromList(
-      argon2Algorithm.convert(nextStateCandidate).bytes + adjustmentValue,
+      argon2Algorithm.convert(initialState).bytes + adjustmentValue,
     );
 
     return argon2Algorithm

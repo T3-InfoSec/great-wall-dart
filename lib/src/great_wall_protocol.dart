@@ -83,6 +83,8 @@ class GreatWall {
       _shuffledCurrentLevelKnowledgePalettes;
 
   /// Get the result of the protocol derivation process.
+  ///
+  /// The result requires calling [finishDerivation] first.
   Uint8List? get derivationHashResult => (isFinished) ? _currentHash : null;
 
   /// Get the current level of the protocol derivation process.
@@ -139,9 +141,18 @@ class GreatWall {
   }
 
   /// Finish the protocol derivation process.
-  // TODO: Add documentation comments.
+  ///
+  /// You need to fill the protocol requirements to be able to finish the
+  /// derivation process. If the requirements not fill properly the finishing
+  /// process will be aborted with a message indicating that.
+  ///
+  /// We provide the requirement of manual finishing to add a support for
+  /// finishing without satisfying protocol requirements.
+  ///
+  /// The finishing requirements are that the protocol is correctly started
+  /// and initialized and the required steps of tacit derivation are filled.
   void finishDerivation() {
-    if (isStarted && _currentLevel == treeDepth + 1) {
+    if (isStarted && isInitialized && _currentLevel == treeDepth + 1) {
       TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
       switch (tacitKnowledge) {

@@ -30,17 +30,7 @@ class GreatWall {
   late List<int> _shuffledArityIndexes;
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
-  // Protocol control fields
-  bool _isFinished = false;
-  bool _isCanceled = false;
-  bool _isInitialized = false;
-  bool _isStarted = false;
-
-  final int _treeArity;
-  final int _treeDepth;
-  final int _timeLockPuzzleParam;
-
-  TacitKnowledge derivationTacitKnowledge = FormosaTacitKnowledge(
+  final TacitKnowledge _tacitKnowledge = FormosaTacitKnowledge(
     {'theme': 'BiP39'},
     {
       'formosaParam': FormosaTacitKnowledgeParam(
@@ -54,14 +44,27 @@ class GreatWall {
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
   final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
 
-  /// Create an instance of [GreatWall] protocol and initialized it.
+  // Protocol control fields
+  bool _isFinished = false;
+  bool _isCanceled = false;
+  bool _isInitialized = false;
+  bool _isStarted = false;
+
+  // Initializing parameters
+  final int _treeArity;
+  final int _treeDepth;
+  final int _timeLockPuzzleParam;
+
+  /// Create and initialize a [GreatWall] protocol instance.
   ///
-  /// [treeArity], [treeDepth] and [timeLockPuzzleParam] are used to
-  /// initializing the protocol and only the absolute value of them will be
-  /// considered. [treeArity] refers to the number of artiy in each branch,
-  /// [treeDepth] refers to the number of branches that will be used in the
-  /// derivation process and [timeLockPuzzleParam] refers to the hardness
-  /// measure in the hard memory hashing process; big number means it's harder.
+  /// The [treeArity], [treeDepth] and [timeLockPuzzleParam] must be provided,
+  /// they are used to properly and securely (by assigning them to large
+  /// integers as you can) initializing the protocol and they must be positive
+  /// integers if not only the absolute value of them will be considered.
+  /// [treeArity] refers to the number of artiy in each branch, [treeDepth]
+  /// refers to the number of branches that will be used in the derivation
+  /// process and [timeLockPuzzleParam] refers to the hardness measure in the
+  /// hard memory hashing process; big number means it's harder.
   GreatWall({
     required int treeArity,
     required int treeDepth,
@@ -75,11 +78,23 @@ class GreatWall {
   /// Get the current hash state of the protocol derivation process.
   Uint8List get currentHash => _currentHash;
 
-  /// Get the current level of the protocol derivation process.
-  int get derivationLevel => _currentLevel;
+  /// Get the tacit knowledge palettes of current level.
+  List<TacitKnowledge> get currentLevelKnowledgePalettes =>
+      _shuffledCurrentLevelKnowledgePalettes;
 
   /// Get the result of the protocol derivation process.
   Uint8List? get derivationHashResult => (isFinished) ? _currentHash : null;
+
+  /// Get the current level of the protocol derivation process.
+  int get derivationLevel => _currentLevel;
+
+  /// The tacit knowledge that will be used in the protocol hash derivation
+  /// process.
+  TacitKnowledge get derivationTacitKnowledge => _tacitKnowledge;
+
+  set derivationTacitKnowledge(TacitKnowledge tacitKnowledge) {
+    tacitKnowledge = tacitKnowledge;
+  }
 
   /// Check if the protocol derivation process canceled.
   bool get isCanceled => _isCanceled;
@@ -93,10 +108,6 @@ class GreatWall {
 
   /// Check if the protocol derivation process started correctly.
   bool get isStarted => _isStarted;
-
-  /// Get the tacit knowledge palettes of current level.
-  List<TacitKnowledge> get currentLevelKnowledgePalettes =>
-      _shuffledCurrentLevelKnowledgePalettes;
 
   /// Set the value of the [password] that you need to hash it by using
   /// [GreatWall] protocol.
@@ -201,17 +212,6 @@ class GreatWall {
     _isInitialized = true;
   }
 
-  // TODO: Add documentation comments.
-  void startDerivation() {
-    if (isInitialized) {
-      _makeExplicitDerivation();
-      _isStarted = true;
-    } else {
-      print('Derivation does not initialized yet.');
-      _isStarted = false;
-    }
-  }
-
   /// Drive the [GreatWall.currentHash] from the user choice [choiceNumber].
   ///
   /// If [choiceNumber] is 0, the protocol will go back one level to its
@@ -249,31 +249,14 @@ class GreatWall {
   }
 
   // TODO: Add documentation comments.
-  void _makeExplicitDerivation() {
-    print('Deriving Seed0 -> Seed1');
-    _updateWithQuickHashing();
-    _seed1 = _currentHash;
-    if (_isCanceled) {
-      print('Derivation canceled');
-      return;
+  void startDerivation() {
+    if (isInitialized) {
+      _makeExplicitDerivation();
+      _isStarted = true;
+    } else {
+      print('Derivation does not initialized yet.');
+      _isStarted = false;
     }
-    print('Deriving Seed1 -> Seed2');
-    _updateWithLongHashing();
-    _seed2 = _currentHash;
-    _currentHash = Uint8List.fromList(_seed0 + _currentHash);
-    if (_isCanceled) {
-      print('Derivation canceled');
-      return;
-    }
-    print('Deriving Seed2 -> Seed3');
-    _updateWithQuickHashing();
-    _seed3 = _currentHash;
-
-    _savedDerivedStates[_derivationPath.copy()] = _currentHash;
-
-    // Prepare the level 1 of tacit derivation process.
-    _currentLevel += 1;
-    _generateLevelKnowledgePalettes();
   }
 
   // TODO: Add documentation comments.
@@ -326,6 +309,34 @@ class GreatWall {
       }
     }
     return _shuffledCurrentLevelKnowledgePalettes;
+  }
+
+  // TODO: Add documentation comments.
+  void _makeExplicitDerivation() {
+    print('Deriving Seed0 -> Seed1');
+    _updateWithQuickHashing();
+    _seed1 = _currentHash;
+    if (_isCanceled) {
+      print('Derivation canceled');
+      return;
+    }
+    print('Deriving Seed1 -> Seed2');
+    _updateWithLongHashing();
+    _seed2 = _currentHash;
+    _currentHash = Uint8List.fromList(_seed0 + _currentHash);
+    if (_isCanceled) {
+      print('Derivation canceled');
+      return;
+    }
+    print('Deriving Seed2 -> Seed3');
+    _updateWithQuickHashing();
+    _seed3 = _currentHash;
+
+    _savedDerivedStates[_derivationPath.copy()] = _currentHash;
+
+    // Prepare the level 1 of tacit derivation process.
+    _currentLevel += 1;
+    _generateLevelKnowledgePalettes();
   }
 
   /// Go back one level to the previous derivation state.

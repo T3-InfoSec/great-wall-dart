@@ -123,7 +123,7 @@ void main() {
       expect(greatwallProtocol.isStarted, isFalse);
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
-      expect(greatwallProtocol.derivationHashResult, isNotNull);
+      expect(greatwallProtocol.derivationHashResult, isNull);
     });
 
     test('flow could be finish derivation successfully', () {

@@ -32,13 +32,11 @@ class GreatWall {
 
   final TacitKnowledge _tacitKnowledge = FormosaTacitKnowledge(
     {'theme': 'BiP39'},
-    {
-      'formosaParam': FormosaTacitKnowledgeParam(
-        'formosaParam',
-        Uint8List(128),
-        Uint8List.fromList([]),
-      )
-    },
+    TacitKnowledgeParam(
+      'formosaParam',
+      Uint8List(128),
+      Uint8List.fromList([]),
+    ),
   );
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
@@ -208,13 +206,11 @@ class GreatWall {
 
     derivationTacitKnowledge = FormosaTacitKnowledge(
       {'theme': 'BiP39'},
-      {
-        'formosaParam': FormosaTacitKnowledgeParam(
-          'formosaParam',
-          Uint8List(128),
-          Uint8List.fromList([]),
-        )
-      },
+      TacitKnowledgeParam(
+        'formosaParam',
+        Uint8List(128),
+        Uint8List.fromList([]),
+      ),
     );
     _derivationPath.clear();
     _savedDerivedStates.clear();
@@ -283,13 +279,11 @@ class GreatWall {
           List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
             for (final arityIdx in _shuffledArityIndexes)
               tacitKnowledge
-                ..params = {
-                  'formosaParam': FormosaTacitKnowledgeParam(
-                    'formosaParam',
-                    _currentHash,
-                    Uint8List.fromList([arityIdx]),
-                  )
-                }
+                ..param = TacitKnowledgeParam(
+                  'formosaParam',
+                  _currentHash,
+                  Uint8List.fromList([arityIdx]),
+                )
           ];
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFormosaPalettes;
@@ -298,18 +292,11 @@ class GreatWall {
           List<FractalTacitKnowledge> shuffledFractalPalettes = [
             for (final arityIdx in _shuffledArityIndexes)
               tacitKnowledge
-                ..params = {
-                  'realParam': FractalTacitKnowledgeParam(
-                    'realParam',
-                    _currentHash,
-                    Uint8List.fromList([arityIdx]),
-                  ),
-                  'imaginaryParam': FractalTacitKnowledgeParam(
-                    'imaginaryParam',
-                    _currentHash,
-                    Uint8List.fromList([arityIdx]),
-                  )
-                }
+                ..param = TacitKnowledgeParam(
+                  'fractalParam',
+                  _currentHash,
+                  Uint8List.fromList([arityIdx]),
+                ),
           ];
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFractalPalettes;

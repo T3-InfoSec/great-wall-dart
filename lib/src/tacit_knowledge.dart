@@ -9,7 +9,7 @@ import 'package:hashlib/hashlib.dart';
 // import 'package:hashviz/hashviz.dart';
 
 /// A sealed and abstract class for tacit knowledge param implementation
-sealed class TacitKnowledgeParam {
+class TacitKnowledgeParam {
   static final Uint8List argon2Salt = Uint8List(32);
   static final int bytesCount = 4;
 
@@ -20,7 +20,7 @@ sealed class TacitKnowledgeParam {
   TacitKnowledgeParam(this.name, this.initialState, this.adjustmentValue);
 
   /// Get the value that represents the param.
-  void get value;
+  Uint8List get value => _computeValue();
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
@@ -28,7 +28,6 @@ sealed class TacitKnowledgeParam {
   /// (here, branch_idx_bytes to current state L_i and hashing it)
   // TODO: Enhance the docs.
   Uint8List _computeValue() {
-    Uint8List nextStateCandidate;
     Argon2 argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -39,7 +38,7 @@ sealed class TacitKnowledgeParam {
       salt: argon2Salt,
     );
 
-    nextStateCandidate = Uint8List.fromList(
+    Uint8List nextStateCandidate = Uint8List.fromList(
       argon2Algorithm.convert(initialState).bytes + adjustmentValue,
     );
 
@@ -50,54 +49,10 @@ sealed class TacitKnowledgeParam {
   }
 }
 
-/// A representation of the formosa tacit knowledge param.
-final class FormosaTacitKnowledgeParam extends TacitKnowledgeParam {
-  FormosaTacitKnowledgeParam(
-    super.name,
-    super.initialState,
-    super.adjustmentValue,
-  );
-
-  @override
-  Uint8List get value => super._computeValue();
-}
-
-/// A representation of the fractal tacit knowledge param.
-final class FractalTacitKnowledgeParam extends TacitKnowledgeParam {
-  FractalTacitKnowledgeParam(
-    super.name,
-    super.initialState,
-    super.adjustmentValue,
-  );
-
-  @override
-  num get value {
-    if (super.name == 'realParam') {
-      return _computeRealParam(super._computeValue());
-    } else if (super.name == 'imaginaryParam') {
-      return _computeImaginaryParam(super._computeValue());
-    } else {
-      return _computeRealParam(super._computeValue());
-    }
-  }
-
-  double _computeRealParam(Uint8List param) {
-    // NOTE: Inverting the order of digits to minimize Benford's law bias.
-    String realParam = '2.${int.parse(param.reversed.join())}';
-    return double.parse(realParam);
-  }
-
-  double _computeImaginaryParam(Uint8List param) {
-    // NOTE: Inverting the order of digits to minimize Benford's law bias.
-    String imaginaryParam = '0.${int.parse(param.reversed.join())}';
-    return double.parse(imaginaryParam);
-  }
-}
-
 /// A sealed and abstract class for tacit knowledge implementation
 sealed class TacitKnowledge {
-  covariant late Map<String, dynamic> configs;
-  covariant late Map<String, TacitKnowledgeParam> params;
+  late Map<String, dynamic> configs;
+  late TacitKnowledgeParam param;
 
   Object get knowledge;
 }
@@ -106,34 +61,34 @@ sealed class TacitKnowledge {
 final class FormosaTacitKnowledge implements TacitKnowledge {
   Mnemonic _knowledgeGenerator;
   @override
-  Map<String, dynamic> configs;
+  late Map<String, dynamic> configs;
   @override
-  Map<String, FormosaTacitKnowledgeParam> params;
+  late TacitKnowledgeParam param;
 
   FormosaTacitKnowledge(
     this.configs,
-    this.params,
+    this.param,
   ) : _knowledgeGenerator = Mnemonic(theme: 'BiP39');
 
   /// Returns a mnemonic string.
   ///
   /// Returns the mnemonic string that represents the actual tacit knowledge
   /// of the [FormosaTacitKnowledge] tacit knowledge. Throws on [Exception]
-  /// if the [TacitKnowledge.configs] or [TacitKnowledge.params] or both
+  /// if the [TacitKnowledge.configs] or [TacitKnowledge.param] or both
   /// are empty because this will generate an insecure [TacitKnowledge].
   @override
   String get knowledge {
-    if (configs.isEmpty || params.isEmpty) {
+    if (configs.isEmpty) {
       throw Exception(
-        'The configs or params or both are empty which is insecure arguments.'
-        ' Please, to get a correct and secure tacit knowledge provides'
-        ' the TacitKnowledge implementation with the correct arguments.',
+        'The configs param is empty which is insecure argument. Please,'
+        ' to get a correct and secure tacit knowledge, provide the'
+        ' TacitKnowledge implementation with the correct configs argument.',
       );
     }
 
     _knowledgeGenerator = Mnemonic(theme: configs['theme']!);
     String knowledge = _knowledgeGenerator.toMnemonic(
-      formosaParam: params['formosaParam']!.value,
+      formosaParam: param.value,
     );
 
     return knowledge;
@@ -144,13 +99,13 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
 final class FractalTacitKnowledge implements TacitKnowledge {
   Fractal _knowledgeGenerator;
   @override
-  Map<String, dynamic> configs;
+  late Map<String, dynamic> configs;
   @override
-  Map<String, FractalTacitKnowledgeParam> params;
+  late TacitKnowledgeParam param;
 
   FractalTacitKnowledge(
     this.configs,
-    this.params,
+    this.param,
   ) : _knowledgeGenerator = Fractal(
           fractalSet: configs['fractalSet']!,
           colorScheme: configs['colorScheme']!,
@@ -160,17 +115,25 @@ final class FractalTacitKnowledge implements TacitKnowledge {
   ///
   /// Returns the image that represents the actual tacit knowledge of the
   /// [FractalTacitKnowledge] tacit knowledge. Throws on [Exception]
-  /// if the [TacitKnowledge.configs] or [TacitKnowledge.params] or both
+  /// if the [TacitKnowledge.configs] or [TacitKnowledge.param] or both
   /// are empty because this will generate an insecure [TacitKnowledge].
   @override
   List<dynamic> get knowledge {
-    if (configs.isEmpty || params.isEmpty) {
+    if (configs.isEmpty) {
       throw Exception(
-        'The configs or params or both are empty which is insecure arguments.'
-        ' Please, to get a correct and secure tacit knowledge provides'
-        ' the TacitKnowledge implementation with the correct arguments.',
+        'The configs param is empty which is insecure argument. Please,'
+        ' to get a correct and secure tacit knowledge, provide the'
+        ' TacitKnowledge implementation with the correct configs argument.',
       );
     }
+
+    // NOTE: Inverting the order of digits to minimize Benford's law bias.
+    String realParam = '2.${int.parse(param.value.reversed.join())}';
+    String imaginaryParam = '0.${int.parse(param.value.reversed.join())}';
+    Map<String, double> params = {
+      'realParam': double.parse(realParam),
+      'imaginaryParam': double.parse(imaginaryParam)
+    };
 
     _knowledgeGenerator.imagePixels = _knowledgeGenerator.update(
       fractalSet: configs['fractalSet'],
@@ -179,8 +142,8 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       xMax: configs['xMax'],
       yMin: configs['yMin'],
       yMax: configs['yMax'],
-      realParam: params['realParam']?.value,
-      imaginaryParam: params['imaginaryParam']?.value,
+      realParam: params['realParam'],
+      imaginaryParam: params['imaginaryParam'],
       width: configs['width'],
       height: configs['height'],
       escapeRadius: configs['escapeRadius'],
@@ -196,13 +159,13 @@ final class FractalTacitKnowledge implements TacitKnowledge {
 // final class HashVizTacitKnowledge implements TacitKnowledge {
 //   HashViz _knowledgeGenerator;
 //   @override
-//   Map<String, dynamic> configs;
+//   late Map<String, dynamic> configs;
 //   @override
-//   Map<String, HashVizTacitKnowledgeParam> params;
+//   late TacitKnowledgeParam param;
 //
 //   HashVizTacitKnowledge(
 //     this.configs,
-//     this.params,
+//     this.param,
 //   )   : _knowledgeGenerator = HashViz(
 //           fractalSet: configs['fractalSet']!,
 //           colorScheme: configs['colorScheme']!,

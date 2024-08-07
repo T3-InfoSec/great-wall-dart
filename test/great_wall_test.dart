@@ -9,7 +9,7 @@ void main() {
     late GreatWall greatwallProtocol;
 
     late Map<String, dynamic> fractalExpectedConfigs;
-    late Map<String, FractalTacitKnowledgeParam> fractalExpectedParams;
+    late TacitKnowledgeParam fractalExpectedParam;
     late FractalTacitKnowledge fractalTacitKnowledge;
 
     setUp(() {

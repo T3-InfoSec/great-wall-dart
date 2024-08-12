@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:hashlib/hashlib.dart';
 
-import 'tacit_knowledge.dart';
+import 'tacit_knowledge_impl.dart';
 import 'utils.dart';
 
 /// The core implementation of the [GreatWall] protocol.

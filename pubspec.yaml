@@ -2,6 +2,7 @@ name: great_wall
 description: A protocol for providing Kerckhoffian, 0-trust and deviceless coercion-resistance in self-custody.
 version: 0.1.0-dev
 homepage: https://t3infosecurity.com
+publish_to: none
 
 environment:
   sdk: ^3.4.0
@@ -14,5 +15,5 @@ dependencies:
   hashlib: ^1.16.0
   t3_formosa:
     git:
-      url: https://github.com/T3-InfoSec/great-wall-dart.git
-      ref: formosa_integration
+      url: https://github.com/T3-InfoSec/t3-formosa-dart.git
+      ref: initial_commit

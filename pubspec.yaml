@@ -14,5 +14,5 @@ dependencies:
   hashlib: ^1.16.0
   t3_formosa:
     git:
-      url: https://github.com/T3-InfoSec/t3-formosa-dart.git
+      url: https://github.com/T3-InfoSec/great-wall-dart.git
       ref: formosa_integration

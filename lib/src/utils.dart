@@ -2,7 +2,7 @@
 // Copyright (c) 2024, ...
 
 /// A path representation of a traversed nodes in a tree.
-class DerivationPath<N extends int> extends Iterable<int> {
+class DerivationPath<N extends int> extends Iterable<N> {
   final List<N> _nodesList;
 
   DerivationPath({

@@ -68,7 +68,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
   FormosaTacitKnowledge(
     this.configs,
     this.param,
-  ) : _knowledgeGenerator = Formosa(theme: Theme.bip39);
+  ) : _knowledgeGenerator = Formosa(formosaTheme: FormosaTheme.bip39);
 
   /// Returns a mnemonic string.
   ///
@@ -86,7 +86,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
       );
     }
 
-    _knowledgeGenerator = Formosa(theme: configs['theme']!);
+    _knowledgeGenerator = Formosa(formosaTheme: configs['formosaTheme']!);
     String knowledge = _knowledgeGenerator.toFormosa(param.value);
 
     return knowledge;

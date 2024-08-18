@@ -48,7 +48,7 @@ void main() {
       // late HashVizTacitKnowledge hashvizTacitKnowledge;
 
       setUp(() {
-        formosaExpectedConfigs = {'theme': Theme.bip39};
+        formosaExpectedConfigs = {'formosaTheme': FormosaTheme.bip39};
         formosaExpectedParam = TacitKnowledgeParam(
           'formosaParam',
           Uint8List(128),

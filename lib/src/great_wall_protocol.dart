@@ -32,7 +32,7 @@ class GreatWall {
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
   final TacitKnowledge _tacitKnowledge = FormosaTacitKnowledge(
-    {'theme': Theme.bip39},
+    {'formosaTheme': FormosaTheme.bip39},
     TacitKnowledgeParam(
       'formosaParam',
       Uint8List(128),
@@ -206,7 +206,7 @@ class GreatWall {
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
 
     derivationTacitKnowledge = FormosaTacitKnowledge(
-      {'theme': Theme.bip39},
+      {'formosaTheme': FormosaTheme.bip39},
       TacitKnowledgeParam(
         'formosaParam',
         Uint8List(128),

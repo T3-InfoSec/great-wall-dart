@@ -146,7 +146,7 @@ class GreatWall {
   /// process will be aborted with a message indicating that.
   ///
   /// We provide the requirement of manual finishing to add a support for
-  /// finishing without satisfying protocol requirements.
+  /// finishing without satisfying optional protocol requirements.
   ///
   /// The finishing requirements are that the protocol is correctly started
   /// and initialized and the required steps of tacit derivation are filled.
@@ -279,12 +279,14 @@ class GreatWall {
         case FormosaTacitKnowledge():
           List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
             for (final arityIdx in _shuffledArityIndexes)
-              tacitKnowledge
-                ..param = TacitKnowledgeParam(
+              FormosaTacitKnowledge(
+                tacitKnowledge.configs,
+                TacitKnowledgeParam(
                   'formosaParam',
                   _currentHash,
                   Uint8List.fromList([arityIdx]),
-                )
+                ),
+              )
           ];
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFormosaPalettes;
@@ -292,12 +294,14 @@ class GreatWall {
         // case FractalTacitKnowledge():
         //   List<FractalTacitKnowledge> shuffledFractalPalettes = [
         //     for (final arityIdx in _shuffledArityIndexes)
-        //       tacitKnowledge
-        //         ..param = TacitKnowledgeParam(
+        //       FractalTacitKnowledge(
+        //         tacitKnowledge.configs,
+        //         TacitKnowledgeParam(
         //           'fractalParam',
         //           _currentHash,
         //           Uint8List.fromList([arityIdx]),
         //         ),
+        //       )
         //   ];
         //   _savedDerivedPathKnowledge[_derivationPath.copy()] =
         //       shuffledFractalPalettes;

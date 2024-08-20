@@ -278,12 +278,14 @@ class GreatWall {
         case FormosaTacitKnowledge():
           List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
             for (final arityIdx in _shuffledArityIndexes)
-              tacitKnowledge
-                ..param = TacitKnowledgeParam(
+              FormosaTacitKnowledge(
+                tacitKnowledge.configs,
+                TacitKnowledgeParam(
                   'formosaParam',
                   _currentHash,
                   Uint8List.fromList([arityIdx]),
-                )
+                ),
+              )
           ];
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFormosaPalettes;
@@ -291,12 +293,14 @@ class GreatWall {
         case FractalTacitKnowledge():
           List<FractalTacitKnowledge> shuffledFractalPalettes = [
             for (final arityIdx in _shuffledArityIndexes)
-              tacitKnowledge
-                ..param = TacitKnowledgeParam(
+              FractalTacitKnowledge(
+                tacitKnowledge.configs,
+                TacitKnowledgeParam(
                   'fractalParam',
                   _currentHash,
                   Uint8List.fromList([arityIdx]),
                 ),
+              )
           ];
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFractalPalettes;

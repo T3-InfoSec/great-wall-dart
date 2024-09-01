@@ -31,17 +31,19 @@ class GreatWall {
   late List<int> _shuffledArityIndexes;
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
-  final TacitKnowledge _tacitKnowledge = FormosaTacitKnowledge(
-    {'formosaTheme': FormosaTheme.bip39},
-    TacitKnowledgeParam(
-      'formosaParam',
-      Uint8List(128),
-      Uint8List.fromList([]),
-    ),
-  );
+  final TacitKnowledge _tacitKnowledge;
+  // = FormosaTacitKnowledge(
+  //   {'formosaTheme': FormosaTheme.bip39},
+  //   TacitKnowledgeParam(
+  //     'formosaParam',
+  //     Uint8List(128),
+  //     Uint8List.fromList([]),
+  //   ),
+  // );
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
+  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge =
+      {};
 
   // Protocol control fields
   bool _isFinished = false;
@@ -68,7 +70,10 @@ class GreatWall {
     required int treeArity,
     required int treeDepth,
     required int timeLockPuzzleParam,
-  })  : _treeArity = treeArity.abs(),
+    required Map<String, dynamic> tacitKnowledgeConfigs,
+  })  : _tacitKnowledge = TacitKnowledgeFactory.buildTacitKnowledgeFromType(
+            'formosa', tacitKnowledgeConfigs),
+        _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs() {
     initialDerivation();
@@ -175,15 +180,15 @@ class GreatWall {
         //     chosenKnowledgeList.add(chosenKnowledge);
         //     tempPath.add(node);
         //   }
-        // case HashVizTacitKnowledge():
-        //   DerivationPath tempPath = DerivationPath();
-        //   List<TacitKnowledge> chosenKnowledgeList = [];
-        //   for (int node in _derivationPath) {
-        //     TacitKnowledge chosenKnowledge =
-        //         _savedDerivedPathKnowledge[tempPath]![node];
-        //     chosenKnowledgeList.add(chosenKnowledge);
-        //     tempPath.add(node);
-        //   }
+        case HashVizTacitKnowledge(): // TODO: Review
+          DerivationPath tempPath = DerivationPath();
+          List<TacitKnowledge> chosenKnowledgeList = [];
+          for (int node in _derivationPath) {
+            TacitKnowledge chosenKnowledge =
+                _savedDerivedPathKnowledge[tempPath]![node];
+            chosenKnowledgeList.add(chosenKnowledge);
+            tempPath.add(node);
+          }
       }
 
       print('Key = $_currentHash');
@@ -272,7 +277,8 @@ class GreatWall {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
-      _shuffledCurrentLevelKnowledgePalettes = _savedDerivedPathKnowledge[_derivationPath]!;
+      _shuffledCurrentLevelKnowledgePalettes =
+          _savedDerivedPathKnowledge[_derivationPath]!;
     } else {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {
@@ -291,6 +297,21 @@ class GreatWall {
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFormosaPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledFormosaPalettes;
+        case HashVizTacitKnowledge():
+          List<HashVizTacitKnowledge> shuffledHashVizPalettes = [
+            for (final arityIdx in _shuffledArityIndexes)
+              HashVizTacitKnowledge(
+                tacitKnowledge.configs,
+                TacitKnowledgeParam(
+                  'hashvizParam',
+                  _currentHash,
+                  Uint8List.fromList([arityIdx]),
+                ),
+              )
+          ];
+          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+              shuffledHashVizPalettes;
+          _shuffledCurrentLevelKnowledgePalettes = shuffledHashVizPalettes;
         // case FractalTacitKnowledge():
         //   List<FractalTacitKnowledge> shuffledFractalPalettes = [
         //     for (final arityIdx in _shuffledArityIndexes)

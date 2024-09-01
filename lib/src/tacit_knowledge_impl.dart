@@ -3,7 +3,9 @@
 
 import 'dart:typed_data';
 
+import 'package:blockies/blockies.dart';
 import 'package:hashlib/hashlib.dart';
+import 'package:hashviz/hashviz.dart';
 import 'package:t3_formosa/formosa.dart';
 // import 'package:fractal/fractal.dart';
 // import 'package:hashviz/hashviz.dart';
@@ -68,7 +70,9 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
   FormosaTacitKnowledge(
     this.configs,
     this.param,
-  ) : _knowledgeGenerator = Formosa(formosaTheme: FormosaTheme.bip39);
+  ) : _knowledgeGenerator = Formosa(
+          formosaTheme: configs['formosaTheme'] ?? FormosaTheme.bip39,
+        );
 
   /// Returns a mnemonic string.
   ///
@@ -152,28 +156,71 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
 //   }
 // }
 
-// TODO: Implement Hashviz tacit knowledge.
-/// Class for generating hashviz (consider using an existing library)
-// final class HashVizTacitKnowledge implements TacitKnowledge {
-//   HashViz _knowledgeGenerator;
-//   @override
-//   late Map<String, dynamic> configs;
-//   @override
-//   late TacitKnowledgeParam param;
-//
-//   HashVizTacitKnowledge(
-//     this.configs,
-//     this.param,
-//   )   : _knowledgeGenerator = HashViz(
-//           fractalSet: configs['fractalSet']!,
-//           colorScheme: configs['colorScheme']!,
-//         );
-//
-//   /// Returns a 3D visualization image of the hash.
-//   ///
-//   /// Returns image that represents the actual tacit knowledge of the
-//   /// [HashVizTacitKnowledge] tacit knowledge.
-//   @override
-//   List<dynamic> get knowledge {
-//   }
-// }
+/// Class for generating hashviz
+final class HashVizTacitKnowledge implements TacitKnowledge {
+  Hashviz _knowledgeGenerator;
+  @override
+  late Map<String, dynamic> configs;
+  @override
+  late TacitKnowledgeParam param;
+
+  HashVizTacitKnowledge(
+    this.configs,
+    this.param,
+  ) : _knowledgeGenerator = Hashviz(
+          size: configs['size'] ?? 8,
+        );
+
+  /// Returns a 3D visualization image of the hash.
+  ///
+  /// Returns image that represents the actual tacit knowledge of the
+  /// [HashVizTacitKnowledge] tacit knowledge. Throws on [Exception]
+  /// if the [TacitKnowledge.configs] or [TacitKnowledge.param] or both
+  /// are empty because this will generate an insecure [TacitKnowledge].
+  @override
+  Blockies get knowledge {
+    if (configs.isEmpty) {
+      throw Exception(
+        'The configs param is empty which is insecure argument. Please,'
+        ' to get a correct and secure tacit knowledge, provide the'
+        ' TacitKnowledge implementation with the correct configs argument.',
+      );
+    }
+
+    _knowledgeGenerator = Hashviz(size: configs['size']!);
+    Blockies knowledge =
+        _knowledgeGenerator.generatePattern(param.value.toString());
+
+    return knowledge;
+  }
+}
+
+class TacitKnowledgeFactory {
+  static TacitKnowledge buildTacitKnowledgeFromType(
+      String type, Map<String, dynamic> configs) {
+    switch (type.toLowerCase()) {
+      case 'formosa':
+        return FormosaTacitKnowledge(
+          configs,
+          TacitKnowledgeParam(
+            'formosaParam',
+            Uint8List(128),
+            Uint8List.fromList([]),
+          ),
+        );
+
+      case 'hashviz':
+        return HashVizTacitKnowledge(
+          configs,
+          TacitKnowledgeParam(
+            'hashvizParam',
+            Uint8List(64),
+            Uint8List.fromList([]),
+          ),
+        );
+
+      default:
+        throw ArgumentError('Unsupported tacit knowledge type: $type');
+    }
+  }
+}

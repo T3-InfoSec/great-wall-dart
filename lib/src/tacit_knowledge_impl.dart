@@ -197,9 +197,9 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
 
 class TacitKnowledgeFactory {
   static TacitKnowledge buildTacitKnowledgeFromType(
-      String type, Map<String, dynamic> configs) {
-    switch (type.toLowerCase()) {
-      case 'formosa':
+      TacitKnowledgeTypes type, Map<String, dynamic> configs) {
+    switch (type) {
+      case TacitKnowledgeTypes.formosa:
         return FormosaTacitKnowledge(
           configs,
           TacitKnowledgeParam(
@@ -209,7 +209,7 @@ class TacitKnowledgeFactory {
           ),
         );
 
-      case 'hashviz':
+      case TacitKnowledgeTypes.hashviz:
         return HashVizTacitKnowledge(
           configs,
           TacitKnowledgeParam(
@@ -223,4 +223,13 @@ class TacitKnowledgeFactory {
         throw ArgumentError('Unsupported tacit knowledge type: $type');
     }
   }
+}
+
+enum TacitKnowledgeTypes {
+  formosa('formosa'),
+  hashviz('hashviz');
+
+  final String value;
+
+  const TacitKnowledgeTypes(this.value);
 }

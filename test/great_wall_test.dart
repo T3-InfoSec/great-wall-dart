@@ -18,6 +18,7 @@ void main() {
         treeArity: 3,
         treeDepth: 5,
         timeLockPuzzleParam: 10,
+        tacitKnowledgeType: TacitKnowledgeTypes.formosa,
         tacitKnowledgeConfigs: {'formosaTheme': FormosaTheme.bip39},
       );
     });

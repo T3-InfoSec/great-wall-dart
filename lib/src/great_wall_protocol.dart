@@ -63,10 +63,10 @@ class GreatWall {
     required int treeArity,
     required int treeDepth,
     required int timeLockPuzzleParam,
-    required String tacitKnowledge,
+    required TacitKnowledgeTypes tacitKnowledgeType,
     required Map<String, dynamic> tacitKnowledgeConfigs,
   })  : _tacitKnowledge = TacitKnowledgeFactory.buildTacitKnowledgeFromType(
-            tacitKnowledge, tacitKnowledgeConfigs),
+            tacitKnowledgeType, tacitKnowledgeConfigs),
         _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs() {

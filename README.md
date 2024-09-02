@@ -37,6 +37,7 @@ void main() {
     treeArity: 3,
     treeDepth: 1,
     timeLockPuzzleParam: 10,
+    tacitKnowledgeConfigs: {'formosaTheme': FormosaTheme.bip39},
   );
 
   // Start the protocol derivation process.

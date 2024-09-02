@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:great_wall/src/great_wall_protocol.dart';
 import 'package:great_wall/src/tacit_knowledge_impl.dart';
+import 'package:t3_formosa/formosa.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -17,6 +18,7 @@ void main() {
         treeArity: 3,
         treeDepth: 5,
         timeLockPuzzleParam: 10,
+        tacitKnowledgeConfigs: {'formosaTheme': FormosaTheme.bip39},
       );
     });
 

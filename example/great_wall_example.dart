@@ -1,10 +1,12 @@
 import 'package:great_wall/great_wall.dart';
+import 'package:t3_formosa/formosa.dart';
 
 void main() {
   GreatWall greatwallProtocol = GreatWall(
     treeArity: 3,
     treeDepth: 5,
     timeLockPuzzleParam: 10,
+    tacitKnowledgeConfigs: {'formosaTheme': FormosaTheme.bip39},
   );
 
   // Call the following if you need to explicitly re-initializing the protocol

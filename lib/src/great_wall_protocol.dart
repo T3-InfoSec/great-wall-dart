@@ -4,6 +4,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:great_wall/src/tacit_knowledge_types.dart';
 import 'package:hashlib/hashlib.dart';
 import 'package:t3_formosa/formosa.dart';
 
@@ -59,6 +60,14 @@ class GreatWall {
   /// refers to the number of branches that will be used in the derivation
   /// process and [timeLockPuzzleParam] refers to the hardness measure in the
   /// hard memory hashing process; big number means it's harder.
+  /// The [tacitKnowledgeType] is used to determine the type of tacit knowledge
+  /// to be built. It is required to select the appropriate knowledge type from
+  /// the provided [tacitKnowledgeConfigs], which is a map containing configuration
+  /// details specific to the tacit knowledge type.
+  /// [tacitKnowledgeConfigs] is a map of [String] keys to [dynamic] values,
+  /// containing the configuration parameters specific to the chosen tacit
+  /// knowledge type. This map is passed to a factory to build the appropriate
+  /// tacit knowledge instance.
   GreatWall({
     required int treeArity,
     required int treeDepth,

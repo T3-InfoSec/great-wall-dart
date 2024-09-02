@@ -7,8 +7,9 @@ import 'package:blockies/blockies.dart';
 import 'package:hashlib/hashlib.dart';
 import 'package:hashviz/hashviz.dart';
 import 'package:t3_formosa/formosa.dart';
+
+import 'tacit_knowledge_types.dart';
 // import 'package:fractal/fractal.dart';
-// import 'package:hashviz/hashviz.dart';
 
 /// A sealed and abstract class for tacit knowledge param implementation
 class TacitKnowledgeParam {
@@ -223,13 +224,4 @@ class TacitKnowledgeFactory {
         throw ArgumentError('Unsupported tacit knowledge type: $type');
     }
   }
-}
-
-enum TacitKnowledgeTypes {
-  formosa('formosa'),
-  hashviz('hashviz');
-
-  final String value;
-
-  const TacitKnowledgeTypes(this.value);
 }

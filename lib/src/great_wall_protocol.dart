@@ -32,14 +32,7 @@ class GreatWall {
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
   final TacitKnowledge _tacitKnowledge;
-  // = FormosaTacitKnowledge(
-  //   {'formosaTheme': FormosaTheme.bip39},
-  //   TacitKnowledgeParam(
-  //     'formosaParam',
-  //     Uint8List(128),
-  //     Uint8List.fromList([]),
-  //   ),
-  // );
+
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
   final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge =
@@ -70,9 +63,10 @@ class GreatWall {
     required int treeArity,
     required int treeDepth,
     required int timeLockPuzzleParam,
+    required String tacitKnowledge,
     required Map<String, dynamic> tacitKnowledgeConfigs,
   })  : _tacitKnowledge = TacitKnowledgeFactory.buildTacitKnowledgeFromType(
-            'formosa', tacitKnowledgeConfigs),
+            tacitKnowledge, tacitKnowledgeConfigs),
         _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs() {

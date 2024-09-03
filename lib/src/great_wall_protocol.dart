@@ -183,7 +183,7 @@ class GreatWall {
         //     chosenKnowledgeList.add(chosenKnowledge);
         //     tempPath.add(node);
         //   }
-        case HashVizTacitKnowledge(): // TODO: Review
+        case HashVizTacitKnowledge():
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
           for (int node in _derivationPath) {
@@ -213,14 +213,7 @@ class GreatWall {
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
 
-    derivationTacitKnowledge = FormosaTacitKnowledge(
-      {'formosaTheme': FormosaTheme.bip39},
-      TacitKnowledgeParam(
-        'formosaParam',
-        Uint8List(128),
-        Uint8List.fromList([]),
-      ),
-    );
+    derivationTacitKnowledge = _tacitKnowledge;
     _derivationPath.clear();
     _savedDerivedStates.clear();
     _savedDerivedPathKnowledge.clear();

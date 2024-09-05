@@ -8,9 +8,9 @@ void main() {
   group('GreatWall()', () {
     late GreatWall greatwallProtocol;
 
-    late Map<String, dynamic> fractalExpectedConfigs;
-    late TacitKnowledgeParam fractalExpectedParam;
-    late FractalTacitKnowledge fractalTacitKnowledge;
+    // late Map<String, dynamic> fractalExpectedConfigs;
+    // late TacitKnowledgeParam fractalExpectedParam;
+    // late FractalTacitKnowledge fractalTacitKnowledge;
 
     setUp(() {
       greatwallProtocol = GreatWall(

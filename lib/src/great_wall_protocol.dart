@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:hashlib/hashlib.dart';
+import 'package:t3_formosa/formosa.dart';
 
 import 'tacit_knowledge_impl.dart';
 import 'utils.dart';
@@ -31,7 +32,7 @@ class GreatWall {
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
   final TacitKnowledge _tacitKnowledge = FormosaTacitKnowledge(
-    {'theme': 'BiP39'},
+    {'formosaTheme': FormosaTheme.bip39},
     TacitKnowledgeParam(
       'formosaParam',
       Uint8List(128),
@@ -164,16 +165,16 @@ class GreatWall {
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
-        case FractalTacitKnowledge():
-          DerivationPath tempPath = DerivationPath();
-          List<TacitKnowledge> chosenKnowledgeList = [];
-          for (int node in _derivationPath) {
-            List<TacitKnowledge> levelKnowledgeList =
-                _savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
-            chosenKnowledgeList.add(chosenKnowledge);
-            tempPath.add(node);
-          }
+        // case FractalTacitKnowledge():
+        //   DerivationPath tempPath = DerivationPath();
+        //   List<TacitKnowledge> chosenKnowledgeList = [];
+        //   for (int node in _derivationPath) {
+        //     List<TacitKnowledge> levelKnowledgeList =
+        //         _savedDerivedPathKnowledge[tempPath]!;
+        //     TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
+        //     chosenKnowledgeList.add(chosenKnowledge);
+        //     tempPath.add(node);
+        //   }
         // case HashVizTacitKnowledge():
         //   DerivationPath tempPath = DerivationPath();
         //   List<TacitKnowledge> chosenKnowledgeList = [];
@@ -205,7 +206,7 @@ class GreatWall {
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
 
     derivationTacitKnowledge = FormosaTacitKnowledge(
-      {'theme': 'BiP39'},
+      {'formosaTheme': FormosaTheme.bip39},
       TacitKnowledgeParam(
         'formosaParam',
         Uint8List(128),
@@ -290,21 +291,21 @@ class GreatWall {
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFormosaPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledFormosaPalettes;
-        case FractalTacitKnowledge():
-          List<FractalTacitKnowledge> shuffledFractalPalettes = [
-            for (final arityIdx in _shuffledArityIndexes)
-              FractalTacitKnowledge(
-                tacitKnowledge.configs,
-                TacitKnowledgeParam(
-                  'fractalParam',
-                  _currentHash,
-                  Uint8List.fromList([arityIdx]),
-                ),
-              )
-          ];
-          _savedDerivedPathKnowledge[_derivationPath.copy()] =
-              shuffledFractalPalettes;
-          _shuffledCurrentLevelKnowledgePalettes = shuffledFractalPalettes;
+        // case FractalTacitKnowledge():
+        //   List<FractalTacitKnowledge> shuffledFractalPalettes = [
+        //     for (final arityIdx in _shuffledArityIndexes)
+        //       FractalTacitKnowledge(
+        //         tacitKnowledge.configs,
+        //         TacitKnowledgeParam(
+        //           'fractalParam',
+        //           _currentHash,
+        //           Uint8List.fromList([arityIdx]),
+        //         ),
+        //       )
+        //   ];
+        //   _savedDerivedPathKnowledge[_derivationPath.copy()] =
+        //       shuffledFractalPalettes;
+        //   _shuffledCurrentLevelKnowledgePalettes = shuffledFractalPalettes;
         // case HashVizTacitKnowledge():
         //   List<FractalTacitKnowledge> shuffledFractalPalettes = [];
         //   shuffledPalettes = shuffledFractalPalettes;

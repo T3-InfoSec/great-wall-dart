@@ -3,7 +3,6 @@
 
 import 'dart:typed_data';
 
-import 'package:blockies/blockies.dart';
 import 'package:hashlib/hashlib.dart';
 import 'package:hashviz/hashviz.dart';
 import 'package:t3_formosa/formosa.dart';
@@ -169,7 +168,7 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
     this.configs,
     this.param,
   ) : _knowledgeGenerator = Hashviz(
-          size: configs['size'] ?? 8,
+          size: configs['size'] ?? 16, // TODO: Review default size
         );
 
   /// Returns a 3D visualization image of the hash.
@@ -179,7 +178,7 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
   /// if the [TacitKnowledge.configs] or [TacitKnowledge.param] or both
   /// are empty because this will generate an insecure [TacitKnowledge].
   @override
-  Blockies get knowledge {
+  List<int> get knowledge {
     if (configs.isEmpty) {
       throw Exception(
         'The configs param is empty which is insecure argument. Please,'
@@ -189,8 +188,8 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
     }
 
     _knowledgeGenerator = Hashviz(size: configs['size']!);
-    Blockies knowledge =
-        _knowledgeGenerator.generatePattern(param.value.toString());
+    List<int> knowledge =
+        _knowledgeGenerator.generatePatternData(param.value.toString());
 
     return knowledge;
   }

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:great_wall/src/tacit_knowledge_impl.dart';
+import 'package:great_wall/src/tacit_knowledge_types.dart';
 import 'package:t3_formosa/formosa.dart';
 import 'package:test/test.dart';
 
@@ -34,18 +35,17 @@ void main() {
   });
 
   group(
-    'TacitKnowledge()',
-    () {
+    'TacitKnowledge()', () {
       late Map<String, dynamic> formosaExpectedConfigs;
       late TacitKnowledgeParam formosaExpectedParam;
       // late Map<String, dynamic> fractalExpectedConfigs;
       // late TacitKnowledgeParam fractalExpectedParam;
-      // late Map<String, dynamic> hashvizExpectedConfigs;
-      // late TacitKnowledgeParam hashvizExpectedParam;
+      late Map<String, dynamic> hashvizExpectedConfigs;
+      late TacitKnowledgeParam hashvizExpectedParam;
 
       late FormosaTacitKnowledge formosaTacitKnowledge;
       // late FractalTacitKnowledge fractalTacitKnowledge;
-      // late HashVizTacitKnowledge hashvizTacitKnowledge;
+      late HashVizTacitKnowledge hashvizTacitKnowledge;
 
       setUp(() {
         formosaExpectedConfigs = {'formosaTheme': FormosaTheme.bip39};
@@ -71,6 +71,14 @@ void main() {
         //   Uint8List(128),
         //   Uint8List.fromList([0]),
         // );
+        hashvizExpectedConfigs = {
+          'size': 16,
+        };
+        hashvizExpectedParam = TacitKnowledgeParam(
+          'hashvizParam',
+          Uint8List(128),
+          Uint8List.fromList([1, 2, 3]),
+        );
 
         formosaTacitKnowledge = FormosaTacitKnowledge(
           formosaExpectedConfigs,
@@ -80,14 +88,20 @@ void main() {
         //   fractalExpectedConfigs,
         //   fractalExpectedParam,
         // );
+        hashvizTacitKnowledge = HashVizTacitKnowledge(
+          hashvizExpectedConfigs,
+          hashvizExpectedParam,
+        );
       });
 
-      test('could use constructors', () {
+      test('could use FormosaTacitKnowledge constructor', () {
         expect(formosaTacitKnowledge.configs, formosaExpectedConfigs);
         expect(formosaTacitKnowledge.param, formosaExpectedParam);
+      });
 
-        // expect(fractalTacitKnowledge.configs, fractalExpectedConfigs);
-        // expect(fractalTacitKnowledge.param, fractalExpectedParam);
+      test('could use HashVizTacitKnowledge constructor', () {
+        expect(hashvizTacitKnowledge.configs, hashvizExpectedConfigs);
+        expect(hashvizTacitKnowledge.param, hashvizExpectedParam);
       });
 
       test('could be able to return underline knowledge', () {
@@ -95,6 +109,23 @@ void main() {
         // knowledge.
         expect(formosaTacitKnowledge.knowledge, 'defense pizza almost');
         // expect(fractalTacitKnowledge.knowledge, [1, 2, 3]);
+        List<int> expectedImageData = [1, 0, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2, 1, 0, 1, 0, 1, 2, 0, 1, 0, 1, 2, 2, 1, 0, 1, 0, 2, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 2, 2, 1, 2, 1, 0, 1, 1, 0, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1, 0, 2, 1, 0, 0, 1, 2, 0, 1, 1, 1, 2, 2, 2, 1, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 1, 0, 1, 1, 0, 2, 2, 0, 1, 1, 0, 1, 0, 2, 2, 0, 0, 2, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 2, 1, 1, 2, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 2, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 2, 2, 1, 0, 0, 2, 2, 2, 2, 0, 0, 1, 2, 2, 1, 1, 1, 0, 0, 0, 1, 0, 2, 2, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 0, 1, 1, 0, 2, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 2, 0, 0, 2, 1, 0, 1, 1, 0, 0];
+        expect(hashvizTacitKnowledge.knowledge, expectedImageData);
+      });
+
+      test('buildTacitKnowledgeFromType() should return correct TacitKnowledge',
+          () {
+        final formosaTacit = TacitKnowledgeFactory.buildTacitKnowledgeFromType(
+          TacitKnowledgeTypes.formosa,
+          formosaExpectedConfigs,
+        );
+        final hashvizTacit = TacitKnowledgeFactory.buildTacitKnowledgeFromType(
+          TacitKnowledgeTypes.hashviz,
+          hashvizExpectedConfigs,
+        );
+
+        expect(formosaTacit, isA<FormosaTacitKnowledge>());
+        expect(hashvizTacit, isA<HashVizTacitKnowledge>());
       });
     },
     // skip: 'The implementation of knowledge generator still under development.',

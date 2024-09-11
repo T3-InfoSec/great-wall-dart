@@ -168,14 +168,14 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
     this.configs,
     this.param,
   ) : _knowledgeGenerator = Hashviz(
-          size: configs['size'] ?? 16, // TODO: Review default size
+          size: configs['size'] ?? 16,
         );
 
-  /// Returns a 3D visualization image of the hash.
+  /// Returns an image of the hash.
   ///
   /// Returns image that represents the actual tacit knowledge of the
-  /// [HashVizTacitKnowledge] tacit knowledge. Throws on [Exception]
-  /// if the [TacitKnowledge.configs] or [TacitKnowledge.param] or both
+  /// [HashVizTacitKnowledge] tacit knowledge using [t3-hashviz-dart] library.
+  ///  Throws on [Exception] if the [TacitKnowledge.configs] or [TacitKnowledge.param] or both
   /// are empty because this will generate an insecure [TacitKnowledge].
   @override
   List<int> get knowledge {
@@ -195,7 +195,29 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
   }
 }
 
+/// Factory class for creating instances of [TacitKnowledge].
+///
+/// This class provides a convenient way to instantiate different types
+/// of tacit knowledge based on the provided [TacitKnowledgeTypes] enum.
+/// It helps to centralize the creation logic and manage configurations
+/// required by each tacit knowledge implementation.
 class TacitKnowledgeFactory {
+  
+  /// Builds a [TacitKnowledge] instance based on the given [TacitKnowledgeTypes] type.
+  ///
+  /// This method constructs the appropriate subclass of [TacitKnowledge] based on
+  /// the provided [type] and [configs]. The method supports types such as:
+  /// - [TacitKnowledgeTypes.formosa]: Creates a [FormosaTacitKnowledge] instance.
+  /// - [TacitKnowledgeTypes.hashviz]: Creates a [HashVizTacitKnowledge] instance.
+  ///
+  /// Throws an [ArgumentError] if an unsupported tacit knowledge type is provided.
+  ///
+  /// - [type]: The type of tacit knowledge to create.
+  /// - [configs]: A map containing configuration options specific to the selected
+  ///   tacit knowledge type.
+  ///
+  /// Returns:
+  /// - An instance of [TacitKnowledge] corresponding to the provided [type].
   static TacitKnowledge buildTacitKnowledgeFromType(
       TacitKnowledgeTypes type, Map<String, dynamic> configs) {
     switch (type) {

@@ -136,7 +136,14 @@ class GreatWall {
   int get treeDepth => _treeDepth;
 
   /// Cancel the current running derivation process.
-  // TODO: Add documentation comments.
+  ///
+  /// This method stops the ongoing derivation process by setting [_isStarted]
+  /// to `false` and marking the process as canceled by setting [_isCanceled]
+  /// to `true`. If the derivation has not started, a message is printed
+  /// indicating that the process is not running, and the cancel flag remains
+  /// `false`.
+  ///
+  /// The cancel flag can later be checked using [isCanceled].
   void cancelDerivation() {
     if (isStarted) {
       _isStarted = false;
@@ -258,7 +265,11 @@ class GreatWall {
     }
   }
 
-  // TODO: Add documentation comments.
+  /// Starts the derivation process if initialized.
+  ///
+  /// If the derivation is initialized, triggers [_makeExplicitDerivation]
+  /// and sets [_isStarted] to `true`. Otherwise, logs a message and sets
+  /// [_isStarted] to `false`.
   void startDerivation() {
     if (isInitialized) {
       _makeExplicitDerivation();
@@ -269,7 +280,13 @@ class GreatWall {
     }
   }
 
-  // TODO: Add documentation comments.
+  /// Generates palettes of knowledge for the current derivation level.
+  ///
+  /// If the current path has saved palettes, it uses them. Otherwise:
+  ///   - Shuffles arity indexes.
+  ///   - Creates and saves shuffled palettes for each [TacitKnowledge] type
+  ///     (e.g., Formosa, HashViz).
+  /// Returns the shuffled palettes.
   List<TacitKnowledge> _generateLevelKnowledgePalettes() {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
@@ -332,7 +349,12 @@ class GreatWall {
     return _shuffledCurrentLevelKnowledgePalettes;
   }
 
-  // TODO: Add documentation comments.
+  /// Performs the explicit derivation process, updating seeds and hashes.
+  ///
+  /// - Logs each step of the derivation from Seed0 to Seed3.
+  /// - Updates [_currentHash] with new values after each step.
+  /// - Saves the final hash state and increments the current level.
+  /// - Generates level-specific knowledge palettes.
   void _makeExplicitDerivation() {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();

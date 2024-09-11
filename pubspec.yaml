@@ -20,5 +20,5 @@ dependencies:
   hashviz:
     git:
       url: https://github.com/T3-InfoSec/t3-hashviz-dart.git
-      ref: hashviz_blockies
+      ref: feature_asymmetric_images
   blockies: ^0.1.2

@@ -187,8 +187,9 @@ class GreatWall {
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
           for (int node in _derivationPath) {
-            TacitKnowledge chosenKnowledge =
-                _savedDerivedPathKnowledge[tempPath]![node];
+            List<TacitKnowledge> levelKnowledgeList =
+                _savedDerivedPathKnowledge[tempPath]!;
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }

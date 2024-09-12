@@ -169,6 +169,7 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
     this.param,
   ) : _knowledgeGenerator = Hashviz(
           size: configs['size'] ?? 16,
+          isSymmetric: configs['isSymmetric'] ?? true,
         );
 
   /// Returns an image of the hash.
@@ -187,7 +188,10 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
       );
     }
 
-    _knowledgeGenerator = Hashviz(size: configs['size']!);
+    _knowledgeGenerator = Hashviz(
+      size: configs['size'] ?? 16,
+      isSymmetric: configs['isSymmetric'] ?? true,
+    );
     List<int> knowledge =
         _knowledgeGenerator.generatePatternData(param.value.toString());
 
@@ -202,7 +206,6 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
 /// It helps to centralize the creation logic and manage configurations
 /// required by each tacit knowledge implementation.
 class TacitKnowledgeFactory {
-  
   /// Builds a [TacitKnowledge] instance based on the given [TacitKnowledgeTypes] type.
   ///
   /// This method constructs the appropriate subclass of [TacitKnowledge] based on

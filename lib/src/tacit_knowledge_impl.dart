@@ -170,6 +170,7 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
   ) : _knowledgeGenerator = Hashviz(
           size: configs['size'] ?? 16,
           isSymmetric: configs['isSymmetric'] ?? true,
+          numColors: configs['numColors'] ?? 3,
         );
 
   /// Returns an image of the hash.
@@ -191,6 +192,7 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
     _knowledgeGenerator = Hashviz(
       size: configs['size'] ?? 16,
       isSymmetric: configs['isSymmetric'] ?? true,
+      numColors: configs['numColors'] ?? 3,
     );
     List<int> knowledge =
         _knowledgeGenerator.generatePatternData(param.value.toString());

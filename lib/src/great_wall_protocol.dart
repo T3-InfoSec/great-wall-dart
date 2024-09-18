@@ -41,8 +41,7 @@ class GreatWall {
   );
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge =
-      {};
+  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
 
   // Protocol control fields
   bool _isFinished = false;
@@ -273,8 +272,7 @@ class GreatWall {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
-      _shuffledCurrentLevelKnowledgePalettes =
-          _savedDerivedPathKnowledge[_derivationPath]!;
+      _shuffledCurrentLevelKnowledgePalettes = _savedDerivedPathKnowledge[_derivationPath]!;
     } else {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {

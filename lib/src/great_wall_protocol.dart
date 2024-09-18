@@ -41,7 +41,8 @@ class GreatWall {
   );
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
+  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge =
+      {};
 
   // Protocol control fields
   bool _isFinished = false;
@@ -272,7 +273,8 @@ class GreatWall {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
-      _shuffledCurrentLevelKnowledgePalettes = _savedDerivedPathKnowledge[_derivationPath]!;
+      _shuffledCurrentLevelKnowledgePalettes =
+          _savedDerivedPathKnowledge[_derivationPath]!;
     } else {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {
@@ -362,18 +364,23 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a long time.
+  /// In order to be able to test in a development environment,
+  /// the long hashing is skipped if it has a value of 0.
+  /// This is an unsafe option and is not recommended for use in production.
   void _updateWithLongHashing() {
-    var argon2Algorithm = Argon2(
-      version: Argon2Version.v13,
-      type: Argon2Type.argon2i,
-      hashLength: 128,
-      iterations: timeLockPuzzleParam,
-      parallelism: 1,
-      memorySizeKB: 1024 * 1024,
-      salt: argon2Salt,
-    );
+    if (timeLockPuzzleParam > 0) {
+      var argon2Algorithm = Argon2(
+        version: Argon2Version.v13,
+        type: Argon2Type.argon2i,
+        hashLength: 128,
+        iterations: timeLockPuzzleParam,
+        parallelism: 1,
+        memorySizeKB: 1024 * 1024,
+        salt: argon2Salt,
+      );
 
-    _currentHash = argon2Algorithm.convert(_currentHash).bytes;
+      _currentHash = argon2Algorithm.convert(_currentHash).bytes;
+    }
   }
 
   /// Update the state with its hash taking presumably a quick time.

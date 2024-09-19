@@ -1,6 +1,7 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -257,15 +258,28 @@ class GreatWall {
   }
 
   // TODO: Add documentation comments.
-  void startDerivation() {
-    if (isInitialized) {
-      _makeExplicitDerivation();
-      _isStarted = true;
-    } else {
-      print('Derivation does not initialized yet.');
-      _isStarted = false;
-    }
+void startDerivation() {
+  if (isInitialized) {
+    _isStarted = true;
+
+    final receivePort = ReceivePort();
+    Isolate.spawn(_isolateEntry, receivePort.sendPort);
+
+    receivePort.first.then((sendPort) {
+      sendPort.send([this]); 
+
+      receivePort.listen((message) {
+        if (message == "done") {
+          print("Derivation completed!");
+          receivePort.close(); // Cierra el ReceivePort
+        }
+      });
+    });
+  } else {
+    print('Derivation does not initialized yet.');
+    _isStarted = false;
   }
+}
 
   // TODO: Add documentation comments.
   List<TacitKnowledge> _generateLevelKnowledgePalettes() {
@@ -313,6 +327,19 @@ class GreatWall {
     }
     return _shuffledCurrentLevelKnowledgePalettes;
   }
+
+void _isolateEntry(SendPort sendPort) async {
+  final ReceivePort receivePort = ReceivePort();
+  sendPort.send(receivePort.sendPort);
+
+  await for (var message in receivePort) {
+    if (message is List) {
+      var greatWall = message[0];
+      greatWall._makeExplicitDerivation();
+      sendPort.send("done");
+    }
+  }
+}
 
   // TODO: Add documentation comments.
   void _makeExplicitDerivation() {

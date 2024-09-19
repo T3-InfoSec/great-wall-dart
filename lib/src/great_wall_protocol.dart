@@ -1,7 +1,6 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
-import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -226,7 +225,7 @@ class GreatWall {
   /// If [choiceNumber] is 0, the protocol will go back one level to its
   /// previous state, if it is greater 0 the protocol will update the state
   /// depending on this choice.
-  void makeTacitDerivation({required int choiceNumber}) {
+  Future<void> makeTacitDerivation({required int choiceNumber}) async {
     if (isStarted &&
         !isCanceled &&
         _savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
@@ -240,7 +239,7 @@ class GreatWall {
           _currentHash = Uint8List.fromList(
             _currentHash + [_shuffledArityIndexes[choiceNumber - 1]],
           );
-          _updateWithQuickHashing();
+          await _updateWithQuickHashing();
           _savedDerivedStates[_derivationPath.copy()] = _currentHash;
         }
 
@@ -258,23 +257,10 @@ class GreatWall {
   }
 
   // TODO: Add documentation comments.
-void startDerivation() {
+  Future<void> startDerivation() async {
   if (isInitialized) {
+    await _makeExplicitDerivation();
     _isStarted = true;
-
-    final receivePort = ReceivePort();
-    Isolate.spawn(_isolateEntry, receivePort.sendPort);
-
-    receivePort.first.then((sendPort) {
-      sendPort.send([this]); 
-
-      receivePort.listen((message) {
-        if (message == "done") {
-          print("Derivation completed!");
-          receivePort.close(); // Cierra el ReceivePort
-        }
-      });
-    });
   } else {
     print('Derivation does not initialized yet.');
     _isStarted = false;
@@ -328,46 +314,33 @@ void startDerivation() {
     return _shuffledCurrentLevelKnowledgePalettes;
   }
 
-void _isolateEntry(SendPort sendPort) async {
-  final ReceivePort receivePort = ReceivePort();
-  sendPort.send(receivePort.sendPort);
-
-  await for (var message in receivePort) {
-    if (message is List) {
-      var greatWall = message[0];
-      greatWall._makeExplicitDerivation();
-      sendPort.send("done");
-    }
-  }
-}
-
   // TODO: Add documentation comments.
-  void _makeExplicitDerivation() {
-    print('Deriving Seed0 -> Seed1');
-    _updateWithQuickHashing();
-    _seed1 = _currentHash;
-    if (_isCanceled) {
-      print('Derivation canceled');
-      return;
-    }
-    print('Deriving Seed1 -> Seed2');
-    _updateWithLongHashing();
-    _seed2 = _currentHash;
-    _currentHash = Uint8List.fromList(_seed0 + _currentHash);
-    if (_isCanceled) {
-      print('Derivation canceled');
-      return;
-    }
-    print('Deriving Seed2 -> Seed3');
-    _updateWithQuickHashing();
-    _seed3 = _currentHash;
-
-    _savedDerivedStates[_derivationPath.copy()] = _currentHash;
-
-    // Prepare the level 1 of tacit derivation process.
-    _currentLevel += 1;
-    _generateLevelKnowledgePalettes();
+  Future<void> _makeExplicitDerivation() async {
+  print('Deriving Seed0 -> Seed1');
+  await _updateWithQuickHashing();
+  _seed1 = _currentHash;
+  if (_isCanceled) {
+    print('Derivation canceled');
+    return;
   }
+  print('Deriving Seed1 -> Seed2');
+  await _updateWithLongHashing();
+  _seed2 = _currentHash;
+  _currentHash = Uint8List.fromList(_seed0 + _currentHash);
+  if (_isCanceled) {
+    print('Derivation canceled');
+    return;
+  }
+  print('Deriving Seed2 -> Seed3');
+  await _updateWithQuickHashing();
+  _seed3 = _currentHash;
+
+  _savedDerivedStates[_derivationPath.copy()] = _currentHash;
+
+  // Prepare the level 1 of tacit derivation process.
+  _currentLevel += 1;
+  _generateLevelKnowledgePalettes();
+}
 
   /// Go back one level to the previous derivation state.
   void _returnDerivationOneLevelBack() {
@@ -388,8 +361,14 @@ void _isolateEntry(SendPort sendPort) async {
     _shuffledArityIndexes.shuffle(Random.secure());
   }
 
+  Future<Uint8List> _computeHash(Argon2 argon2Algorithm, List<int> data) {
+    return Future(() {
+      return argon2Algorithm.convert(data).bytes;
+    });
+  }
+
   /// Update the state with its hash taking presumably a long time.
-  void _updateWithLongHashing() {
+  Future<void> _updateWithLongHashing() async {
     var argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -400,11 +379,11 @@ void _isolateEntry(SendPort sendPort) async {
       salt: argon2Salt,
     );
 
-    _currentHash = argon2Algorithm.convert(_currentHash).bytes;
+    _currentHash = await _computeHash(argon2Algorithm, _currentHash);
   }
 
   /// Update the state with its hash taking presumably a quick time.
-  void _updateWithQuickHashing() {
+  Future<void> _updateWithQuickHashing() async {
     var argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -415,6 +394,6 @@ void _isolateEntry(SendPort sendPort) async {
       salt: argon2Salt,
     );
 
-    _currentHash = argon2Algorithm.convert(_currentHash).bytes;
+    _currentHash = await _computeHash(argon2Algorithm, _currentHash);
   }
 }

@@ -2,11 +2,11 @@ import 'package:great_wall/great_wall.dart';
 import 'package:great_wall/src/tacit_knowledge_impl.dart';
 import 'package:t3_formosa/formosa.dart';
 
-void main() {
+Future<void> main() async {
   GreatWall greatwallProtocol = GreatWall(
     treeArity: 3,
     treeDepth: 5,
-    timeLockPuzzleParam: 10,
+    timeLockPuzzleParam: 1000,
     tacitKnowledgeType: TacitKnowledgeTypes.formosa,
     tacitKnowledgeConfigs: {'formosaTheme': FormosaTheme.bip39},
   );
@@ -19,7 +19,12 @@ void main() {
       'viboniboasmofiasbrchsprorirerugugucavehistmiinciwibowifltuor';
 
   // Start the protocol derivation process.
-  greatwallProtocol.startDerivation();
+  await greatwallProtocol.startDerivation(
+        onProgress: (int progress) {
+      // Logs each time progress changes
+      print("Derivation in progress [$progress %]");
+    },
+  );
 
   print(greatwallProtocol.currentLevelKnowledgePalettes);
   greatwallProtocol.makeTacitDerivation(

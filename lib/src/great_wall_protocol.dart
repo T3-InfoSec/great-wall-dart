@@ -270,9 +270,9 @@ class GreatWall {
   /// If the derivation is initialized, triggers [_makeExplicitDerivation]
   /// and sets [_isStarted] to `true`. Otherwise, logs a message and sets
   /// [_isStarted] to `false`.
-  void startDerivation() {
+  Future<void> startDerivation({required Function(int) onProgress}) async {
     if (isInitialized) {
-      _makeExplicitDerivation();
+      await _makeExplicitDerivation(onProgress: onProgress);
       _isStarted = true;
     } else {
       print('Derivation does not initialized yet.');
@@ -355,7 +355,7 @@ class GreatWall {
   /// - Updates [_currentHash] with new values after each step.
   /// - Saves the final hash state and increments the current level.
   /// - Generates level-specific knowledge palettes.
-  void _makeExplicitDerivation() {
+  Future<void> _makeExplicitDerivation({required Function(int) onProgress}) async {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();
     _seed1 = _currentHash;
@@ -364,7 +364,7 @@ class GreatWall {
       return;
     }
     print('Deriving Seed1 -> Seed2');
-    _updateWithLongHashing();
+    await _updateWithLongHashing(onProgress: onProgress);
     _seed2 = _currentHash;
     _currentHash = Uint8List.fromList(_seed0 + _currentHash);
     if (_isCanceled) {
@@ -402,18 +402,35 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a long time.
-  void _updateWithLongHashing() {
-    var argon2Algorithm = Argon2(
-      version: Argon2Version.v13,
-      type: Argon2Type.argon2i,
-      hashLength: 128,
-      iterations: timeLockPuzzleParam,
-      parallelism: 1,
-      memorySizeKB: 1024 * 1024,
-      salt: argon2Salt,
-    );
+  Future<void> _updateWithLongHashing({required Function(int) onProgress}) async {
+    var argon2 = Argon2(
+        version: Argon2Version.v13,
+        type: Argon2Type.argon2i,
+        hashLength: 128,
+        iterations: 1,
+        parallelism: 1,
+        memorySizeKB: 1024 * 1024,
+        salt: argon2Salt,
+      );
 
-    _currentHash = argon2Algorithm.convert(_currentHash).bytes;
+    int totalSteps = timeLockPuzzleParam;
+    int reportFrequency = (totalSteps ~/ 100).clamp(1, totalSteps); 
+
+
+    for (int step = 0; step < totalSteps; step++) {
+      if (_isCanceled) {
+        print('Derivation canceled during long hashing.');
+        return;
+      }
+      
+      _currentHash = argon2.convert(_currentHash).bytes;
+
+      if (step % reportFrequency == 0) {
+        int progress = ((step + 1) * 100) ~/ totalSteps;
+        onProgress(progress);
+        await Future.delayed(Duration(milliseconds: 1));  // Pauses the cycle to allow other events to process.
+      }
+    }
   }
 
   /// Update the state with its hash taking presumably a quick time.

@@ -4,6 +4,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:great_wall/src/tacit_knowledge_types.dart';
 import 'package:hashlib/hashlib.dart';
 import 'package:t3_formosa/formosa.dart';
 
@@ -31,17 +32,12 @@ class GreatWall {
   late List<int> _shuffledArityIndexes;
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
-  final TacitKnowledge _tacitKnowledge = FormosaTacitKnowledge(
-    {'formosaTheme': FormosaTheme.bip39},
-    TacitKnowledgeParam(
-      'formosaParam',
-      Uint8List(128),
-      Uint8List.fromList([]),
-    ),
-  );
+  final TacitKnowledge _tacitKnowledge;
+
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge = {};
+  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge =
+      {};
 
   // Protocol control fields
   bool _isFinished = false;
@@ -64,11 +60,23 @@ class GreatWall {
   /// refers to the number of branches that will be used in the derivation
   /// process and [timeLockPuzzleParam] refers to the hardness measure in the
   /// hard memory hashing process; big number means it's harder.
+  /// The [tacitKnowledgeType] is used to determine the type of tacit knowledge
+  /// to be built. It is required to select the appropriate knowledge type from
+  /// the provided [tacitKnowledgeConfigs], which is a map containing configuration
+  /// details specific to the tacit knowledge type.
+  /// [tacitKnowledgeConfigs] is a map of [String] keys to [dynamic] values,
+  /// containing the configuration parameters specific to the chosen tacit
+  /// knowledge type. This map is passed to a factory to build the appropriate
+  /// tacit knowledge instance.
   GreatWall({
     required int treeArity,
     required int treeDepth,
     required int timeLockPuzzleParam,
-  })  : _treeArity = treeArity.abs(),
+    required TacitKnowledgeTypes tacitKnowledgeType,
+    required Map<String, dynamic> tacitKnowledgeConfigs,
+  })  : _tacitKnowledge = TacitKnowledgeFactory.buildTacitKnowledgeFromType(
+            tacitKnowledgeType, tacitKnowledgeConfigs),
+        _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs() {
     initialDerivation();
@@ -128,7 +136,14 @@ class GreatWall {
   int get treeDepth => _treeDepth;
 
   /// Cancel the current running derivation process.
-  // TODO: Add documentation comments.
+  ///
+  /// This method stops the ongoing derivation process by setting [_isStarted]
+  /// to `false` and marking the process as canceled by setting [_isCanceled]
+  /// to `true`. If the derivation has not started, a message is printed
+  /// indicating that the process is not running, and the cancel flag remains
+  /// `false`.
+  ///
+  /// The cancel flag can later be checked using [isCanceled].
   void cancelDerivation() {
     if (isStarted) {
       _isStarted = false;
@@ -175,15 +190,16 @@ class GreatWall {
         //     chosenKnowledgeList.add(chosenKnowledge);
         //     tempPath.add(node);
         //   }
-        // case HashVizTacitKnowledge():
-        //   DerivationPath tempPath = DerivationPath();
-        //   List<TacitKnowledge> chosenKnowledgeList = [];
-        //   for (int node in _derivationPath) {
-        //     TacitKnowledge chosenKnowledge =
-        //         _savedDerivedPathKnowledge[tempPath]![node];
-        //     chosenKnowledgeList.add(chosenKnowledge);
-        //     tempPath.add(node);
-        //   }
+        case HashVizTacitKnowledge():
+          DerivationPath tempPath = DerivationPath();
+          List<TacitKnowledge> chosenKnowledgeList = [];
+          for (int node in _derivationPath) {
+            List<TacitKnowledge> levelKnowledgeList =
+                _savedDerivedPathKnowledge[tempPath]!;
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
+            chosenKnowledgeList.add(chosenKnowledge);
+            tempPath.add(node);
+          }
       }
 
       print('Key = $_currentHash');
@@ -205,14 +221,7 @@ class GreatWall {
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
 
-    derivationTacitKnowledge = FormosaTacitKnowledge(
-      {'formosaTheme': FormosaTheme.bip39},
-      TacitKnowledgeParam(
-        'formosaParam',
-        Uint8List(128),
-        Uint8List.fromList([]),
-      ),
-    );
+    derivationTacitKnowledge = _tacitKnowledge;
     _derivationPath.clear();
     _savedDerivedStates.clear();
     _savedDerivedPathKnowledge.clear();
@@ -256,7 +265,11 @@ class GreatWall {
     }
   }
 
-  // TODO: Add documentation comments.
+  /// Starts the derivation process if initialized.
+  ///
+  /// If the derivation is initialized, triggers [_makeExplicitDerivation]
+  /// and sets [_isStarted] to `true`. Otherwise, logs a message and sets
+  /// [_isStarted] to `false`.
   void startDerivation() {
     if (isInitialized) {
       _makeExplicitDerivation();
@@ -267,12 +280,19 @@ class GreatWall {
     }
   }
 
-  // TODO: Add documentation comments.
+  /// Generates palettes of knowledge for the current derivation level.
+  ///
+  /// If the current path has saved palettes, it uses them. Otherwise:
+  ///   - Shuffles arity indexes.
+  ///   - Creates and saves shuffled palettes for each [TacitKnowledge] type
+  ///     (e.g., Formosa, HashViz).
+  /// Returns the shuffled palettes.
   List<TacitKnowledge> _generateLevelKnowledgePalettes() {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
-      _shuffledCurrentLevelKnowledgePalettes = _savedDerivedPathKnowledge[_derivationPath]!;
+      _shuffledCurrentLevelKnowledgePalettes =
+          _savedDerivedPathKnowledge[_derivationPath]!;
     } else {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {
@@ -291,6 +311,21 @@ class GreatWall {
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFormosaPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledFormosaPalettes;
+        case HashVizTacitKnowledge():
+          List<HashVizTacitKnowledge> shuffledHashVizPalettes = [
+            for (final arityIdx in _shuffledArityIndexes)
+              HashVizTacitKnowledge(
+                tacitKnowledge.configs,
+                TacitKnowledgeParam(
+                  'hashvizParam',
+                  _currentHash,
+                  Uint8List.fromList([arityIdx]),
+                ),
+              )
+          ];
+          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+              shuffledHashVizPalettes;
+          _shuffledCurrentLevelKnowledgePalettes = shuffledHashVizPalettes;
         // case FractalTacitKnowledge():
         //   List<FractalTacitKnowledge> shuffledFractalPalettes = [
         //     for (final arityIdx in _shuffledArityIndexes)
@@ -314,7 +349,12 @@ class GreatWall {
     return _shuffledCurrentLevelKnowledgePalettes;
   }
 
-  // TODO: Add documentation comments.
+  /// Performs the explicit derivation process, updating seeds and hashes.
+  ///
+  /// - Logs each step of the derivation from Seed0 to Seed3.
+  /// - Updates [_currentHash] with new values after each step.
+  /// - Saves the final hash state and increments the current level.
+  /// - Generates level-specific knowledge palettes.
   void _makeExplicitDerivation() {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();

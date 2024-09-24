@@ -6,7 +6,7 @@ Future<void> main() async {
   GreatWall greatwallProtocol = GreatWall(
     treeArity: 3,
     treeDepth: 5,
-    timeLockPuzzleParam: 1000,
+    timeLockPuzzleParam: 10,
     tacitKnowledgeType: TacitKnowledgeTypes.formosa,
     tacitKnowledgeConfigs: {'formosaTheme': FormosaTheme.bip39},
   );

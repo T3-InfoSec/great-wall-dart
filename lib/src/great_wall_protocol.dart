@@ -406,7 +406,7 @@ class GreatWall {
     var argon2 = Argon2(
         version: Argon2Version.v13,
         type: Argon2Type.argon2i,
-        hashLength: 128,
+        hashLength: 128, // bytes
         iterations: 1,
         parallelism: 1,
         memorySizeKB: 1024 * 1024,
@@ -415,7 +415,6 @@ class GreatWall {
 
     int totalSteps = timeLockPuzzleParam;
     int reportFrequency = (totalSteps ~/ 100).clamp(1, totalSteps); 
-
 
     for (int step = 0; step < totalSteps; step++) {
       if (_isCanceled) {

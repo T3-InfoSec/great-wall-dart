@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:great_wall/src/great_wall_protocol.dart';
-import 'package:great_wall/src/tacit_knowledge_impl.dart';
-import 'package:great_wall/src/tacit_knowledge_types.dart';
+import 'package:great_wall/great_wall.dart';
 import 'package:t3_formosa/formosa.dart';
 import 'package:test/test.dart';
 
@@ -15,12 +13,18 @@ void main() {
     // late FractalTacitKnowledge fractalTacitKnowledge;
 
     setUp(() {
+      Map<String, dynamic> configs = {'formosaTheme': FormosaTheme.bip39};
+      TacitKnowledgeParam param = TacitKnowledgeParam(
+        name: 'Param',
+        initialState: Uint8List(128),
+        adjustmentValue: Uint8List.fromList([1, 2, 3]),
+      );
+
       greatwallProtocol = GreatWall(
         treeArity: 3,
         treeDepth: 5,
         timeLockPuzzleParam: 10,
-        tacitKnowledgeType: TacitKnowledgeTypes.formosa,
-        tacitKnowledgeConfigs: {'formosaTheme': FormosaTheme.bip39},
+        tacitKnowledge: FormosaTacitKnowledge(configs: configs, param: param),
       );
     });
 

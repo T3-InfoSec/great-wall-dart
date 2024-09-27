@@ -4,7 +4,7 @@
 import 'dart:typed_data';
 
 import 'package:hashlib/hashlib.dart';
-import 'package:hashviz/hashviz.dart';
+import 'package:t3_hashviz/hashviz.dart';
 import 'package:t3_formosa/formosa.dart';
 
 import 'tacit_knowledge_types.dart';

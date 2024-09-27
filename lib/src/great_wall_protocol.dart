@@ -4,9 +4,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:great_wall/src/tacit_knowledge_types.dart';
 import 'package:hashlib/hashlib.dart';
-import 'package:t3_formosa/formosa.dart';
 
 import 'tacit_knowledge_impl.dart';
 import 'utils.dart';
@@ -59,7 +57,8 @@ class GreatWall {
   /// [treeArity] refers to the number of artiy in each branch, [treeDepth]
   /// refers to the number of branches that will be used in the derivation
   /// process and [timeLockPuzzleParam] refers to the hardness measure in the
-  /// hard memory hashing process; big number means it's harder.
+  /// hard-memory hashing process; bigger number harder process.
+
   /// The [tacitKnowledgeType] is used to determine the type of tacit knowledge
   /// to be built. It is required to select the appropriate knowledge type from
   /// the provided [tacitKnowledgeConfigs], which is a map containing configuration
@@ -72,10 +71,8 @@ class GreatWall {
     required int treeArity,
     required int treeDepth,
     required int timeLockPuzzleParam,
-    required TacitKnowledgeTypes tacitKnowledgeType,
-    required Map<String, dynamic> tacitKnowledgeConfigs,
-  })  : _tacitKnowledge = TacitKnowledgeFactory.buildTacitKnowledgeFromType(
-            tacitKnowledgeType, tacitKnowledgeConfigs),
+    required TacitKnowledge tacitKnowledge,
+  })  : _tacitKnowledge = tacitKnowledge,
         _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs() {
@@ -300,11 +297,11 @@ class GreatWall {
           List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
             for (final arityIdx in _shuffledArityIndexes)
               FormosaTacitKnowledge(
-                tacitKnowledge.configs,
-                TacitKnowledgeParam(
-                  'formosaParam',
-                  _currentHash,
-                  Uint8List.fromList([arityIdx]),
+                configs: tacitKnowledge.configs,
+                param: TacitKnowledgeParam(
+                  name: 'formosaParam',
+                  initialState: _currentHash,
+                  adjustmentValue: Uint8List.fromList([arityIdx]),
                 ),
               )
           ];
@@ -315,11 +312,11 @@ class GreatWall {
           List<HashVizTacitKnowledge> shuffledHashVizPalettes = [
             for (final arityIdx in _shuffledArityIndexes)
               HashVizTacitKnowledge(
-                tacitKnowledge.configs,
-                TacitKnowledgeParam(
-                  'hashvizParam',
-                  _currentHash,
-                  Uint8List.fromList([arityIdx]),
+                configs: tacitKnowledge.configs,
+                param: TacitKnowledgeParam(
+                  name: 'hashvizParam',
+                  initialState: _currentHash,
+                  adjustmentValue: Uint8List.fromList([arityIdx]),
                 ),
               )
           ];

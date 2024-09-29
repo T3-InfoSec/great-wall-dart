@@ -16,8 +16,8 @@ dependencies:
   t3_formosa:
     git:
       url: https://github.com/T3-InfoSec/t3-formosa-dart.git
-      ref: initial_commit
+      ref: development
   t3_hashviz:
     git:
       url: https://github.com/T3-InfoSec/t3-hashviz-dart.git
-      ref: audit_merged_code
+      ref: development

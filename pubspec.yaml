@@ -20,4 +20,4 @@ dependencies:
   t3_hashviz:
     git:
       url: https://github.com/T3-InfoSec/t3-hashviz-dart.git
-      ref: development
+      ref: audit_merged_code

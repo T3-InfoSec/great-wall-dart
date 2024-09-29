@@ -121,6 +121,37 @@ void main() {
           1, 0, 0, // Current state of the derivation.
         ]);
       });
+
+      test('with not provided param return null', () {
+        formosaExpectedConfigs = {'formosaTheme': FormosaTheme.bip39};
+        formosaTacitKnowledge = FormosaTacitKnowledge(
+          configs: formosaExpectedConfigs,
+        );
+
+        // fractalExpectedConfigs = {
+        //   'fractalSet': 'burningship',
+        //   'colorScheme': 'gray',
+        //   'xMin': 0,
+        //   'xMax': 0,
+        //   'yMin': 0,
+        //   'yMax': 0,
+        //   'width': 2,
+        //   'height': 2,
+        //   'escapeRadius': 4,
+        //   'maxIteration': 100,
+        // };
+        // fractalTacitKnowledge = FractalTacitKnowledge(
+        //   configs: fractalExpectedConfigs,
+        // );
+
+        hashvizExpectedConfigs = {'hashvizSize': 16};
+        hashvizTacitKnowledge = HashVizTacitKnowledge(
+          configs: hashvizExpectedConfigs,
+        );
+
+        expect(formosaTacitKnowledge.knowledge, isNull);
+        expect(hashvizTacitKnowledge.knowledge, isNull);
+      });
     },
     // skip: 'The implementation of knowledge generator still under development.',
   );

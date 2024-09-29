@@ -14,17 +14,12 @@ void main() {
 
     setUp(() {
       Map<String, dynamic> configs = {'formosaTheme': FormosaTheme.bip39};
-      TacitKnowledgeParam param = TacitKnowledgeParam(
-        name: 'Param',
-        initialState: Uint8List(128),
-        adjustmentValue: Uint8List.fromList([1, 2, 3]),
-      );
 
       greatwallProtocol = GreatWall(
         treeArity: 3,
         treeDepth: 5,
         timeLockPuzzleParam: 10,
-        tacitKnowledge: FormosaTacitKnowledge(configs: configs, param: param),
+        tacitKnowledge: FormosaTacitKnowledge(configs: configs),
       );
     });
 

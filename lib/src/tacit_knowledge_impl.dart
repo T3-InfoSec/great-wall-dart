@@ -38,7 +38,7 @@ final class TacitKnowledgeParam {
       hashLength: 128,
       iterations: 3,
       parallelism: 1,
-      memorySizeKB: 1024 * 1024,
+      memorySizeKB: 10 * 1024,
       salt: argon2Salt,
     );
 

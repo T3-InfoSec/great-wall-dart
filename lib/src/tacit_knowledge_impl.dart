@@ -61,7 +61,7 @@ sealed class TacitKnowledge {
   Object? get knowledge;
 }
 
-/// A simple to use API for formosa tacit knowledge.
+/// A class that can be instantiated to create a formosa tacit knowledge.
 final class FormosaTacitKnowledge implements TacitKnowledge {
   late Formosa _knowledgeGenerator;
 
@@ -100,7 +100,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
   }
 }
 
-/// A simple to use API for fractal tacit knowledge.
+/// A class that can be instantiated to create a formosa tacit knowledge.
 // final class FractalTacitKnowledge implements TacitKnowledge {
 //   late Fractal _knowledgeGenerator;
 //
@@ -159,7 +159,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
 //   }
 // }
 
-/// A simple to use API for hashviz tacit knowledge.
+/// A class that can be instantiated to create a formosa tacit knowledge.
 final class HashVizTacitKnowledge implements TacitKnowledge {
   late Hashviz _knowledgeGenerator;
 

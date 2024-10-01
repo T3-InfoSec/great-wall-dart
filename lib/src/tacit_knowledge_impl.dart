@@ -7,8 +7,9 @@ import 'package:hashlib/hashlib.dart';
 import 'package:t3_formosa/formosa.dart';
 import 'package:t3_hashviz/hashviz.dart';
 
-/// A sealed and abstract class for tacit knowledge param implementation
-class TacitKnowledgeParam {
+/// A tacit knowledge param that can be passed for any tacit knowledge
+/// type as a parameter to tweak (in a tacit way) the tacit knowledge.
+final class TacitKnowledgeParam {
   static final Uint8List argon2Salt = Uint8List(32);
   static final int bytesCount = 4;
 

@@ -7,4 +7,4 @@
 library;
 
 export 'src/great_wall_protocol.dart';
-export 'src/tacit_knowledge_types.dart';
+export 'src/tacit_knowledge_impl.dart';

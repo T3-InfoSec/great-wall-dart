@@ -48,6 +48,9 @@ class GreatWall {
   final int _treeDepth;
   final int _timeLockPuzzleParam;
 
+  // Progress indicator callback
+  final Function(int) onProgress;
+
   /// Create and initialize a [GreatWall] protocol instance.
   ///
   /// The [treeArity], [treeDepth] and [timeLockPuzzleParam] must be provided,
@@ -60,11 +63,15 @@ class GreatWall {
   /// hard-memory hashing process; bigger number harder process. The
   /// [tacitKnowledge] is used to generate palettes of tacit knowledge to be
   /// used in the protocol hash derivation process.
+  /// Optionally, the [onProgress] callback can be provided to track the progress
+  /// of the derivation process. If no [onProgress] function is provided, a default
+  /// function that does nothing will be used.
   GreatWall({
     required int treeArity,
     required int treeDepth,
     required int timeLockPuzzleParam,
     required TacitKnowledge tacitKnowledge,
+    this.onProgress = _defaultOnProgress,
   })  : _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs(),
@@ -124,6 +131,9 @@ class GreatWall {
 
   /// Get the tree depth of the derivation process.
   int get treeDepth => _treeDepth;
+
+  // Default empty progress callback
+  static void _defaultOnProgress(int _) {}
 
   /// Cancel the current running derivation process.
   ///
@@ -259,7 +269,7 @@ class GreatWall {
   /// If the derivation is initialized, then the derivation process will be
   /// start. Otherwise, logs a message and sets start flag to `false`. The
   /// start flag can later be checked using [GreatWall.isStarted].
-  Future<void> startDerivation({required Function(int) onProgress}) async {
+  Future<void> startDerivation() async {
     if (isInitialized) {
       await _makeExplicitDerivation(onProgress: onProgress);
       _isStarted = true;

@@ -8,7 +8,10 @@ Future<void> main() async {
     treeDepth: 5,
     timeLockPuzzleParam: 10,
     tacitKnowledge: FormosaTacitKnowledge(configs: formosaConfigs),
-  );
+    onProgress: (int progress) {
+      print("Derivation in progress [$progress %]");
+    });
+
 
   Map<String, dynamic> hashvizConfigs = {'hashvizSize': 16};
   GreatWall greatwallProtocolWithHashViz = GreatWall(
@@ -27,13 +30,7 @@ Future<void> main() async {
       'viboniboasmofiasbrchsprorirerugugucavehistmiinciwibowifltuor';
 
   // Start the protocol derivation process.
-  await greatwallProtocolWithFormosa.startDerivation(
-        onProgress: (int progress) {
-      // Logs each time progress changes
-      print("Derivation in progress [$progress %]");
-    },
-  );
-
+  await greatwallProtocolWithFormosa.startDerivation();
 
   print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
   greatwallProtocolWithFormosa.makeTacitDerivation(

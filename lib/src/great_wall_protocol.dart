@@ -271,7 +271,7 @@ class GreatWall {
   /// start flag can later be checked using [GreatWall.isStarted].
   Future<void> startDerivation() async {
     if (isInitialized) {
-      await _makeExplicitDerivation(onProgress: onProgress);
+      await _makeExplicitDerivation();
       _isStarted = true;
     } else {
       print('Derivation does not initialized yet.');
@@ -353,7 +353,7 @@ class GreatWall {
   /// [GreatWall.currentHash] with new values after each step. Saves the
   /// final hash state and increments the current level. Generates
   /// level-specific knowledge palettes.
-  Future<void> _makeExplicitDerivation({required Function(int) onProgress}) async {
+  Future<void> _makeExplicitDerivation() async {
 
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();
@@ -363,7 +363,7 @@ class GreatWall {
       return;
     }
     print('Deriving Seed1 -> Seed2');
-    await _updateWithLongHashing(onProgress: onProgress);
+    await _updateWithLongHashing();
     _seed2 = _currentHash;
     _currentHash = Uint8List.fromList(_seed0 + _currentHash);
     if (_isCanceled) {
@@ -401,7 +401,7 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a long time.
-  Future<void> _updateWithLongHashing({required Function(int) onProgress}) async {
+  Future<void> _updateWithLongHashing() async {
     var argon2 = Argon2(
         version: Argon2Version.v13,
         type: Argon2Type.argon2i,

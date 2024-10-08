@@ -42,14 +42,13 @@ class GreatWall {
   bool _isCanceled = false;
   bool _isInitialized = false;
   bool _isStarted = false;
+  // Progress indicator callback
+  Function(int) onProgress;
 
   // Initializing parameters
   final int _treeArity;
   final int _treeDepth;
   final int _timeLockPuzzleParam;
-
-  // Progress indicator callback
-  final Function(int) onProgress;
 
   /// Create and initialize a [GreatWall] protocol instance.
   ///
@@ -132,7 +131,7 @@ class GreatWall {
   /// Get the tree depth of the derivation process.
   int get treeDepth => _treeDepth;
 
-  set onProgress(Function(int) callback) {
+  void setOnProgress(Function(int) callback) {
     onProgress = callback;
   }
 

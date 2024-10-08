@@ -132,6 +132,10 @@ class GreatWall {
   /// Get the tree depth of the derivation process.
   int get treeDepth => _treeDepth;
 
+  set onProgress(Function(int) callback) {
+    onProgress = callback;
+  }
+
   // Default empty progress callback
   static void _defaultOnProgress(int _) {}
 

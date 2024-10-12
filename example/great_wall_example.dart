@@ -1,20 +1,17 @@
 import 'package:great_wall/great_wall.dart';
 import 'package:t3_formosa/formosa.dart';
 
-void main() async {
+Future<void> main() async {
   Map<String, dynamic> formosaConfigs = {'formosaTheme': FormosaTheme.bip39};
   GreatWall greatwallProtocolWithFormosa = GreatWall(
     treeArity: 3,
     treeDepth: 5,
     timeLockPuzzleParam: 10,
     tacitKnowledge: FormosaTacitKnowledge(configs: formosaConfigs),
-    onStepProgress: (int progress) {
-      print("Current Step Progress [$progress %]");
-    },
-    onProtocolProgress: (int progress) {
-      print("Protocol Progress [$progress %]");
-    },
-  );
+    onProgress: (int progress) {
+      print("Derivation in progress [$progress %]");
+    });
+
 
   Map<String, dynamic> hashvizConfigs = {'hashvizSize': 16};
   GreatWall greatwallProtocolWithHashViz = GreatWall(
@@ -33,7 +30,7 @@ void main() async {
       'viboniboasmofiasbrchsprorirerugugucavehistmiinciwibowifltuor';
 
   // Start the protocol derivation process.
-  greatwallProtocolWithFormosa.startDerivation();
+  await greatwallProtocolWithFormosa.startDerivation();
 
   print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
   greatwallProtocolWithFormosa.makeTacitDerivation(

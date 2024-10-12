@@ -62,13 +62,6 @@ class GreatWall {
   /// hard-memory hashing process; bigger number harder process. The
   /// [tacitKnowledge] is used to generate palettes of tacit knowledge to be
   /// used in the protocol hash derivation process.
-  ///
-  /// Optionally, the [onStepProgress] and [onProtocolProgress] callbacks can
-  /// be provided to report the current step progress and protocol progress,
-  /// respectively. If they are not provided or one of them, then no report
-  /// for the progress will happen. Under the hood, they allow to the progress
-  /// reporting to run asynchronously, thus the progress can be tracked from
-  /// other thread.
   GreatWall({
     required int treeArity,
     required int treeDepth,
@@ -449,8 +442,6 @@ class GreatWall {
     _currentHash = argon2Algorithm.convert(_currentHash).bytes;
   }
 
-  /// Pauses execution flow to allow other events to process and update the
-  /// current derivation step progress.
   void _updateStepProgress({
     required int stepNumber,
     required int totalSteps,
@@ -465,8 +456,6 @@ class GreatWall {
     }
   }
 
-  /// Pauses execution flow to allow other events to process and update the
-  /// protocol progress.
   void _updateProtocolProgress({
     required int stepNumber,
     required int totalSteps,

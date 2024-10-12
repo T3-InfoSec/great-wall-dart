@@ -31,24 +31,24 @@ class GreatWall {
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
   final TacitKnowledge _tacitKnowledge;
-
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge =
-      {};
+  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedKnowledge = {};
 
   // Protocol control fields
   bool _isFinished = false;
   bool _isCanceled = false;
   bool _isInitialized = false;
   bool _isStarted = false;
-  // Progress indicator callback
-  Function(int) onProgress;
 
   // Initializing parameters
   final int _treeArity;
   final int _treeDepth;
   final int _timeLockPuzzleParam;
+
+  // Progress indicator callback
+  final Function(int)? _onStepProgress;
+  final Function(int)? _onProtocolProgress;
 
   /// Create and initialize a [GreatWall] protocol instance.
   ///
@@ -62,19 +62,19 @@ class GreatWall {
   /// hard-memory hashing process; bigger number harder process. The
   /// [tacitKnowledge] is used to generate palettes of tacit knowledge to be
   /// used in the protocol hash derivation process.
-  /// Optionally, the [onProgress] callback can be provided to track the progress
-  /// of the derivation process. If no [onProgress] function is provided, a default
-  /// function that does nothing will be used.
   GreatWall({
     required int treeArity,
     required int treeDepth,
     required int timeLockPuzzleParam,
     required TacitKnowledge tacitKnowledge,
-    this.onProgress = _defaultOnProgress,
+    void Function(int progress)? onStepProgress,
+    void Function(int progress)? onProtocolProgress,
   })  : _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs(),
-        _tacitKnowledge = tacitKnowledge {
+        _tacitKnowledge = tacitKnowledge,
+        _onStepProgress = onStepProgress,
+        _onProtocolProgress = onProtocolProgress {
     initialDerivation();
   }
 
@@ -96,10 +96,6 @@ class GreatWall {
   /// The tacit knowledge that will be used in the protocol hash derivation
   /// process.
   TacitKnowledge get derivationTacitKnowledge => _tacitKnowledge;
-
-  set derivationTacitKnowledge(TacitKnowledge tacitKnowledge) {
-    tacitKnowledge = tacitKnowledge;
-  }
 
   /// Check if the protocol derivation process canceled.
   bool get isCanceled => _isCanceled;
@@ -131,13 +127,6 @@ class GreatWall {
   /// Get the tree depth of the derivation process.
   int get treeDepth => _treeDepth;
 
-  void setOnProgress(Function(int) callback) {
-    onProgress = callback;
-  }
-
-  // Default empty progress callback
-  static void _defaultOnProgress(int _) {}
-
   /// Cancel the current running derivation process.
   ///
   /// This method stops the ongoing derivation process and marking the process
@@ -168,15 +157,15 @@ class GreatWall {
   /// and initialized and the required steps of tacit derivation are filled.
   void finishDerivation() {
     if (isStarted && isInitialized && _currentLevel == treeDepth + 1) {
-      TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
+      _updateProtocolProgress(stepNumber: 3, totalSteps: 4);
 
-      switch (tacitKnowledge) {
+      switch (_tacitKnowledge) {
         case FormosaTacitKnowledge():
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
           for (int node in _derivationPath) {
             List<TacitKnowledge> levelKnowledgeList =
-                _savedDerivedPathKnowledge[tempPath]!;
+                _savedDerivedKnowledge[tempPath]!;
             TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
@@ -196,7 +185,7 @@ class GreatWall {
           List<TacitKnowledge> chosenKnowledgeList = [];
           for (int node in _derivationPath) {
             List<TacitKnowledge> levelKnowledgeList =
-                _savedDerivedPathKnowledge[tempPath]!;
+                _savedDerivedKnowledge[tempPath]!;
             TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
@@ -205,6 +194,8 @@ class GreatWall {
 
       print('Key = $_currentHash');
       _isFinished = true;
+
+      _updateProtocolProgress(stepNumber: 4, totalSteps: 4);
     } else {
       print('Derivation does not started yet or not completed.');
       _isFinished = false;
@@ -222,12 +213,13 @@ class GreatWall {
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
 
-    derivationTacitKnowledge = _tacitKnowledge;
     _derivationPath.clear();
     _savedDerivedStates.clear();
-    _savedDerivedPathKnowledge.clear();
+    _savedDerivedKnowledge.clear();
 
     _isInitialized = true;
+
+    _updateProtocolProgress(stepNumber: 1, totalSteps: 4);
   }
 
   /// Drive the [GreatWall.currentHash] from the user choice [choiceNumber].
@@ -238,7 +230,7 @@ class GreatWall {
   void makeTacitDerivation({required int choiceNumber}) {
     if (isStarted &&
         !isCanceled &&
-        _savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
+        _savedDerivedKnowledge.containsKey(_derivationPath.copy())) {
       if (choiceNumber > 0) {
         _currentLevel += 1;
         _derivationPath.add(choiceNumber);
@@ -268,14 +260,15 @@ class GreatWall {
 
   /// Starts the derivation process if initialized.
   ///
-
   /// If the derivation is initialized, then the derivation process will be
   /// start. Otherwise, logs a message and sets start flag to `false`. The
   /// start flag can later be checked using [GreatWall.isStarted].
-  Future<void> startDerivation() async {
+  void startDerivation() {
     if (isInitialized) {
-      await _makeExplicitDerivation();
+      _makeExplicitDerivation();
       _isStarted = true;
+
+      _updateProtocolProgress(stepNumber: 2, totalSteps: 4);
     } else {
       print('Derivation does not initialized yet.');
       _isStarted = false;
@@ -290,9 +283,9 @@ class GreatWall {
   List<TacitKnowledge> _generateLevelKnowledgePalettes() {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
-    if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
+    if (_savedDerivedKnowledge.containsKey(_derivationPath.copy())) {
       _shuffledCurrentLevelKnowledgePalettes =
-          _savedDerivedPathKnowledge[_derivationPath]!;
+          _savedDerivedKnowledge[_derivationPath]!;
     } else {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {
@@ -308,7 +301,7 @@ class GreatWall {
                 ),
               )
           ];
-          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+          _savedDerivedKnowledge[_derivationPath.copy()] =
               shuffledFormosaPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledFormosaPalettes;
         case HashVizTacitKnowledge():
@@ -323,7 +316,7 @@ class GreatWall {
                 ),
               )
           ];
-          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+          _savedDerivedKnowledge[_derivationPath.copy()] =
               shuffledHashVizPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledHashVizPalettes;
         // case FractalTacitKnowledge():
@@ -356,25 +349,29 @@ class GreatWall {
   /// [GreatWall.currentHash] with new values after each step. Saves the
   /// final hash state and increments the current level. Generates
   /// level-specific knowledge palettes.
-  Future<void> _makeExplicitDerivation() async {
-
+  void _makeExplicitDerivation() {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();
+    _updateStepProgress(stepNumber: 1, totalSteps: 4);
     _seed1 = _currentHash;
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
+
     print('Deriving Seed1 -> Seed2');
-    await _updateWithLongHashing();
+    _updateWithLongHashing();
+    _updateStepProgress(stepNumber: 2, totalSteps: 4);
     _seed2 = _currentHash;
     _currentHash = Uint8List.fromList(_seed0 + _currentHash);
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
+
     print('Deriving Seed2 -> Seed3');
     _updateWithQuickHashing();
+    _updateStepProgress(stepNumber: 3, totalSteps: 4);
     _seed3 = _currentHash;
 
     _savedDerivedStates[_derivationPath.copy()] = _currentHash;
@@ -382,6 +379,7 @@ class GreatWall {
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;
     _generateLevelKnowledgePalettes();
+    _updateStepProgress(stepNumber: 4, totalSteps: 4);
   }
 
   /// Go back one level to the previous derivation state.
@@ -404,33 +402,28 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a long time.
-  Future<void> _updateWithLongHashing() async {
+  void _updateWithLongHashing() async {
     var argon2 = Argon2(
-        version: Argon2Version.v13,
-        type: Argon2Type.argon2i,
-        hashLength: 128, // bytes
-        iterations: 1,
-        parallelism: 1,
-        memorySizeKB: 1024 * 1024,
-        salt: argon2Salt,
-      );
+      version: Argon2Version.v13,
+      type: Argon2Type.argon2i,
+      hashLength: 128, // bytes
+      iterations: 1,
+      parallelism: 1,
+      memorySizeKB: 1024 * 1024,
+      salt: argon2Salt,
+    );
 
-    int totalSteps = timeLockPuzzleParam;
-    int reportFrequency = (totalSteps ~/ 100).clamp(1, totalSteps); 
-
-    for (int step = 0; step < totalSteps; step++) {
+    for (int step = 0; step < timeLockPuzzleParam; step++) {
       if (_isCanceled) {
         print('Derivation canceled during long hashing.');
         return;
       }
-      
-      _currentHash = argon2.convert(_currentHash).bytes;
 
-      if (step % reportFrequency == 0) {
-        int progress = ((step + 1) * 100) ~/ totalSteps;
-        onProgress(progress);
-        await Future.delayed(Duration(milliseconds: 1));  // Pauses the cycle to allow other events to process.
-      }
+      _currentHash = argon2.convert(_currentHash).bytes;
+      _updateStepProgress(
+        stepNumber: step + 1,
+        totalSteps: timeLockPuzzleParam,
+      );
     }
   }
 
@@ -447,5 +440,33 @@ class GreatWall {
     );
 
     _currentHash = argon2Algorithm.convert(_currentHash).bytes;
+  }
+
+  void _updateStepProgress({
+    required int stepNumber,
+    required int totalSteps,
+  }) async {
+    if (_onStepProgress != null) {
+      int progress = ((stepNumber) * 100) ~/ totalSteps;
+
+      Future.delayed(
+        Duration(milliseconds: 100),
+        _onStepProgress(progress),
+      );
+    }
+  }
+
+  void _updateProtocolProgress({
+    required int stepNumber,
+    required int totalSteps,
+  }) async {
+    if (_onProtocolProgress != null) {
+      int progress = ((stepNumber) * 100) ~/ totalSteps;
+
+      Future.delayed(
+        Duration(milliseconds: 100),
+        _onProtocolProgress(progress),
+      );
+    }
   }
 }

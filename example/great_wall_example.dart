@@ -1,7 +1,7 @@
 import 'package:great_wall/great_wall.dart';
 import 'package:t3_formosa/formosa.dart';
 
-void main() {
+void main() async {
   Map<String, dynamic> formosaConfigs = {'formosaTheme': FormosaTheme.bip39};
   GreatWall greatwallProtocolWithFormosa = GreatWall(
     treeArity: 3,

@@ -1,46 +1,61 @@
 import 'package:great_wall/great_wall.dart';
+import 'package:t3_formosa/formosa.dart';
 
 void main() {
-  GreatWall greatwallProtocol = GreatWall(
+  Map<String, dynamic> formosaConfigs = {'formosaTheme': FormosaTheme.bip39};
+  GreatWall greatwallProtocolWithFormosa = GreatWall(
     treeArity: 3,
     treeDepth: 5,
     timeLockPuzzleParam: 10,
+    tacitKnowledge: FormosaTacitKnowledge(configs: formosaConfigs),
+  );
+
+  Map<String, dynamic> hashvizConfigs = {'hashvizSize': 16};
+  GreatWall greatwallProtocolWithHashViz = GreatWall(
+    treeArity: 3,
+    treeDepth: 5,
+    timeLockPuzzleParam: 10,
+    tacitKnowledge: HashVizTacitKnowledge(configs: hashvizConfigs),
   );
 
   // Call the following if you need to explicitly re-initializing the protocol
   // derivation process.
-  greatwallProtocol.initialDerivation();
+  greatwallProtocolWithFormosa.initialDerivation();
+  greatwallProtocolWithHashViz.initialDerivation();
 
-  greatwallProtocol.seed0 =
+  greatwallProtocolWithFormosa.seed0 =
       'viboniboasmofiasbrchsprorirerugugucavehistmiinciwibowifltuor';
 
   // Start the protocol derivation process.
-  greatwallProtocol.startDerivation();
+  greatwallProtocolWithFormosa.startDerivation();
 
-  print(greatwallProtocol.currentLevelKnowledgePalettes);
-  greatwallProtocol.makeTacitDerivation(
+  print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
+  greatwallProtocolWithFormosa.makeTacitDerivation(
     choiceNumber: 1,
   ); // Choose the first palette
-  print(greatwallProtocol.currentLevelKnowledgePalettes);
-  greatwallProtocol.makeTacitDerivation(
+  print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
+  greatwallProtocolWithFormosa.makeTacitDerivation(
     choiceNumber: 2,
   ); // Choose the second palette
-  print(greatwallProtocol.currentLevelKnowledgePalettes);
-  greatwallProtocol.makeTacitDerivation(
+  print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
+  greatwallProtocolWithFormosa.makeTacitDerivation(
     choiceNumber: 3,
   ); // Choose the third palette
-  print(greatwallProtocol.currentLevelKnowledgePalettes);
-  greatwallProtocol.makeTacitDerivation(
+  print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
+  greatwallProtocolWithFormosa.makeTacitDerivation(
     choiceNumber: 1,
   ); // Choose the first palette
-  print(greatwallProtocol.currentLevelKnowledgePalettes);
-  greatwallProtocol.makeTacitDerivation(
+  print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
+  greatwallProtocolWithFormosa.makeTacitDerivation(
     choiceNumber: 2,
   ); // Choose the second palette
 
   // Finish the protocol derivation process.
-  greatwallProtocol.finishDerivation();
+  greatwallProtocolWithFormosa.finishDerivation();
 
   // Get the hash result of derivation.
-  print('The derivation key is: ${greatwallProtocol.derivationHashResult}');
+  print(
+    'The derivation key is: '
+    '${greatwallProtocolWithFormosa.derivationHashResult}',
+  );
 }

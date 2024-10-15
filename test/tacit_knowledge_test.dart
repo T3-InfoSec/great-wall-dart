@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:great_wall/src/tacit_knowledge_impl.dart';
+import 'package:great_wall/great_wall.dart';
 import 'package:t3_formosa/formosa.dart';
 import 'package:test/test.dart';
 
@@ -10,9 +10,9 @@ void main() {
 
     setUp(() {
       tacitKnowledgeParam = TacitKnowledgeParam(
-        'Param',
-        Uint8List(128),
-        Uint8List.fromList([1, 2, 3]),
+        name: 'Param',
+        initialState: Uint8List(128),
+        adjustmentValue: Uint8List.fromList([1, 2, 3]),
       );
     });
 
@@ -38,22 +38,28 @@ void main() {
     () {
       late Map<String, dynamic> formosaExpectedConfigs;
       late TacitKnowledgeParam formosaExpectedParam;
+      late FormosaTacitKnowledge formosaTacitKnowledge;
+
       // late Map<String, dynamic> fractalExpectedConfigs;
       // late TacitKnowledgeParam fractalExpectedParam;
-      // late Map<String, dynamic> hashvizExpectedConfigs;
-      // late TacitKnowledgeParam hashvizExpectedParam;
-
-      late FormosaTacitKnowledge formosaTacitKnowledge;
       // late FractalTacitKnowledge fractalTacitKnowledge;
-      // late HashVizTacitKnowledge hashvizTacitKnowledge;
+
+      late Map<String, dynamic> hashvizExpectedConfigs;
+      late TacitKnowledgeParam hashvizExpectedParam;
+      late HashVizTacitKnowledge hashvizTacitKnowledge;
 
       setUp(() {
         formosaExpectedConfigs = {'formosaTheme': FormosaTheme.bip39};
         formosaExpectedParam = TacitKnowledgeParam(
-          'formosaParam',
-          Uint8List(128),
-          Uint8List.fromList([0]),
+          name: 'formosaParam',
+          initialState: Uint8List(128),
+          adjustmentValue: Uint8List.fromList([0]),
         );
+        formosaTacitKnowledge = FormosaTacitKnowledge(
+          configs: formosaExpectedConfigs,
+          param: formosaExpectedParam,
+        );
+
         // fractalExpectedConfigs = {
         //   'fractalSet': 'burningship',
         //   'colorScheme': 'gray',
@@ -67,34 +73,84 @@ void main() {
         //   'maxIteration': 100,
         // };
         // fractalExpectedParam = TacitKnowledgeParam(
-        //   'realParam',
-        //   Uint8List(128),
-        //   Uint8List.fromList([0]),
+        //   name: 'realParam',
+        //   initialState: Uint8List(128),
+        //   adjustmentValue: Uint8List.fromList([0]),
+        // );
+        // fractalTacitKnowledge = FractalTacitKnowledge(
+        //   configs: fractalExpectedConfigs,
+        //   param: fractalExpectedParam,
         // );
 
-        formosaTacitKnowledge = FormosaTacitKnowledge(
-          formosaExpectedConfigs,
-          formosaExpectedParam,
+        hashvizExpectedConfigs = {'hashvizSize': 16};
+        hashvizExpectedParam = TacitKnowledgeParam(
+          name: 'hashvizParam',
+          initialState: Uint8List(128),
+          adjustmentValue: Uint8List.fromList([1, 2, 3]),
         );
-        // fractalTacitKnowledge = FractalTacitKnowledge(
-        //   fractalExpectedConfigs,
-        //   fractalExpectedParam,
-        // );
+        hashvizTacitKnowledge = HashVizTacitKnowledge(
+          configs: hashvizExpectedConfigs,
+          param: hashvizExpectedParam,
+        );
       });
 
-      test('could use constructors', () {
+      test('could use FormosaTacitKnowledge constructor', () {
         expect(formosaTacitKnowledge.configs, formosaExpectedConfigs);
         expect(formosaTacitKnowledge.param, formosaExpectedParam);
+      });
 
-        // expect(fractalTacitKnowledge.configs, fractalExpectedConfigs);
-        // expect(fractalTacitKnowledge.param, fractalExpectedParam);
+      test('could use HashVizTacitKnowledge constructor', () {
+        expect(hashvizTacitKnowledge.configs, hashvizExpectedConfigs);
+        expect(hashvizTacitKnowledge.param, hashvizExpectedParam);
       });
 
       test('could be able to return underline knowledge', () {
-        // TODO: Change the expected result to what actually produced by
-        // knowledge.
         expect(formosaTacitKnowledge.knowledge, 'defense pizza almost');
-        // expect(fractalTacitKnowledge.knowledge, [1, 2, 3]);
+        expect(hashvizTacitKnowledge.knowledge, [
+          1, 0, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2, 1, 0, 1, 0, 1, 2, 0, 1, 0, 1,
+          2, 2, 1, 0, 1, 0, 2, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0,
+          0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 2, 2, 1, 2,
+          1, 0, 1, 1, 0, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1, 0, 2, 1, 0, 0, 1, 2, 0,
+          1, 1, 1, 2, 2, 2, 1, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 1, 2, 2, 2, 1, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 0, 1, 0, 1, 1, 0, 2, 2, 0,
+          1, 1, 0, 1, 0, 2, 2, 0, 0, 2, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 2, 1,
+          1, 2, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 2, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1,
+          1, 0, 0, 1, 0, 0, 1, 1, 1, 2, 2, 1, 0, 0, 2, 2, 2, 2, 0, 0, 1, 2, 2,
+          1, 1, 1, 0, 0, 0, 1, 0, 2, 2, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2,
+          0, 1, 1, 0, 2, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 2, 0, 0, 2, 1, 0, 1,
+          1, 0, 0, // Current state of the derivation.
+        ]);
+      });
+
+      test('with not provided param return null', () {
+        formosaExpectedConfigs = {'formosaTheme': FormosaTheme.bip39};
+        formosaTacitKnowledge = FormosaTacitKnowledge(
+          configs: formosaExpectedConfigs,
+        );
+
+        // fractalExpectedConfigs = {
+        //   'fractalSet': 'burningship',
+        //   'colorScheme': 'gray',
+        //   'xMin': 0,
+        //   'xMax': 0,
+        //   'yMin': 0,
+        //   'yMax': 0,
+        //   'width': 2,
+        //   'height': 2,
+        //   'escapeRadius': 4,
+        //   'maxIteration': 100,
+        // };
+        // fractalTacitKnowledge = FractalTacitKnowledge(
+        //   configs: fractalExpectedConfigs,
+        // );
+
+        hashvizExpectedConfigs = {'hashvizSize': 16};
+        hashvizTacitKnowledge = HashVizTacitKnowledge(
+          configs: hashvizExpectedConfigs,
+        );
+
+        expect(formosaTacitKnowledge.knowledge, isNull);
+        expect(hashvizTacitKnowledge.knowledge, isNull);
       });
     },
     // skip: 'The implementation of knowledge generator still under development.',

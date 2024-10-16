@@ -42,8 +42,6 @@ class GreatWall {
   bool _isCanceled = false;
   bool _isInitialized = false;
   bool _isStarted = false;
-  // Progress indicator callback
-  Function(int) onProgress;
 
   // Initializing parameters
   final int _treeArity;
@@ -62,15 +60,11 @@ class GreatWall {
   /// hard-memory hashing process; bigger number harder process. The
   /// [tacitKnowledge] is used to generate palettes of tacit knowledge to be
   /// used in the protocol hash derivation process.
-  /// Optionally, the [onProgress] callback can be provided to track the progress
-  /// of the derivation process. If no [onProgress] function is provided, a default
-  /// function that does nothing will be used.
   GreatWall({
     required int treeArity,
     required int treeDepth,
     required int timeLockPuzzleParam,
     required TacitKnowledge tacitKnowledge,
-    this.onProgress = _defaultOnProgress,
   })  : _treeArity = treeArity.abs(),
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs(),
@@ -130,13 +124,6 @@ class GreatWall {
 
   /// Get the tree depth of the derivation process.
   int get treeDepth => _treeDepth;
-
-  void setOnProgress(Function(int) callback) {
-    onProgress = callback;
-  }
-
-  // Default empty progress callback
-  static void _defaultOnProgress(int _) {}
 
   /// Cancel the current running derivation process.
   ///
@@ -268,13 +255,12 @@ class GreatWall {
 
   /// Starts the derivation process if initialized.
   ///
-
   /// If the derivation is initialized, then the derivation process will be
   /// start. Otherwise, logs a message and sets start flag to `false`. The
   /// start flag can later be checked using [GreatWall.isStarted].
-  Future<void> startDerivation() async {
+  void startDerivation() {
     if (isInitialized) {
-      await _makeExplicitDerivation();
+      _makeExplicitDerivation();
       _isStarted = true;
     } else {
       print('Derivation does not initialized yet.');
@@ -356,8 +342,7 @@ class GreatWall {
   /// [GreatWall.currentHash] with new values after each step. Saves the
   /// final hash state and increments the current level. Generates
   /// level-specific knowledge palettes.
-  Future<void> _makeExplicitDerivation() async {
-
+  void _makeExplicitDerivation() {
     print('Deriving Seed0 -> Seed1');
     _updateWithQuickHashing();
     _seed1 = _currentHash;
@@ -366,7 +351,7 @@ class GreatWall {
       return;
     }
     print('Deriving Seed1 -> Seed2');
-    await _updateWithLongHashing();
+    _updateWithLongHashing();
     _seed2 = _currentHash;
     _currentHash = Uint8List.fromList(_seed0 + _currentHash);
     if (_isCanceled) {
@@ -408,7 +393,7 @@ class GreatWall {
   /// In order to be able to test in a development environment,
   /// the long hashing is skipped if it has a value of 0.
   /// This is an unsafe option and is not recommended for use in production.
-  Future<void> _updateWithLongHashing() async {
+  void _updateWithLongHashing() {
     if (timeLockPuzzleParam > 0) {
       var argon2Algorithm = Argon2(
         version: Argon2Version.v13,
@@ -420,22 +405,13 @@ class GreatWall {
         salt: argon2Salt,
       );
 
-      int totalSteps = timeLockPuzzleParam;
-      int reportFrequency = (totalSteps ~/ 100).clamp(1, totalSteps); 
-
-      for (int step = 0; step < totalSteps; step++) {
+      for (int step = 0; step < timeLockPuzzleParam; step++) {
         if (_isCanceled) {
           print('Derivation canceled during long hashing.');
           return;
         }
         
         _currentHash = argon2Algorithm.convert(_currentHash).bytes;
-
-        if (step % reportFrequency == 0) {
-          int progress = ((step + 1) * 100) ~/ totalSteps;
-          onProgress(progress);
-          await Future.delayed(Duration(milliseconds: 1));  // Pauses the cycle to allow other events to process.
-        }
       }
     }
   }

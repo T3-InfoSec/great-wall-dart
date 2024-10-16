@@ -44,15 +44,14 @@ void main() {
       );
     });
 
-    test('flow could be start', () async {
-      await greatwallProtocol.startDerivation();
+    test('flow could be start', () {
+      greatwallProtocol.startDerivation();
 
       expect(greatwallProtocol.isCanceled, isFalse);
       expect(greatwallProtocol.isStarted, isTrue);
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationHashResult, isNull);
-      print(greatwallProtocol.currentHash);
       expect(greatwallProtocol.currentHash, [
           194, 115, 189, 160, 109, 180, 101, 153, 231, 56, 199, 157, 63, 150, 3,
           58, 81, 14, 2, 240, 77, 242, 122, 67, 109, 186, 255, 242, 41, 122, 88, 
@@ -63,10 +62,10 @@ void main() {
           41, 128, 198, 242, 153, 128, 155, 226, 152, 75, 130, 244, 151, 62, 247, 
           145, 23, 152, 114, 179, 203, 236, 48, 249, 197, 23, 23, 153, 229, 182, 219, 233
         ]);
-    }, timeout: Timeout(Duration(seconds: 60)));
+    });
 
-    test('could get generated level knowledge palettes', () async {
-      await greatwallProtocol.startDerivation();
+    test('could get generated level knowledge palettes', () {
+      greatwallProtocol.startDerivation();
       List<TacitKnowledge> knowledgePalettes =
           greatwallProtocol.currentLevelKnowledgePalettes;
       expect(knowledgePalettes.length, greatwallProtocol.treeArity);
@@ -89,10 +88,10 @@ void main() {
           41, 128, 198, 242, 153, 128, 155, 226, 152, 75, 130, 244, 151, 62, 247, 
           145, 23, 152, 114, 179, 203, 236, 48, 249, 197, 23, 23, 153, 229, 182, 219, 233
         ]);
-    }, timeout: Timeout(Duration(seconds: 60)));
+    });
 
-    test('could using tacit knowledge derivation', () async {
-      await greatwallProtocol.startDerivation();
+    test('could using tacit knowledge derivation', () {
+      greatwallProtocol.startDerivation();
       greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
       expect(greatwallProtocol.currentHash, [
           194, 115, 189, 160, 109, 180, 101, 153, 231, 56, 199, 157, 63, 150, 3,
@@ -113,10 +112,10 @@ void main() {
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationHashResult, isNull);
-    }, timeout: Timeout(Duration(seconds: 60)));
+    });
 
-    test('flow could cancel the current running derivation', () async {
-      await greatwallProtocol.startDerivation();
+    test('flow could cancel the current running derivation', () {
+      greatwallProtocol.startDerivation();
       greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
       greatwallProtocol.cancelDerivation();
 
@@ -125,10 +124,10 @@ void main() {
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationHashResult, isNull);
-    }, timeout: Timeout(Duration(seconds: 60)));
+    });
 
-    test('flow could be finish derivation successfully', () async {
-      await greatwallProtocol.startDerivation();
+    test('flow could be finish derivation successfully', () {
+      greatwallProtocol.startDerivation();
       greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
       greatwallProtocol.makeTacitDerivation(choiceNumber: 1);
       greatwallProtocol.makeTacitDerivation(choiceNumber: 2);
@@ -142,10 +141,10 @@ void main() {
       expect(greatwallProtocol.isFinished, isTrue);
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationHashResult, isNotNull);
-    }, timeout: Timeout(Duration(seconds: 60)));
+    });
 
-    test('flow could handle finish incomplete derivation', () async {
-      await greatwallProtocol.startDerivation();
+    test('flow could handle finish incomplete derivation', () {
+      greatwallProtocol.startDerivation();
       greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
       greatwallProtocol.makeTacitDerivation(choiceNumber: 1);
       greatwallProtocol.makeTacitDerivation(choiceNumber: 2);
@@ -156,7 +155,7 @@ void main() {
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationHashResult, isNull);
-    }, timeout: Timeout(Duration(seconds: 60)));
+    });
 
     test('flow could handle finish did not started tacit derivation', () {
       greatwallProtocol.finishDerivation();
@@ -166,6 +165,6 @@ void main() {
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationHashResult, isNull);
-    }, timeout: Timeout(Duration(seconds: 60)));
+    });
   });
 }

@@ -404,32 +404,38 @@ class GreatWall {
   }
 
   /// Update the state with its hash taking presumably a long time.
+  /// 
+  /// In order to be able to test in a development environment,
+  /// the long hashing is skipped if it has a value of 0.
+  /// This is an unsafe option and is not recommended for use in production.
   Future<void> _updateWithLongHashing() async {
-    var argon2 = Argon2(
+    if (timeLockPuzzleParam > 0) {
+      var argon2Algorithm = Argon2(
         version: Argon2Version.v13,
         type: Argon2Type.argon2i,
-        hashLength: 128, // bytes
+        hashLength: 128,
         iterations: 1,
         parallelism: 1,
         memorySizeKB: 1024 * 1024,
         salt: argon2Salt,
       );
 
-    int totalSteps = timeLockPuzzleParam;
-    int reportFrequency = (totalSteps ~/ 100).clamp(1, totalSteps); 
+      int totalSteps = timeLockPuzzleParam;
+      int reportFrequency = (totalSteps ~/ 100).clamp(1, totalSteps); 
 
-    for (int step = 0; step < totalSteps; step++) {
-      if (_isCanceled) {
-        print('Derivation canceled during long hashing.');
-        return;
-      }
-      
-      _currentHash = argon2.convert(_currentHash).bytes;
+      for (int step = 0; step < totalSteps; step++) {
+        if (_isCanceled) {
+          print('Derivation canceled during long hashing.');
+          return;
+        }
+        
+        _currentHash = argon2Algorithm.convert(_currentHash).bytes;
 
-      if (step % reportFrequency == 0) {
-        int progress = ((step + 1) * 100) ~/ totalSteps;
-        onProgress(progress);
-        await Future.delayed(Duration(milliseconds: 1));  // Pauses the cycle to allow other events to process.
+        if (step % reportFrequency == 0) {
+          int progress = ((step + 1) * 100) ~/ totalSteps;
+          onProgress(progress);
+          await Future.delayed(Duration(milliseconds: 1));  // Pauses the cycle to allow other events to process.
+        }
       }
     }
   }

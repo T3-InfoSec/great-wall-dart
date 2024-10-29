@@ -20,5 +20,5 @@ dependencies:
   t3_hashviz:
     git:
       url: git@github.com:T3-InfoSec/t3-hashviz-dart.git
-      ref: feature_asymmetric_images
+      ref: development
 

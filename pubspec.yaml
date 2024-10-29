@@ -21,4 +21,3 @@ dependencies:
     git:
       url: git@github.com:T3-InfoSec/t3-hashviz-dart.git
       ref: development
-

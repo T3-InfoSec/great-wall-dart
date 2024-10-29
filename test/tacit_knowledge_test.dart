@@ -77,6 +77,22 @@ void main() {
         //   initialState: Uint8List(128),
         //   adjustmentValue: Uint8List.fromList([0]),
         // );
+        hashvizExpectedConfigs = {
+          'size': 16,
+          'isSymmetric': false,
+          'numColors': 3,
+        };
+        hashvizExpectedParam = TacitKnowledgeParam(
+          name: 'hashvizParam',
+          initialState:  Uint8List(128),
+          adjustmentValue:  Uint8List.fromList([1, 2, 3]),
+        );
+
+        formosaTacitKnowledge = FormosaTacitKnowledge(
+          configs:  formosaExpectedConfigs,
+          param:  formosaExpectedParam,
+        );
+
         // fractalTacitKnowledge = FractalTacitKnowledge(
         //   configs: fractalExpectedConfigs,
         //   param: fractalExpectedParam,
@@ -106,20 +122,22 @@ void main() {
 
       test('could be able to return underline knowledge', () {
         expect(formosaTacitKnowledge.knowledge, 'talk mutual diagram');
+print(hashvizTacitKnowledge.knowledge);
         expect(hashvizTacitKnowledge.knowledge, [
-          1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 2, 1, 1, 0,
-          1, 1, 0, 1, 1, 2, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 0,
-          0, 0, 1, 1, 1, 2, 2, 0, 1, 0, 0, 1, 0, 2, 2, 1, 1, 1, 1, 2, 2, 0, 2,
-          0, 1, 2, 2, 1, 0, 2, 0, 2, 2, 1, 2, 1, 2, 0, 1, 0, 2, 1, 1, 2, 0, 1,
-          0, 2, 1, 2, 0, 0, 1, 0, 2, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 1, 0,
-          0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 1, 0, 0, 1,
-          2, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 2, 1, 0, 0, 1, 2, 1, 0, 1, 0, 1, 0,
-          1, 0, 0, 0, 2, 0, 2, 2, 0, 2, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1,
-          1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1,
-          0, 0, 1, 1, 2, 0, 1, 0, 2, 2, 0, 1, 0, 2, 1, 1, 0, 1, 0, 0, 2, 1, 1,
-          1, 1, 1, 1, 1, 1, 2, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
-          0, 0, 2 // Current state of the derivation.
-        ]);
+          1, 0, 1, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 1, 0, 1, 0, 2, 1, 
+          2, 1, 2, 0, 1, 1, 0, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 2, 2, 
+          1, 2, 2, 1, 2, 2, 2, 1, 0, 0, 1, 2, 2, 2, 2, 0, 1, 1, 1, 
+          1, 0, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 0, 1, 2, 2, 1, 0, 2, 
+          1, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 1, 1, 2, 0, 2, 0, 2, 2, 
+          2, 0, 0, 1, 0, 2, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 2, 2, 
+          0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 2, 
+          2, 1, 0, 0, 1, 2, 2, 1, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 0, 
+          0, 2, 2, 2, 0, 2, 0, 2, 1, 1, 1, 0, 1, 2, 0, 2, 2, 0, 2, 
+          1, 0, 1, 1, 1, 2, 1, 2, 1, 0, 2, 1, 2, 2, 1, 2, 0, 1, 2, 
+          1, 2, 0, 1, 2, 2, 1, 0, 2, 2, 2, 2, 0, 1, 2, 2, 1, 0, 0, 
+          1, 2, 2, 0, 2, 0, 2, 2, 0, 2, 0, 2, 2, 1, 0, 1, 0, 1, 2, 
+          2, 2, 1, 1, 1, 1, 2, 2, 2, 1, 0, 1, 2, 0, 0, 1, 0, 1, 2, 
+          1, 1, 2, 1, 0, 1, 0, 0, 2]);
       });
 
       test('with not provided param return null', () {

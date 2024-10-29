@@ -193,7 +193,9 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
 
     _knowledgeGenerator = Hashviz(
         hashToVisualize: param!.value.toString(),
-        visualizationSize: configs['hashvizSize']!);
+        visualizationSize: configs['hashvizSize']!,
+        isSymmetric: configs['isSymmetric'] ?? true,
+        numColors: configs['numColors'] ?? 3);
     List<int> knowledge = _knowledgeGenerator.visualizationBlocks;
 
     return knowledge;

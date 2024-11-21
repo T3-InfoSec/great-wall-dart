@@ -91,6 +91,8 @@ class GreatWall {
   /// process.
   TacitKnowledge get derivationTacitKnowledge => _tacitKnowledge;
 
+  Map<DerivationPath, Uint8List> get savedDerivedStates => _savedDerivedStates;
+
   set derivationTacitKnowledge(TacitKnowledge tacitKnowledge) {
     tacitKnowledge = tacitKnowledge;
   }
@@ -240,10 +242,10 @@ class GreatWall {
           _savedDerivedStates[_derivationPath.copy()] = _currentHash;
         }
 
-        _generateLevelKnowledgePalettes();
+        generateLevelKnowledgePalettes(_currentHash);
       } else {
         _returnDerivationOneLevelBack();
-        _generateLevelKnowledgePalettes();
+        generateLevelKnowledgePalettes(_currentHash);
       }
     } else {
       print(
@@ -268,12 +270,31 @@ class GreatWall {
     }
   }
 
+  Uint8List getSelectedNode(Uint8List currentHash, int choiceNumber) {
+
+// var arityIdx = greatwallProtocolWithFormosa2.currentLevelKnowledgePalettes[choiceNumber! - 1].param!.adjustmentValue;
+
+Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
+
+    var argon2Algorithm = Argon2(
+      version: Argon2Version.v13,
+      type: Argon2Type.argon2i,
+      hashLength: 128,
+      iterations: 1,
+      parallelism: 1,
+      memorySizeKB: 10 * 1024,
+      salt: Uint8List(32),
+    );
+
+    return argon2Algorithm.convert(hash).bytes;
+  }
+
   /// Generates palettes of knowledge for the current derivation level.
   ///
   /// If the current path has saved palettes, it uses them. Otherwise,
   /// creates and saves a list with length [GreatWall.treeArity] of shuffled
   /// palettes of [TacitKnowledge]. Returns the list of shuffled palettes.
-  List<TacitKnowledge> _generateLevelKnowledgePalettes() {
+  List<TacitKnowledge> generateLevelKnowledgePalettes(Uint8List currentHash) {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
@@ -289,7 +310,7 @@ class GreatWall {
                 configs: tacitKnowledge.configs,
                 param: TacitKnowledgeParam(
                   name: 'formosaParam',
-                  initialState: _currentHash,
+                  initialState: currentHash,
                   adjustmentValue: Uint8List.fromList([arityIdx]),
                 ),
               )
@@ -304,7 +325,7 @@ class GreatWall {
                 configs: tacitKnowledge.configs,
                 param: TacitKnowledgeParam(
                   name: 'hashvizParam',
-                  initialState: _currentHash,
+                  initialState: currentHash,
                   adjustmentValue: Uint8List.fromList([arityIdx]),
                 ),
               )
@@ -366,7 +387,7 @@ class GreatWall {
 
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;
-    _generateLevelKnowledgePalettes();
+    generateLevelKnowledgePalettes(_currentHash);
   }
 
   /// Go back one level to the previous derivation state.

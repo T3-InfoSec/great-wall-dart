@@ -21,3 +21,7 @@ dependencies:
     git:
       url: git@github.com:T3-InfoSec/t3-hashviz-dart.git
       ref: development
+  fractal:
+    git:
+      url: git@github.com:T3-InfoSec/t3-fractals-dart.git
+      ref: init-import # TODO change to correct branch

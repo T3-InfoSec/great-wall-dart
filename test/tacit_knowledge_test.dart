@@ -40,9 +40,9 @@ void main() {
       late TacitKnowledgeParam formosaExpectedParam;
       late FormosaTacitKnowledge formosaTacitKnowledge;
 
-      // late Map<String, dynamic> fractalExpectedConfigs;
-      // late TacitKnowledgeParam fractalExpectedParam;
-      // late FractalTacitKnowledge fractalTacitKnowledge;
+      late Map<String, dynamic> fractalExpectedConfigs;
+      late TacitKnowledgeParam fractalExpectedParam;
+      late FractalTacitKnowledge fractalTacitKnowledge;
 
       late Map<String, dynamic> hashvizExpectedConfigs;
       late TacitKnowledgeParam hashvizExpectedParam;
@@ -60,23 +60,24 @@ void main() {
           param: formosaExpectedParam,
         );
 
-        // fractalExpectedConfigs = {
-        //   'fractalSet': 'burningship',
-        //   'colorScheme': 'gray',
-        //   'xMin': 0,
-        //   'xMax': 0,
-        //   'yMin': 0,
-        //   'yMax': 0,
-        //   'width': 2,
-        //   'height': 2,
-        //   'escapeRadius': 4,
-        //   'maxIteration': 100,
-        // };
-        // fractalExpectedParam = TacitKnowledgeParam(
-        //   name: 'realParam',
-        //   initialState: Uint8List(128),
-        //   adjustmentValue: Uint8List.fromList([0]),
-        // );
+        fractalExpectedConfigs = {
+          'fractalSet': 'burningship',
+          'colorScheme': 'gray',
+          'xMin': 0,
+          'xMax': 0,
+          'yMin': 0,
+          'yMax': 0,
+          'width': 2,
+          'height': 2,
+          'escapeRadius': 4,
+          'maxIteration': 100,
+        };
+        fractalExpectedParam = TacitKnowledgeParam(
+          name: 'realParam',
+          initialState: Uint8List(128),
+          adjustmentValue: Uint8List.fromList([0]),
+        );
+
         hashvizExpectedConfigs = {
           'size': 16,
           'isSymmetric': false,
@@ -93,10 +94,10 @@ void main() {
           param:  formosaExpectedParam,
         );
 
-        // fractalTacitKnowledge = FractalTacitKnowledge(
-        //   configs: fractalExpectedConfigs,
-        //   param: fractalExpectedParam,
-        // );
+        fractalTacitKnowledge = FractalTacitKnowledge(
+          configs: fractalExpectedConfigs,
+          param: fractalExpectedParam,
+        );
 
         hashvizExpectedConfigs = {'hashvizSize': 16};
         hashvizExpectedParam = TacitKnowledgeParam(
@@ -122,7 +123,6 @@ void main() {
 
       test('could be able to return underline knowledge', () {
         expect(formosaTacitKnowledge.knowledge, 'talk mutual diagram');
-print(hashvizTacitKnowledge.knowledge);
         expect(hashvizTacitKnowledge.knowledge, [
           1, 0, 1, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 1, 0, 1, 0, 2, 1, 
           2, 1, 2, 0, 1, 1, 0, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 2, 2, 
@@ -146,21 +146,21 @@ print(hashvizTacitKnowledge.knowledge);
           configs: formosaExpectedConfigs,
         );
 
-        // fractalExpectedConfigs = {
-        //   'fractalSet': 'burningship',
-        //   'colorScheme': 'gray',
-        //   'xMin': 0,
-        //   'xMax': 0,
-        //   'yMin': 0,
-        //   'yMax': 0,
-        //   'width': 2,
-        //   'height': 2,
-        //   'escapeRadius': 4,
-        //   'maxIteration': 100,
-        // };
-        // fractalTacitKnowledge = FractalTacitKnowledge(
-        //   configs: fractalExpectedConfigs,
-        // );
+        fractalExpectedConfigs = {
+          'fractalSet': 'burningship',
+          'colorScheme': 'gray',
+          'xMin': 0,
+          'xMax': 0,
+          'yMin': 0,
+          'yMax': 0,
+          'width': 2,
+          'height': 2,
+          'escapeRadius': 4,
+          'maxIteration': 100,
+        };
+        fractalTacitKnowledge = FractalTacitKnowledge(
+          configs: fractalExpectedConfigs,
+        );
 
         hashvizExpectedConfigs = {'hashvizSize': 16};
         hashvizTacitKnowledge = HashVizTacitKnowledge(
@@ -171,6 +171,5 @@ print(hashvizTacitKnowledge.knowledge);
         expect(hashvizTacitKnowledge.knowledge, isNull);
       });
     },
-    // skip: 'The implementation of knowledge generator still under development.',
   );
 }

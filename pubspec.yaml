@@ -16,7 +16,7 @@ dependencies:
   t3_formosa:
     git:
       url: git@github.com:T3-InfoSec/t3-formosa-dart.git
-      ref: development
+      ref: issue93_object-orient_cryptographic_objects
   t3_hashviz:
     git:
       url: git@github.com:T3-InfoSec/t3-hashviz-dart.git

@@ -16,7 +16,7 @@ class Eka {
 
   String key;
 
-  Eka() : key = _generateHexadecimalKey();
+  Eka({String? key}) : key = key ?? _generateHexadecimalKey();
 
   /// Generates a secure random hexadecimal key, formatted into [digitsChunkSize]-character blocks
   /// separated by spaces for readability.

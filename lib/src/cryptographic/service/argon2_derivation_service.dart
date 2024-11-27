@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:typed_data';
+import 'package:cryptography/cryptography.dart';
 import 'package:hashlib/hashlib.dart';
 
 /// A service for performing hash derivation using the Argon2 algorithm.
@@ -45,5 +47,25 @@ class Argon2DerivationService {
     );
 
     return argon2Algorithm.convert(inputHash).bytes;
+  }
+
+  /// Derives a 256-bit AES encryption key from the provided [key] string using the Argon2id algorithm.
+  ///
+  /// This method is designed to generate a secure key suitable for AES-GCM encryption by applying
+  /// the Argon2id key derivation function on the input [key].
+  Future<SecretKey> deriveKey(String key) async {
+    final argon2 = Argon2id(
+      parallelism: 4,
+      iterations: 3,
+      memory: 65536, // KB (64 MB),
+      hashLength: 32, // 256 bits
+    );
+
+    final secretKey = await argon2.deriveKey(
+      secretKey: SecretKey(utf8.encode(key)),
+      nonce: [], // TODO: Review fixed nonce
+    );
+
+    return secretKey;
   }
 }

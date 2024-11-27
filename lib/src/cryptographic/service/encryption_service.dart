@@ -1,7 +1,9 @@
-import 'dart:convert';
 import 'package:cryptography/cryptography.dart';
+import 'package:great_wall/src/cryptographic/service/argon2_derivation_service.dart';
 
 class EncryptionService {
+
+  Argon2DerivationService argon2derivationService = Argon2DerivationService();
 
   /// Encrypts a list of bytes [plainTextBytes] using AES-GCM with a derived ephemeral key from [key].
   ///
@@ -16,7 +18,7 @@ class EncryptionService {
   /// for each encryption operation), and a MAC (Message Authentication Code) that 
   /// protects the integrity and authenticity of the encrypted data.
   Future<List<int>> encrypt(List<int> plainTextBytes, String key) async {
-    final derivedKey = await deriveKey(key);
+    final derivedKey = await argon2derivationService.deriveKey(key);
     final algorithm = AesGcm.with256bits();
 
     final secretBox = await algorithm.encrypt(
@@ -39,7 +41,7 @@ class EncryptionService {
   /// which the AES-GCM algorithm uses for decryption. Finally, the method decrypts 
   /// the data and returns the original byte list.
   Future<List<int>> decrypt(List<int> cipherText, String key) async {
-    final derivedKey = await deriveKey(key);
+    final derivedKey = await argon2derivationService.deriveKey(key);
     final algorithm = AesGcm.with256bits();
     final nonce = cipherText.sublist(0, 12);
     final ciphertextWithMac = cipherText.sublist(12);
@@ -55,25 +57,5 @@ class EncryptionService {
       secretKey: derivedKey,
     );
     return decryptedBytes;
-  }
-
-  /// Derives a 256-bit AES encryption key from the provided [key] string using the Argon2id algorithm.
-  ///
-  /// This method is designed to generate a secure key suitable for AES-GCM encryption by applying
-  /// the Argon2id key derivation function on the input [key].
-  Future<SecretKey> deriveKey(String key) async {
-    final argon2 = Argon2id(
-      parallelism: 4,
-      iterations: 3,
-      memory: 65536, // KB (64 MB),
-      hashLength: 32, // 256 bits
-    );
-
-    final secretKey = await argon2.deriveKey(
-      secretKey: SecretKey(utf8.encode(key)),
-      nonce: [],
-    );
-
-    return secretKey;
   }
 }

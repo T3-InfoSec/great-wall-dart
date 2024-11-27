@@ -122,7 +122,7 @@ class GreatWall {
   set sa0(Pa0 pa0) {
     initialDerivation();
     _sa0.from(pa0);
-    _node = Node(_sa0);
+    _node = Node(_sa0.seed); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.
@@ -211,7 +211,7 @@ class GreatWall {
     _sa1 = Sa1();
     _sa2 = Sa2();
     _sa3 = Sa3();
-    _node = Node(_sa0);
+    _node = Node(_sa0.seed); // TODO: Review the need for the use of node before derivation
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
@@ -356,14 +356,14 @@ class GreatWall {
   /// level-specific knowledge palettes.
   void _makeExplicitDerivation() {
     _sa1.from(_sa0);
-    _node.update(_sa1.seed); // TODO: Review the need for the use of _node before derivation
+    _node.update(_sa1.seed); // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
     _deriveSa2FromSa1();
-    _node.update(_sa2.seed); // TODO: Review the need for the use of _node before derivation
+    _node.update(_sa2.seed); // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;

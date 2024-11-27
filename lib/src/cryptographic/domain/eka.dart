@@ -51,7 +51,7 @@ class Eka {
   /// This method requires that `generateHexadecimalKey` has been called previously,
   /// otherwise it will throw an exception.
   Future<void> encryptNode(Node node) async {
-    node.hashEncrypted = await EncryptionService().encrypt(node.currentHash, key);
+    node.hashEncrypted = await EncryptionService().encrypt(node.hash, key);
   }
 
   /// Decrypts the given base64 [seedEncrypted] string and returns a [Pa0] object.

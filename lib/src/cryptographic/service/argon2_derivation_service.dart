@@ -9,25 +9,40 @@ import 'package:hashlib/hashlib.dart';
 /// memory configurations using the Argon2i variant of the Argon2 algorithm.
 class Argon2DerivationService {
 
-  final Uint8List argon2Salt = Uint8List(32);
-
-  /// Derives a cryptographic hash using Argon2 with high memory usage given an [inputHash].
-  ///
-  /// To achieve a presumably high execution time, this method should be called 
-  /// multiple times. It is designed for scenarios where stronger computational 
-  /// resistance is required by increasing the cumulative processing time.
-  Uint8List deriveWithHighMemory(Uint8List inputHash) {
-    var argon2Algorithm = Argon2(
+  final Argon2 highMemoryArgon2 = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
       hashLength: 128, // Bytes
       iterations: 1,
       parallelism: 1,
       memorySizeKB: 1024 * 1024, // 1 GB
-      salt: argon2Salt,
+      salt: Uint8List(32), // TODO: Review salt value
     );
-      
-    return argon2Algorithm.convert(inputHash).bytes;
+  
+  final Argon2 moderateMemoryArgon2 = Argon2(
+      version: Argon2Version.v13,
+      type: Argon2Type.argon2i,
+      hashLength: 128, // Bytes
+      iterations: 1,
+      parallelism: 1,
+      memorySizeKB: 10 * 1024, // 10 MB
+      salt: Uint8List(32), // TODO: Review salt value
+    );
+
+  /// Derives a cryptographic hash using Argon2 with high memory usage given an [inputHash].
+  ///
+  /// To achieve a presumably high execution time, this method should be called 
+  /// multiple times. It is designed for scenarios where stronger computational 
+  /// resistance is required by increasing the cumulative processing time.
+  Uint8List deriveWithHighMemory(int iterations, Uint8List inputHash) {
+    Uint8List derivedHash = inputHash;
+    if (iterations > 0) {
+      for (int step = 0; step < iterations; step++) {
+        // if (_isCanceled) {print('Derivation canceled during long hashing.');return;} // TODO: Review unable to cancel flow during long bypass
+        derivedHash = highMemoryArgon2.convert(derivedHash).bytes;
+      }
+    }
+    return derivedHash;
   }
 
   /// Derives a cryptographic hash using Argon2 with moderate memory usage given an [inputHash].
@@ -36,17 +51,7 @@ class Argon2DerivationService {
   /// on the specifications of the device running the process. It is suitable 
   /// for scenarios where a quick derivation process is desirable.
   Uint8List deriveWithModerateMemory(Uint8List inputHash) {
-    var argon2Algorithm = Argon2(
-      version: Argon2Version.v13,
-      type: Argon2Type.argon2i,
-      hashLength: 128, // Bytes
-      iterations: 1,
-      parallelism: 1,
-      memorySizeKB: 10 * 1024, // 10 MB
-      salt: argon2Salt,
-    );
-
-    return argon2Algorithm.convert(inputHash).bytes;
+    return moderateMemoryArgon2.convert(inputHash).bytes;
   }
 
   /// Derives a 256-bit AES encryption key from the provided [key] string using the Argon2id algorithm.

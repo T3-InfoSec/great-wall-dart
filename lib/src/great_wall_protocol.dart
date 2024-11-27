@@ -31,7 +31,7 @@ class GreatWall {
   late Sa1 _sa1;
   late Sa2 _sa2;
   late Sa3 _sa3;
-  late Node _node;
+  late Node _currentNode;
   late int _currentLevel;
   late List<int> _shuffledArityIndexes;
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
@@ -78,8 +78,8 @@ class GreatWall {
     initialDerivation();
   }
 
-  /// Get the current hash state of the protocol derivation process.
-  Uint8List get currentHash => _node.currentHash;
+  /// Get the current node state of the protocol derivation process.
+  Node get currentNode => _currentNode;
 
   /// Get the tacit knowledge palettes of current level.
   List<TacitKnowledge> get currentLevelKnowledgePalettes =>
@@ -88,7 +88,7 @@ class GreatWall {
   /// Get the result of the protocol derivation process.
   ///
   /// The result requires calling [finishDerivation] first.
-  Uint8List? get derivationHashResult => (isFinished) ? _node.currentHash : null;
+  Uint8List? get derivationHashResult => (isFinished) ? _currentNode.hash : null;
 
   /// Get the current level of the protocol derivation process.
   int get derivationLevel => _currentLevel;
@@ -122,7 +122,7 @@ class GreatWall {
   set sa0(Pa0 pa0) {
     initialDerivation();
     _sa0.from(pa0);
-    _node = Node(_sa0.seed); // TODO: Review the need for the use of node before tacit derivation
+    _currentNode = Node(_sa0.seed); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.
@@ -211,7 +211,7 @@ class GreatWall {
     _sa1 = Sa1();
     _sa2 = Sa2();
     _sa3 = Sa3();
-    _node = Node(_sa0.seed); // TODO: Review the need for the use of node before derivation
+    _currentNode = Node(_sa0.seed); // TODO: Review the need for the use of node before derivation
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
@@ -224,7 +224,7 @@ class GreatWall {
     _isInitialized = true;
   }
 
-  /// Drive the [GreatWall.currentHash] from the user choice [choiceNumber].
+  /// Drive the [_currentNode] from the user choice [choiceNumber].
   ///
   /// If [choiceNumber] is 0, the protocol will go back one level to its
   /// previous state, if it is greater 0 the protocol will update the state
@@ -238,19 +238,19 @@ class GreatWall {
         _derivationPath.add(choiceNumber);
 
         if (_savedDerivedStates.containsKey(_derivationPath.copy())) {
-          _node.update(_savedDerivedStates[_derivationPath]!);
+          _currentNode.hash = _savedDerivedStates[_derivationPath]!;
         } else {
-          _node.update(Uint8List.fromList(
-            _node.currentHash + [_shuffledArityIndexes[choiceNumber - 1]],
-          ));
-          _node.update(argon2derivationService.deriveWithModerateMemory(_node.currentHash));
-          _savedDerivedStates[_derivationPath.copy()] = _node.currentHash;
+          _currentNode.hash = Uint8List.fromList(
+            _currentNode.hash + [_shuffledArityIndexes[choiceNumber - 1]],
+          );
+          _currentNode.hash = argon2derivationService.deriveWithModerateMemory(_currentNode.hash);
+          _savedDerivedStates[_derivationPath.copy()] = _currentNode.hash;
         }
 
-        generateLevelKnowledgePalettes(_node.currentHash);
+        generateLevelKnowledgePalettes(_currentNode.hash);
       } else {
         _returnDerivationOneLevelBack();
-        generateLevelKnowledgePalettes(_node.currentHash);
+        generateLevelKnowledgePalettes(_currentNode.hash);
       }
     } else {
       print(
@@ -356,26 +356,26 @@ class GreatWall {
   /// level-specific knowledge palettes.
   void _makeExplicitDerivation() {
     _sa1.from(_sa0);
-    _node.update(_sa1.seed); // TODO: Review the need for the use of node before derivation
+    _currentNode.hash = _sa1.seed; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
-    _deriveSa2FromSa1();
-    _node.update(_sa2.seed); // TODO: Review the need for the use of node before derivation
+    _sa2.from(_timeLockPuzzleParam, _sa1);
+    _currentNode.hash = _sa2.seed; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
     _sa3.from(_sa0, _sa2);
-    _node.update(_sa3.seed);
-    _savedDerivedStates[_derivationPath.copy()] = _node.currentHash;
+    _currentNode.hash = _sa3.seed;
+    _savedDerivedStates[_derivationPath.copy()] = _currentNode.hash;
 
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;
-    generateLevelKnowledgePalettes(_node.currentHash);
+    generateLevelKnowledgePalettes(_currentNode.hash);
   }
 
   /// Go back one level to the previous derivation state.
@@ -387,7 +387,7 @@ class GreatWall {
     _currentLevel -= 1;
     _derivationPath.pop();
 
-    _node.update(_savedDerivedStates[_derivationPath]!);
+    _currentNode.hash = _savedDerivedStates[_derivationPath]!;
   }
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].
@@ -395,27 +395,5 @@ class GreatWall {
     _shuffledArityIndexes = [for (var idx = 0; idx < treeArity; idx++) idx];
 
     _shuffledArityIndexes.shuffle(Random.secure());
-  }
-
-  /// Derives SA2 from SA1 through multiple iterations of a long hashing process.
-  ///
-  /// The derivation process can be affected by the [timeLockPuzzleParam]. If this value
-  /// is greater than 0, the method will perform the derivation [timeLockPuzzleParam] times.
-  /// If the operation is canceled during the derivation, it will stop and print a cancellation message.
-  ///
-  /// In order to be able to test in a development environment, the long hashing is skipped
-  /// if [timeLockPuzzleParam] has a value of 0. This is an unsafe option and is not recommended
-  /// for use in production as it bypasses the intended cryptographic process.
-  void _deriveSa2FromSa1() {
-    print('Deriving SA1 to SA2');
-    if (timeLockPuzzleParam > 0) {
-      for (int step = 0; step < timeLockPuzzleParam; step++) {
-        if (_isCanceled) {
-          print('Derivation canceled during long hashing.');
-          return;
-        }
-        _sa2.from(_sa1);
-      }
-    }
   }
 }

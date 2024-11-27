@@ -15,8 +15,12 @@ class Sa2 {
   Uint8List get seed => _seed;
 
   /// Updates the value of [_seed] based on the seed from a given [sa1].
-  void from(Sa1 sa1) {
-    _seed = Argon2DerivationService().deriveWithHighMemory(sa1.seed);
+  /// 
+  /// The derivation process is repeated [iterations] times, where each iteration
+  /// derives the seed using a memory-intensive key derivation algorithm. 
+  void from(int iterations, Sa1 sa1) {
+    print('Deriving SA1 to SA2');
+    _seed = Argon2DerivationService().deriveWithHighMemory(iterations, sa1.seed);
   }
 
   @override

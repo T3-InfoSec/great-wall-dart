@@ -24,7 +24,6 @@ void main() {
     });
 
     test('should use constructor', () {
-      expect(GreatWall.argon2Salt, Uint8List(32));
       expect(GreatWall.bytesCount, 4);
 
       expect(greatwallProtocol.treeArity, 3);

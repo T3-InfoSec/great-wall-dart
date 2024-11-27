@@ -1,4 +1,5 @@
 import 'package:great_wall/great_wall.dart';
+import 'package:great_wall/src/cryptographic/domain/pa0.dart';
 import 'package:t3_formosa/formosa.dart';
 
 void main() {
@@ -23,8 +24,8 @@ void main() {
   greatwallProtocolWithFormosa.initialDerivation();
   greatwallProtocolWithHashViz.initialDerivation();
 
-  greatwallProtocolWithFormosa.seed0 =
-      'viboniboasmofiasbrchsprorirerugugucavehistmiinciwibowifltuor';
+  greatwallProtocolWithFormosa.sa0 =
+      Pa0(seed: 'viboniboasmofiasbrchsprorirerugugucavehistmiinciwibowifltuor');
 
   // Start the protocol derivation process.
   greatwallProtocolWithFormosa.startDerivation();

@@ -45,11 +45,8 @@ class Eka {
     pa0.seedEncrypted = await EncryptionService().encrypt(encode, key);
   }
 
-  /// Encrypts the [node] currentHash using this Eka and stores the result
+  /// Encrypts the [node] hash using this Eka and stores the result
   /// in the `hashEncrypted` attribute of [node].
-  ///
-  /// This method requires that `generateHexadecimalKey` has been called previously,
-  /// otherwise it will throw an exception.
   Future<void> encryptNode(Node node) async {
     node.hashEncrypted = await EncryptionService().encrypt(node.hash, key);
   }

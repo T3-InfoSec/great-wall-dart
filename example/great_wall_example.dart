@@ -20,16 +20,16 @@ void main() {
 
   Map<String, dynamic> fractalConfigs = {
     'funcType': 'burningship',
-    'xMin': 2.0,
-    'xMax': 4.0,
-    'yMin': -2.0,
-    'yMax': 2.0,
-    'realP': 0.5,
-    'imaginaryParam': 0.5,
-    'width': 800,
-    'height': 600,
-    'escapeRadius': 16,
-    'maxIterations': 1000
+    'xMin': -2.5,
+    'xMax': 2.0,
+    'yMin': -2,
+    'yMax': 0.8,
+    'realP': 2.0,
+    'imagP': 0.0,
+    'width': 1024,
+    'height': 1024,
+    'escapeRadius': 4,
+    'maxIters': 30,
   };
   GreatWall greatwallProtocolWithFractal = GreatWall(
     treeArity: 3,

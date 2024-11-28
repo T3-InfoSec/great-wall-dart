@@ -4,7 +4,13 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:hashlib/hashlib.dart';
+import 'package:great_wall/src/cryptographic/domain/pa0.dart';
+import 'package:great_wall/src/cryptographic/domain/sa0.dart';
+import 'package:great_wall/src/cryptographic/domain/sa1.dart';
+import 'package:great_wall/src/cryptographic/domain/sa2.dart';
+import 'package:great_wall/src/cryptographic/domain/sa3.dart';
+import 'package:great_wall/src/cryptographic/domain/node.dart';
+import 'package:great_wall/src/cryptographic/service/argon2_derivation_service.dart';
 
 import 'tacit_knowledge_impl.dart';
 import 'utils.dart';
@@ -17,15 +23,15 @@ import 'utils.dart';
 ///
 // TODO: Complete the library-level documentation comments.
 class GreatWall {
-  static final Uint8List argon2Salt = Uint8List(32);
   static final int bytesCount = 4;
+  static final Argon2DerivationService argon2derivationService = Argon2DerivationService();
 
-  // Protocol helper parameters declaration
-  late Uint8List _seed0;
-  late Uint8List _seed1;
-  late Uint8List _seed2;
-  late Uint8List _seed3;
-  late Uint8List _currentHash;
+  // Protocol derivation states
+  late Sa0 _sa0;
+  late Sa1 _sa1;
+  late Sa2 _sa2;
+  late Sa3 _sa3;
+  late Node _currentNode;
   late int _currentLevel;
   late List<int> _shuffledArityIndexes;
   late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
@@ -72,8 +78,8 @@ class GreatWall {
     initialDerivation();
   }
 
-  /// Get the current hash state of the protocol derivation process.
-  Uint8List get currentHash => _currentHash;
+  /// Get the current node state of the protocol derivation process.
+  Node get currentNode => _currentNode;
 
   /// Get the tacit knowledge palettes of current level.
   List<TacitKnowledge> get currentLevelKnowledgePalettes =>
@@ -82,7 +88,7 @@ class GreatWall {
   /// Get the result of the protocol derivation process.
   ///
   /// The result requires calling [finishDerivation] first.
-  Uint8List? get derivationHashResult => (isFinished) ? _currentHash : null;
+  Uint8List? get derivationHashResult => (isFinished) ? _currentNode.hash : null;
 
   /// Get the current level of the protocol derivation process.
   int get derivationLevel => _currentLevel;
@@ -110,12 +116,13 @@ class GreatWall {
   /// Check if the protocol derivation process started correctly.
   bool get isStarted => _isStarted;
 
-  /// Set the value of the [password] that you need to hash it by using
+  /// Set the value of the [pa0] that you need to hash it by using
   /// [GreatWall] protocol.
   // TODO: Make sure the password match one of the formosa theme.
-  set seed0(String password) {
+  set sa0(Pa0 pa0) {
     initialDerivation();
-    _currentHash = _seed0 = Uint8List.fromList(password.codeUnits);
+    _sa0.from(pa0);
+    _currentNode = Node(_sa0.seed); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.
@@ -166,8 +173,6 @@ class GreatWall {
         chosenKnowledgeList.add(chosenKnowledge);
         tempPath.add(node);
       }
-
-      print('Key = $_currentHash');
       _isFinished = true;
     } else {
       print('Derivation does not started yet or not completed.');
@@ -177,11 +182,11 @@ class GreatWall {
 
   /// Reset the [GreatWall] protocol derivation process to its initial state.
   void initialDerivation() {
-    _seed0 = Uint8List(128);
-    _seed1 = Uint8List(128);
-    _seed2 = Uint8List(128);
-    _seed3 = Uint8List(128);
-    _currentHash = _seed0;
+    _sa0 = Sa0();
+    _sa1 = Sa1();
+    _sa2 = Sa2();
+    _sa3 = Sa3();
+    _currentNode = Node(_sa0.seed); // TODO: Review the need for the use of node before derivation
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
@@ -194,7 +199,7 @@ class GreatWall {
     _isInitialized = true;
   }
 
-  /// Drive the [GreatWall.currentHash] from the user choice [choiceNumber].
+  /// Drive the [_currentNode] from the user choice [choiceNumber].
   ///
   /// If [choiceNumber] is 0, the protocol will go back one level to its
   /// previous state, if it is greater 0 the protocol will update the state
@@ -208,19 +213,19 @@ class GreatWall {
         _derivationPath.add(choiceNumber);
 
         if (_savedDerivedStates.containsKey(_derivationPath.copy())) {
-          _currentHash = _savedDerivedStates[_derivationPath]!;
+          _currentNode.hash = _savedDerivedStates[_derivationPath]!;
         } else {
-          _currentHash = Uint8List.fromList(
-            _currentHash + [_shuffledArityIndexes[choiceNumber - 1]],
+          _currentNode.hash = Uint8List.fromList(
+            _currentNode.hash + [_shuffledArityIndexes[choiceNumber - 1]],
           );
-          _updateWithQuickHashing();
-          _savedDerivedStates[_derivationPath.copy()] = _currentHash;
+          _currentNode.hash = argon2derivationService.deriveWithModerateMemory(_currentNode.hash);
+          _savedDerivedStates[_derivationPath.copy()] = _currentNode.hash;
         }
 
-        generateLevelKnowledgePalettes(_currentHash);
+        generateLevelKnowledgePalettes(_currentNode.hash);
       } else {
         _returnDerivationOneLevelBack();
-        generateLevelKnowledgePalettes(_currentHash);
+        generateLevelKnowledgePalettes(_currentNode.hash);
       }
     } else {
       print(
@@ -246,22 +251,8 @@ class GreatWall {
   }
 
   Uint8List getSelectedNode(Uint8List currentHash, int choiceNumber) {
-
-// var arityIdx = greatwallProtocolWithFormosa2.currentLevelKnowledgePalettes[choiceNumber! - 1].param!.adjustmentValue;
-
-Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
-
-    var argon2Algorithm = Argon2(
-      version: Argon2Version.v13,
-      type: Argon2Type.argon2i,
-      hashLength: 128,
-      iterations: 1,
-      parallelism: 1,
-      memorySizeKB: 10 * 1024,
-      salt: Uint8List(32),
-    );
-
-    return argon2Algorithm.convert(hash).bytes;
+    Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
+    return argon2derivationService.deriveWithModerateMemory(hash);
   }
 
   /// Generates palettes of knowledge for the current derivation level.
@@ -315,7 +306,7 @@ Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceN
                 configs: tacitKnowledge.configs,
                 param: TacitKnowledgeParam(
                   name: 'fractalParam',
-                  initialState: _currentHash,
+                  initialState: currentHash,
                   adjustmentValue: Uint8List.fromList([arityIdx]),
                 ),
               )
@@ -336,30 +327,27 @@ Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceN
   /// final hash state and increments the current level. Generates
   /// level-specific knowledge palettes.
   void _makeExplicitDerivation() {
-    print('Deriving Seed0 -> Seed1');
-    _updateWithQuickHashing();
-    _seed1 = _currentHash;
+    _sa1.from(_sa0);
+    _currentNode.hash = _sa1.seed; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
-    print('Deriving Seed1 -> Seed2');
-    _updateWithLongHashing();
-    _seed2 = _currentHash;
-    _currentHash = Uint8List.fromList(_seed0 + _currentHash);
-    if (_isCanceled) {
-      print('Derivation canceled');
-      return;
-    }
-    print('Deriving Seed2 -> Seed3');
-    _updateWithQuickHashing();
-    _seed3 = _currentHash;
 
-    _savedDerivedStates[_derivationPath.copy()] = _currentHash;
+    _sa2.from(_timeLockPuzzleParam, _sa1);
+    _currentNode.hash = _sa2.seed; // TODO: Review the need for the use of node before derivation
+    if (_isCanceled) {
+      print('Derivation canceled');
+      return;
+    }
+
+    _sa3.from(_sa0, _sa2);
+    _currentNode.hash = _sa3.seed;
+    _savedDerivedStates[_derivationPath.copy()] = _currentNode.hash;
 
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;
-    generateLevelKnowledgePalettes(_currentHash);
+    generateLevelKnowledgePalettes(_currentNode.hash);
   }
 
   /// Go back one level to the previous derivation state.
@@ -371,7 +359,7 @@ Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceN
     _currentLevel -= 1;
     _derivationPath.pop();
 
-    _currentHash = _savedDerivedStates[_derivationPath]!;
+    _currentNode.hash = _savedDerivedStates[_derivationPath]!;
   }
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].
@@ -379,48 +367,5 @@ Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceN
     _shuffledArityIndexes = [for (var idx = 0; idx < treeArity; idx++) idx];
 
     _shuffledArityIndexes.shuffle(Random.secure());
-  }
-
-  /// Update the state with its hash taking presumably a long time.
-  /// 
-  /// In order to be able to test in a development environment,
-  /// the long hashing is skipped if it has a value of 0.
-  /// This is an unsafe option and is not recommended for use in production.
-  void _updateWithLongHashing() {
-    if (timeLockPuzzleParam > 0) {
-      var argon2Algorithm = Argon2(
-        version: Argon2Version.v13,
-        type: Argon2Type.argon2i,
-        hashLength: 128,
-        iterations: 1,
-        parallelism: 1,
-        memorySizeKB: 1024 * 1024,
-        salt: argon2Salt,
-      );
-
-      for (int step = 0; step < timeLockPuzzleParam; step++) {
-        if (_isCanceled) {
-          print('Derivation canceled during long hashing.');
-          return;
-        }
-        
-        _currentHash = argon2Algorithm.convert(_currentHash).bytes;
-      }
-    }
-  }
-
-  /// Update the state with its hash taking presumably a quick time.
-  void _updateWithQuickHashing() {
-    var argon2Algorithm = Argon2(
-      version: Argon2Version.v13,
-      type: Argon2Type.argon2i,
-      hashLength: 128,
-      iterations: 1,
-      parallelism: 1,
-      memorySizeKB: 10 * 1024,
-      salt: argon2Salt,
-    );
-
-    _currentHash = argon2Algorithm.convert(_currentHash).bytes;
   }
 }

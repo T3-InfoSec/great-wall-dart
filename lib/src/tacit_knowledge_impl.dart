@@ -94,8 +94,8 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
       return null;
     }
 
-    _knowledgeGenerator = Formosa(formosaTheme: configs['formosaTheme']!);
-    String knowledge = _knowledgeGenerator.toFormosa(param!.value);
+    _knowledgeGenerator = Formosa(formosaTheme: configs['formosaTheme']!, entropy: param!.value);
+    String knowledge = _knowledgeGenerator.seed;
 
     return knowledge;
   }
@@ -147,11 +147,11 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       yMin: configs['yMin'],
       yMax: configs['yMax'],
       realP: params['realParam'],
-      imagP: params['imaginaryParam'],
+      imagP: params['imagP'],
       width: configs['width'],
       height: configs['height'],
       escapeRadius: configs['escapeRadius'],
-      maxIters: configs['maxIterations'],
+      maxIters: configs['maxIters'],
     );
 
     _knowledgeGenerator.update();

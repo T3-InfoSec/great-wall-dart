@@ -120,7 +120,7 @@ final class FractalTacitKnowledge implements TacitKnowledge {
   /// not provided. Throws on [Exception] if the [TacitKnowledge.configs]
   /// is empty because this will generate an insecure [TacitKnowledge].
   @override
-  List<dynamic>? get knowledge {
+  Uint8List? get knowledge {
     if (configs.isEmpty) {
       throw Exception(
         'The configs param is empty which is insecure argument. Please,'

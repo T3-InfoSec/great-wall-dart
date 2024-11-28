@@ -93,8 +93,8 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
       return null;
     }
 
-    _knowledgeGenerator = Formosa(formosaTheme: configs['formosaTheme']!);
-    String knowledge = _knowledgeGenerator.toFormosa(param!.value);
+    _knowledgeGenerator = Formosa(formosaTheme: configs['formosaTheme']!, entropy: param!.value);
+    String knowledge = _knowledgeGenerator.seed;
 
     return knowledge;
   }

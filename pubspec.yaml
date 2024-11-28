@@ -24,4 +24,4 @@ dependencies:
   fractal:
     git:
       url: git@github.com:T3-InfoSec/t3-fractals-dart.git
-      ref: init-import # TODO change to correct branch
+      ref: fix/import-the-fractal-class-into-the-dart-module

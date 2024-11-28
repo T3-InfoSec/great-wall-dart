@@ -157,7 +157,6 @@ class GreatWall {
   /// and initialized and the required steps of tacit derivation are filled.
   void finishDerivation() {
     if (isStarted && isInitialized && _currentLevel == treeDepth + 1) {
-
       DerivationPath tempPath = DerivationPath();
       List<TacitKnowledge> chosenKnowledgeList = [];
       for (int node in _derivationPath) {

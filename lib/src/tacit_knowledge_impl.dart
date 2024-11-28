@@ -147,7 +147,7 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       yMin: configs['yMin'],
       yMax: configs['yMax'],
       realP: params['realParam'],
-      imagP: params['imagP'],
+      imagP: params['imaginaryParam'],
       width: configs['width'],
       height: configs['height'],
       escapeRadius: configs['escapeRadius'],

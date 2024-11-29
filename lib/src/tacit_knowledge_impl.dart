@@ -141,17 +141,16 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       'imaginaryParam': double.parse(imaginaryParam)
     };
     _knowledgeGenerator = Fractal(
-      funcType: configs['funcType'],
-      xMin: configs['xMin'],
-      xMax: configs['xMax'],
-      yMin: configs['yMin'],
-      yMax: configs['yMax'],
+      xMin: configs['xMin'] ?? -2.5,
+      xMax: configs['xMax'] ?? 2.0,
+      yMin: configs['yMin'] ?? -2.0,
+      yMax: configs['yMax'] ?? 0.8,
       realP: params['realParam']!,
       imagP: params['imaginaryParam']!,
-      width: configs['width'],
-      height: configs['height'],
-      escapeRadius: configs['escapeRadius'],
-      maxIters: configs['maxIters'],
+      width: configs['width'] ?? 1024,
+      height: configs['height'] ?? 1024,
+      escapeRadius: configs['escapeRadius'] ?? 4,
+      maxIters: configs['maxIters'] ?? 30,
     );
 
     _knowledgeGenerator.update();

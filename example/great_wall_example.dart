@@ -1,5 +1,4 @@
 import 'package:great_wall/great_wall.dart';
-import 'package:great_wall/src/cryptographic/domain/pa0.dart';
 import 'package:t3_formosa/formosa.dart';
 
 void main() {
@@ -23,7 +22,7 @@ void main() {
     'funcType': 'burningship',
     'xMin': -2.5,
     'xMax': 2.0,
-    'yMin': -2,
+    'yMin': -2.0,
     'yMax': 0.8,
     'realP': 2.0,
     'imagP': 0.0,

@@ -122,7 +122,7 @@ class GreatWall {
   set sa0(Pa0 pa0) {
     initialDerivation();
     _sa0.from(pa0);
-    _currentNode = Node(_sa0.seed, treeDepth, treeArity); // TODO: Review the need for the use of node before tacit derivation
+    _currentNode = Node(_sa0.seed, depth: treeDepth, arity: treeArity); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.
@@ -211,7 +211,6 @@ class GreatWall {
     _sa1 = Sa1();
     _sa2 = Sa2();
     _sa3 = Sa3();
-    _currentNode = Node(_sa0.seed, treeDepth, treeArity); // TODO: Review the need for the use of node before derivation
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];

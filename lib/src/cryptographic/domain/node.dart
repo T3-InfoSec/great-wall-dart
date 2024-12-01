@@ -10,8 +10,8 @@ import 'package:great_wall/src/cryptographic/domain/entropy.dart';
 /// and configuration within the derivation hierarchy.
 class Node extends Entropy {
   List<int> encryptedHash;
-  final int depth;
-  final int arity;
+  final int? depth;
+  final int? arity;
   
   /// Constructs a [Node] instance with an initial entropy [value],
   /// along with its [depth] and [arity].
@@ -19,7 +19,7 @@ class Node extends Entropy {
   /// The [value] represents the raw entropy of the node, while [depth]
   /// indicates its level in the derivation hierarchy, and [arity]
   /// specifies the branching factor used for its derivation.
-  Node(super.value, this.depth, this.arity): encryptedHash = [];
+  Node(super.value, {this.depth, this.arity}): encryptedHash = [];
 
   /// Creates a new [Node] by deriving it from a [previousNode]
   /// 
@@ -29,7 +29,7 @@ class Node extends Entropy {
   /// with [shuffleArityIndex].
   Node.fromNode(Node previousNode, List<int> shuffleArityIndex)
       : encryptedHash = [],
-        depth = previousNode.depth + 1,
+        depth = previousNode.depth != null ? previousNode.depth! + 1 : previousNode.depth,
         arity = previousNode.arity,
         super(Uint8List.fromList(previousNode.value + shuffleArityIndex));
 

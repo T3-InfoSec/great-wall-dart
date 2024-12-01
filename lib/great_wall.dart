@@ -16,3 +16,4 @@ export 'src/cryptographic/domain/sa0.dart';
 export 'src/cryptographic/domain/sa1.dart';
 export 'src/cryptographic/domain/sa2.dart';
 export 'src/cryptographic/domain/sa3.dart';
+export 'src/cryptographic/service/encryption_service.dart';

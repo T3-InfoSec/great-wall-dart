@@ -1,25 +1,30 @@
 import 'dart:typed_data';
 
+import 'package:great_wall/src/cryptographic/domain/entropy.dart';
 import 'package:great_wall/src/cryptographic/domain/sa0.dart';
 import 'package:great_wall/src/cryptographic/service/argon2_derivation_service.dart';
 
-/// Sa1 represents a derived state from Sa0
-class Sa1 {
+/// Represents the first derived state [Sa1] in the protocol derivation process.
+/// 
+/// It is derived from the initial entropy state [Sa0]
+class Sa1 extends Entropy{
   static final int bytesSize = 128;
 
-  Uint8List _seed;
+  /// Constructs an instance of [Sa1] with an initial entropy [value]
+  /// of [bytesSize] bytes.
+  /// 
+  /// The initial entropy is initialized as an empty byte array of the specified size.
+  Sa1() : super(Uint8List(bytesSize));
 
-  /// Constructs an Sa1 instance with an initial [_seed] of [bytesSize]
-  Sa1() : _seed = Uint8List(bytesSize);
-
-  Uint8List get seed => _seed;
-
-  /// Updates the value of [_seed] based on the seed from a given [sa0].
+  /// Derives the entropy [value] from the given initial entropy [sa0].
+  /// 
+  /// This method updates the [value] of the current instance by applying
+  /// a derivation process using the seed from [sa0].
   void from(Sa0 sa0) {
     print('Deriving SA0 to SA1');
-    _seed = Argon2DerivationService().deriveWithModerateMemory(sa0.seed);
+    value = Argon2DerivationService().deriveWithModerateMemory(sa0.seed);
   }
 
   @override
-  String toString() => 'Sa1(seed: ${String.fromCharCodes(_seed)}';
+  String toString() => 'Sa1(seed: ${String.fromCharCodes(value)}';
 }

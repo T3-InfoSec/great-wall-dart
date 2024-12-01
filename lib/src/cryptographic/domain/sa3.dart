@@ -1,27 +1,34 @@
 import 'dart:typed_data';
 
+import 'package:great_wall/src/cryptographic/domain/entropy.dart';
 import 'package:great_wall/src/cryptographic/domain/sa0.dart';
 import 'package:great_wall/src/cryptographic/domain/sa2.dart';
 import 'package:great_wall/src/cryptographic/service/argon2_derivation_service.dart';
 
-/// Sa3 represents a derived state from Sa2
-class Sa3 {
+/// Represents the third derived state [Sa3] in the protocol derivation process.
+/// 
+/// It is derived from a combination of the initial entropy state [Sa0]
+/// and the second derived state [Sa2]
+class Sa3 extends Entropy {
   static final int bytesSize = 128;
 
-  Uint8List _seed;
+  /// Constructs an instance of [Sa3] with an initial entropy [value]
+  /// of [bytesSize] bytes.
+  /// 
+  /// The initial entropy is initialized as an empty byte array of the specified size.
+  Sa3() : super(Uint8List(bytesSize));
 
-  /// Constructs an Sa3 instance with an initial [_seed] of [bytesSize]
-  Sa3() : _seed = Uint8List(bytesSize);
-
-  Uint8List get seed => _seed;
-
-  /// Updates the value of [_seed] based on the seed from a given [sa2].
+  /// Derives the entropy [value] based on the values from [sa0] and [sa2].
+  /// 
+  /// This method updates the [value] of the current instance by combining
+  /// the seed from [sa0] and the entropy value from [sa2], then applying
+  /// a derivation process.
   void from(Sa0 sa0, Sa2 sa2) {
     print('Deriving SA2 to SA3');
-    _seed = Argon2DerivationService()
-        .deriveWithModerateMemory(Uint8List.fromList(sa0.seed + sa2.seed));
+    value = Argon2DerivationService()
+        .deriveWithModerateMemory(Uint8List.fromList(sa0.seed + sa2.value));
   }
 
   @override
-  String toString() => 'Sa3(seed: ${String.fromCharCodes(_seed)}';
+  String toString() => 'Sa3(seed: ${String.fromCharCodes(value)}';
 }

@@ -88,7 +88,7 @@ class GreatWall {
   /// Get the result of the protocol derivation process.
   ///
   /// The result requires calling [finishDerivation] first.
-  Uint8List? get derivationHashResult => (isFinished) ? _currentNode.hash : null;
+  Uint8List? get derivationHashResult => (isFinished) ? _currentNode.value : null;
 
   /// Get the current level of the protocol derivation process.
   int get derivationLevel => _currentLevel;
@@ -122,7 +122,7 @@ class GreatWall {
   set sa0(Pa0 pa0) {
     initialDerivation();
     _sa0.from(pa0);
-    _currentNode = Node(_sa0.seed); // TODO: Review the need for the use of node before tacit derivation
+    _currentNode = Node(_sa0.seed, treeDepth, treeArity); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.
@@ -211,7 +211,7 @@ class GreatWall {
     _sa1 = Sa1();
     _sa2 = Sa2();
     _sa3 = Sa3();
-    _currentNode = Node(_sa0.seed); // TODO: Review the need for the use of node before derivation
+    _currentNode = Node(_sa0.seed, treeDepth, treeArity); // TODO: Review the need for the use of node before derivation
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
@@ -238,19 +238,19 @@ class GreatWall {
         _derivationPath.add(choiceNumber);
 
         if (_savedDerivedStates.containsKey(_derivationPath.copy())) {
-          _currentNode.hash = _savedDerivedStates[_derivationPath]!;
+          _currentNode.value = _savedDerivedStates[_derivationPath]!;
         } else {
-          _currentNode.hash = Uint8List.fromList(
-            _currentNode.hash + [_shuffledArityIndexes[choiceNumber - 1]],
+          _currentNode.value = Uint8List.fromList(
+            _currentNode.value + [_shuffledArityIndexes[choiceNumber - 1]],
           );
-          _currentNode.hash = argon2derivationService.deriveWithModerateMemory(_currentNode.hash);
-          _savedDerivedStates[_derivationPath.copy()] = _currentNode.hash;
+          _currentNode.value = argon2derivationService.deriveWithModerateMemory(_currentNode.value);
+          _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
         }
 
-        generateLevelKnowledgePalettes(_currentNode.hash);
+        generateLevelKnowledgePalettes(_currentNode.value);
       } else {
         _returnDerivationOneLevelBack();
-        generateLevelKnowledgePalettes(_currentNode.hash);
+        generateLevelKnowledgePalettes(_currentNode.value);
       }
     } else {
       print(
@@ -356,26 +356,26 @@ class GreatWall {
   /// level-specific knowledge palettes.
   void _makeExplicitDerivation() {
     _sa1.from(_sa0);
-    _currentNode.hash = _sa1.seed; // TODO: Review the need for the use of node before derivation
+    _currentNode.value = _sa1.value; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
     _sa2.from(_timeLockPuzzleParam, _sa1);
-    _currentNode.hash = _sa2.seed; // TODO: Review the need for the use of node before derivation
+    _currentNode.value = _sa2.value; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
     _sa3.from(_sa0, _sa2);
-    _currentNode.hash = _sa3.seed;
-    _savedDerivedStates[_derivationPath.copy()] = _currentNode.hash;
+    _currentNode.value = _sa3.value;
+    _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
 
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;
-    generateLevelKnowledgePalettes(_currentNode.hash);
+    generateLevelKnowledgePalettes(_currentNode.value);
   }
 
   /// Go back one level to the previous derivation state.
@@ -387,7 +387,7 @@ class GreatWall {
     _currentLevel -= 1;
     _derivationPath.pop();
 
-    _currentNode.hash = _savedDerivedStates[_derivationPath]!;
+    _currentNode.value = _savedDerivedStates[_derivationPath]!;
   }
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].

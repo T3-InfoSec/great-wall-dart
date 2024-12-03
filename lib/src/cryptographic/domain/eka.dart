@@ -1,71 +1,34 @@
-import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
-import 'package:great_wall/great_wall.dart';
-import 'package:great_wall/src/cryptographic/service/encryption_service.dart';
+import 'package:great_wall/src/cryptographic/domain/aes_key.dart';
 
 /// Eka is an ephemeral encryption key used to encrypt critical data.
 /// 
 /// Eka acts as a last resort option for retrieving PA0 if the original entry seed is forgotten.
-class Eka {
-  static const int keyLength = 32; // Digits
-  static const int hexBase = 16;
-  static const int digitsChunkSize = 4;
+class Eka extends AesKey {
+  /// Constructor that automatically generates a new secure hexadecimal [key].
+  Eka() : super(_generateHexadecimalKey());
 
-  String key;
-
-  Eka({String? key}) : key = key ?? _generateHexadecimalKey();
-
-  /// Generates a secure random hexadecimal key, formatted into [digitsChunkSize]-character blocks
-  /// separated by spaces for readability.
-  ///
-  /// - Generates a [keyLength]-character hexadecimal sequence.
-  /// - Formats the key into [digitsChunkSize]-character blocks separated by spaces using a regex.
-  /// - Removes trailing spaces with `trim()`.
-  static String _generateHexadecimalKey() {
+  /// Constructor to create an instance of `Eka` with an existing [key].
+  Eka.fromKey(super.key);
+  
+  /// Static helper to generate the key.
+  static String _generateHexadecimalKey({
+    int keyLength = 32,
+    int digitsChunkSize = 4,
+  }) {
     final random = Random.secure();
-    final buffer = StringBuffer();
+    final key = List<int>.generate(keyLength, (_) => random.nextInt(16))
+        .map((value) => value.toRadixString(16))
+        .join();
 
-    for (int i = 0; i < keyLength; i++) {
-      buffer.write(random.nextInt(hexBase).toRadixString(hexBase));
-    }
+    // Format the key into [digitsChunkSize]-character blocks.
+    final formattedKey = RegExp('.{1,$digitsChunkSize}')
+        .allMatches(key)
+        .map((match) => match.group(0)!)
+        .join(' ')
+        .trim();
 
-    return buffer.toString().toUpperCase().replaceAllMapped(
-      RegExp('.{$digitsChunkSize}'),
-      (match) => "${match.group(0)} ",
-    ).trim();
-  }
-
-  /// Encrypts the [pa0] sedd using this Eka and stores the result
-  /// in the seedEncrypted attribute of [pa0]
-  Future<void> encryptPa0(Pa0 pa0) async {
-    Uint8List encode = utf8.encode(pa0.seed);
-    pa0.seedEncrypted = await EncryptionService().encrypt(encode, key);
-  }
-
-  /// Encrypts the [node] hash using this Eka and stores the result
-  /// in the `hashEncrypted` attribute of [node].
-  Future<void> encryptNode(Node node) async {
-    node.encryptedHash = await EncryptionService().encrypt(node.value, key);
-  }
-
-  /// Decrypts the given base64 [seedEncrypted] string and returns a [Pa0] object.
-  ///
-  /// This method decrypts the provided string using Eka and returns the decrypted data as a Pa0 instance.
-  Future<Pa0> decryptToPa0(String seedEncrypted) async {
-    Uint8List decodedBytes = base64Decode(seedEncrypted);
-    List<int> decryptedBytes = await EncryptionService().decrypt(decodedBytes, key);
-    String seed = utf8.decode(decryptedBytes);
-    return Pa0(seed: seed);
-  }
-
-  /// Decrypts the given base64 [hashEncrypted] string and returns a [Node] object.
-  ///
-  /// This method decrypts the provided string using Eka and returns the decrypted data as a Node instance.
-  Future<Node> decryptToNode(String encryptedHash) async {
-    Uint8List decodedBytes = base64Decode(encryptedHash);
-    List<int> decryptedBytes = await EncryptionService().decrypt(decodedBytes, key);
-    return Node(Uint8List.fromList(decryptedBytes));
+    return formattedKey;
   }
 }

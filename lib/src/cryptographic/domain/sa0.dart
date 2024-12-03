@@ -1,23 +1,37 @@
+import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:great_wall/src/cryptographic/domain/pa0.dart';
+import 'package:great_wall/src/cryptographic/domain/critical.dart';
+import 'package:t3_formosa/formosa.dart';
 
-/// Sa0 represents a derived state from Pa0
-class Sa0 {
+/// Sa0 represents the initial seed entered into the derivation protocol.
+///
+/// This seed is encrypted using a key for secure storage.
+class Sa0 extends Critical {
   static final int bytesSize = 128;
+  
+  Formosa? formosa;
 
-  Uint8List _seed;
+  /// Constructs an [Sa0] instance
+  /// 
+  /// with an initial [value] of [bytesSize]
+  Sa0() : super(Uint8List(bytesSize));
 
-  /// Constructs an Sa0 instance with an initial [_seed] of [bytesSize]
-  Sa0() : _seed = Uint8List(bytesSize);
+  Sa0._(this.formosa) : super(Uint8List.fromList(formosa!.entropy));
 
-  Uint8List get seed => _seed;
+  factory Sa0.fromFormosa({Formosa? providedFormosa}) {
+    return Sa0._(providedFormosa ?? _generateSixWordsFormosa());
+  }
 
-  /// Updates the value of [seed] based on the seed from a given [pa0].
-  void from(Pa0 pa0) {
-    _seed = Uint8List.fromList(pa0.seed.codeUnits);
+  /// Generates a six-words BIP39 seed using random entropy and bip39 as Formosa theme.
+  static Formosa _generateSixWordsFormosa() {
+    Uint8List entropy = _generateRandomEntropy();
+    return Formosa(
+      formosaTheme: FormosaTheme.bip39, 
+      entropy: entropy);
   }
 
   @override
-  String toString() => 'Sa0(seed: ${String.fromCharCodes(_seed)}';
+  String toString() => 'Sa0(value: ${String.fromCharCodes(value)}';
 }

@@ -1,15 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:great_wall/src/cryptographic/domain/entropy.dart';
+import 'package:great_wall/src/cryptographic/domain/critical.dart';
 
 /// Represents a node in the derivation process of the protocol,
-/// encapsulating entropy and protocol metadata.
+/// encapsulating critical value entropy and protocol metadata.
 /// 
-/// A [Node] extends [Entropy], providing both the raw entropy [value]
+/// A [Node] extends [Critical], providing both the raw entropy [value]
 /// and metadata such as [depth] and [arity] that describe its position
 /// and configuration within the derivation hierarchy.
-class Node extends Entropy {
-  List<int> encryptedHash;
+class Node extends Critical {
   final int? depth;
   final int? arity;
   
@@ -19,7 +18,7 @@ class Node extends Entropy {
   /// The [value] represents the raw entropy of the node, while [depth]
   /// indicates its level in the derivation hierarchy, and [arity]
   /// specifies the branching factor used for its derivation.
-  Node(super.value, {this.depth, this.arity}): encryptedHash = [];
+  Node(super.value, {this.depth, this.arity});
 
   /// Creates a new [Node] by deriving it from a [previousNode]
   /// 
@@ -27,8 +26,7 @@ class Node extends Entropy {
   /// its [depth] is incremented by one. The entropy [value] is
   /// constructed by concatenating the [value] of the [previousNode]
   /// with [shuffleArityIndex].
-  Node.fromNode(Node previousNode, List<int> shuffleArityIndex)
-      : encryptedHash = [],
+  Node.fromNode(Node previousNode, List<int> shuffleArityIndex):
         depth = previousNode.depth != null ? previousNode.depth! + 1 : previousNode.depth,
         arity = previousNode.arity,
         super(Uint8List.fromList(previousNode.value + shuffleArityIndex));

@@ -4,7 +4,6 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:great_wall/src/cryptographic/domain/pa0.dart';
 import 'package:great_wall/src/cryptographic/domain/sa0.dart';
 import 'package:great_wall/src/cryptographic/domain/sa1.dart';
 import 'package:great_wall/src/cryptographic/domain/sa2.dart';
@@ -119,10 +118,10 @@ class GreatWall {
   /// Set the value of the [pa0] that you need to hash it by using
   /// [GreatWall] protocol.
   // TODO: Make sure the password match one of the formosa theme.
-  set sa0(Pa0 pa0) {
+  set sa0(Sa0 sa0) {
     initialDerivation();
-    _sa0.from(pa0);
-    _currentNode = Node(_sa0.seed, depth: treeDepth, arity: treeArity); // TODO: Review the need for the use of node before tacit derivation
+    _sa0 = sa0;
+    _currentNode = Node(_sa0.formosa.entropy, depth: treeDepth, arity: treeArity); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.

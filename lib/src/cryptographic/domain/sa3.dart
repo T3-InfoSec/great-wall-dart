@@ -26,7 +26,7 @@ class Sa3 extends Entropy {
   void from(Sa0 sa0, Sa2 sa2) {
     print('Deriving SA2 to SA3');
     value = Argon2DerivationService()
-        .deriveWithModerateMemory(Uint8List.fromList(sa0.seed + sa2.value));
+        .deriveWithModerateMemory(Uint8List.fromList(sa0.formosa.entropy + sa2.value));
   }
 
   @override

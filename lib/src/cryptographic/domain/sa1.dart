@@ -22,7 +22,7 @@ class Sa1 extends Entropy{
   /// a derivation process using the seed from [sa0].
   void from(Sa0 sa0) {
     print('Deriving SA0 to SA1');
-    value = Argon2DerivationService().deriveWithModerateMemory(sa0.seed);
+    value = Argon2DerivationService().deriveWithModerateMemory(sa0.formosa.entropy);
   }
 
   @override

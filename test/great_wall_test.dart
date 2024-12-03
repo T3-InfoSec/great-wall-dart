@@ -21,6 +21,7 @@ void main() {
         timeLockPuzzleParam: 1,
         tacitKnowledge: FormosaTacitKnowledge(configs: configs),
       );
+      greatwallProtocol.sa0 = Sa0();
     });
 
     test('should use constructor', () {

@@ -122,7 +122,6 @@ void main() {
 
       test('could be able to return underline knowledge', () {
         expect(formosaTacitKnowledge.knowledge, 'talk mutual diagram');
-print(hashvizTacitKnowledge.knowledge);
         expect(hashvizTacitKnowledge.knowledge, [
           1, 0, 1, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 1, 0, 1, 0, 2, 1, 
           2, 1, 2, 0, 1, 1, 0, 2, 1, 2, 1, 2, 0, 0, 0, 1, 2, 2, 2, 

@@ -30,6 +30,12 @@ class Sa0 extends Critical {
     return Sa0._(providedFormosa);
   }
 
+  factory Sa0.fromMnemonic(String mnemonic) {
+    return Sa0._(Formosa.fromMnemonic(
+      formosaTheme: FormosaTheme.bip39, 
+      mnemonic: mnemonic));
+  }
+
   @override
   String toString() => 'Sa0(value: ${String.fromCharCodes(value)}';
 }

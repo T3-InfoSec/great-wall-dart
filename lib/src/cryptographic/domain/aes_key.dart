@@ -11,9 +11,11 @@ abstract class AesKey {
   final AesGcm algorithm = AesGcm.with256bits();
 
   final String key;
-  late final SecretKey? _secretKey;  
+  late SecretKey? _secretKey;  
 
-  AesKey(this.key);
+  AesKey(this.key) {
+      _secretKey = null; // Explicitly set default to null.
+  }
 
   /// Encrypts a [critical] list of bytes using AES-GCM [algorithm] and [key].
   ///
@@ -23,7 +25,10 @@ abstract class AesKey {
   /// for each encryption operation), and a MAC (Message Authentication Code) that 
   /// protects the integrity and authenticity of the encrypted data.
   Future<void> encrypt(Critical critical) async {
-    _secretKey ??= await Argon2DerivationService().deriveKey(key);
+    if (_secretKey == null) {
+        print("Deriving the key for the first time...");
+        _secretKey = await Argon2DerivationService().deriveKey(key);
+    }
     critical.secretBox = await algorithm.encrypt(
       critical.value,
       secretKey: _secretKey!,

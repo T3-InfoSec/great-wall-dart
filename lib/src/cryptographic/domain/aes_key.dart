@@ -25,10 +25,7 @@ abstract class AesKey {
   /// for each encryption operation), and a MAC (Message Authentication Code) that 
   /// protects the integrity and authenticity of the encrypted data.
   Future<void> encrypt(Critical critical) async {
-    if (_secretKey == null) {
-        print("Deriving the key for the first time...");
-        _secretKey = await Argon2DerivationService().deriveKey(key);
-    }
+    _secretKey ??= await Argon2DerivationService().deriveKey(key);
     critical.secretBox = await algorithm.encrypt(
       critical.value,
       secretKey: _secretKey!,

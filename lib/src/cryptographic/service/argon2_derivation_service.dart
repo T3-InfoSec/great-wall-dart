@@ -65,15 +65,11 @@ class Argon2DerivationService {
       memory: 65536, // KB (64 MB),
       hashLength: 32, // 256 bits
     );
-    final SecretKey secretKey;
-    try {
-      secretKey = await argon2.deriveKey(
-        secretKey: SecretKey(utf8.encode(key)),
-        nonce: [], // TODO: Review fixed nonce
-      );
-    } catch (e) {
-      throw Exception('Failed to derive secretKey from key: $e');
-    }
+
+    final SecretKey secretKey = await argon2.deriveKey(
+      secretKey: SecretKey(utf8.encode(key)),
+      nonce: [], // TODO: Review fixed nonce
+    );
 
     return secretKey;
   }

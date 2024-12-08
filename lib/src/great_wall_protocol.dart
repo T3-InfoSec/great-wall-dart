@@ -4,12 +4,8 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:great_wall/src/cryptographic/domain/sa0.dart';
-import 'package:great_wall/src/cryptographic/domain/sa1.dart';
-import 'package:great_wall/src/cryptographic/domain/sa2.dart';
-import 'package:great_wall/src/cryptographic/domain/sa3.dart';
-import 'package:great_wall/src/cryptographic/domain/node.dart';
-import 'package:great_wall/src/cryptographic/service/argon2_derivation_service.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
+import 'package:t3_formosa/formosa.dart';
 
 import 'tacit_knowledge_impl.dart';
 import 'utils.dart';
@@ -121,7 +117,7 @@ class GreatWall {
   set sa0(Sa0 sa0) {
     initialDerivation();
     _sa0 = sa0;
-    _currentNode = Node(_sa0.formosa.entropy, depth: treeDepth, arity: treeArity); // TODO: Review the need for the use of node before tacit derivation
+    _currentNode = Node(_sa0.formosa.value, depth: treeDepth, arity: treeArity); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.
@@ -206,7 +202,7 @@ class GreatWall {
 
   /// Reset the [GreatWall] protocol derivation process to its initial state.
   void initialDerivation() {
-    _sa0 = Sa0();
+    _sa0 = Sa0(Formosa(Uint8List(128), FormosaTheme.bip39));
     _sa1 = Sa1();
     _sa2 = Sa2();
     _sa3 = Sa3();

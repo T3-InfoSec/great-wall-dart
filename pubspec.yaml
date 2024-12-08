@@ -23,3 +23,7 @@ dependencies:
     git:
       url: git@github.com:T3-InfoSec/t3-hashviz-dart.git
       ref: development
+  t3_crypto_objects:
+    git:
+      url: git@github.com:T3-InfoSec/t3-crypto-objects-dart.git
+      ref: initialise_objects

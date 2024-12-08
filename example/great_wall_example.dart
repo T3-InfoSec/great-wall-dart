@@ -1,4 +1,5 @@
 import 'package:great_wall/great_wall.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
 import 'package:t3_formosa/formosa.dart';
 
 void main() {
@@ -23,7 +24,7 @@ void main() {
   greatwallProtocolWithFormosa.initialDerivation();
   greatwallProtocolWithHashViz.initialDerivation();
 
-  greatwallProtocolWithFormosa.sa0 = Sa0();
+  greatwallProtocolWithFormosa.sa0 = Sa0(Formosa(Entropy.fromRandom(wordsNumber: 6).value, FormosaTheme.bip39));
 
   // Start the protocol derivation process.
   greatwallProtocolWithFormosa.startDerivation();

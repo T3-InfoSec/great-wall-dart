@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:great_wall/great_wall.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
 import 'package:t3_formosa/formosa.dart';
 import 'package:test/test.dart';
 
@@ -21,7 +22,7 @@ void main() {
         timeLockPuzzleParam: 1,
         tacitKnowledge: FormosaTacitKnowledge(configs: configs),
       );
-      greatwallProtocol.sa0 = Sa0();
+      greatwallProtocol.sa0 = Sa0(Formosa(Uint8List(128), FormosaTheme.bip39));
     });
 
     test('should use constructor', () {

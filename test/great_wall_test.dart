@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:great_wall/great_wall.dart';
 import 'package:t3_crypto_objects/crypto_objects.dart';
-import 'package:t3_formosa/formosa.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -5,7 +5,6 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:t3_crypto_objects/crypto_objects.dart';
-import 'package:t3_formosa/formosa.dart';
 
 import 'tacit_knowledge_impl.dart';
 import 'utils.dart';

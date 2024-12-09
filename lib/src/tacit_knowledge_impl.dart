@@ -4,7 +4,7 @@
 import 'dart:typed_data';
 
 import 'package:hashlib/hashlib.dart';
-import 'package:t3_formosa/formosa.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
 import 'package:t3_hashviz/hashviz.dart';
 
 /// A tacit knowledge param that can be passed for any tacit knowledge

@@ -236,7 +236,7 @@ class GreatWall {
           _currentNode.value = Uint8List.fromList(
             _currentNode.value + [_shuffledArityIndexes[choiceNumber - 1]],
           );
-          _currentNode.value = argon2derivationService.deriveWithModerateMemory(_currentNode.value);
+          _currentNode.value = argon2derivationService.deriveWithModerateMemory(_currentNode);
           _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
         }
 
@@ -270,7 +270,7 @@ class GreatWall {
 
   Uint8List getSelectedNode(Uint8List currentHash, int choiceNumber) {
     Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
-    return argon2derivationService.deriveWithModerateMemory(hash);
+    return argon2derivationService.deriveWithModerateMemory(EntropyBytes(hash));
   }
 
   /// Generates palettes of knowledge for the current derivation level.

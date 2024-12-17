@@ -23,7 +23,7 @@ void main() {
   greatwallProtocolWithFormosa.initialDerivation();
   greatwallProtocolWithHashViz.initialDerivation();
 
-  greatwallProtocolWithFormosa.sa0 = Sa0(Formosa.fromRandomWords(wordsNumber: 6, formosaTheme: FormosaTheme.bip39));
+  greatwallProtocolWithFormosa.sa0 = Sa0(Formosa.fromRandomWords(wordCount: 6, formosaTheme: FormosaTheme.bip39));
 
   // Start the protocol derivation process.
   greatwallProtocolWithFormosa.startDerivation();

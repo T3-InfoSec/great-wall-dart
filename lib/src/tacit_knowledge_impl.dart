@@ -94,7 +94,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
     }
 
     _knowledgeGenerator = Formosa(param!.value, configs['formosaTheme']!);
-    String knowledge = _knowledgeGenerator.getMnemonic();
+    String knowledge = _knowledgeGenerator.mnemonic;
 
     return knowledge;
   }

@@ -116,7 +116,7 @@ class GreatWall {
   set sa0(Sa0 sa0) {
     initialDerivation();
     _sa0 = sa0;
-    _currentNode = Node(_sa0.formosa.value, depth: treeDepth, arity: treeArity); // TODO: Review the need for the use of node before tacit derivation
+    _currentNode = Node(_sa0.formosa.value, nodeDepth: 1); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.

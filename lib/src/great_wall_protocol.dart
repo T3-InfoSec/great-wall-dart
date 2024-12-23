@@ -158,39 +158,14 @@ class GreatWall {
   /// and initialized and the required steps of tacit derivation are filled.
   void finishDerivation() {
     if (isStarted && isInitialized && _currentLevel == treeDepth + 1) {
-      TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
-
-      switch (tacitKnowledge) {
-        case FormosaTacitKnowledge():
-          DerivationPath tempPath = DerivationPath();
-          List<TacitKnowledge> chosenKnowledgeList = [];
-          for (int node in _derivationPath) {
-            List<TacitKnowledge> levelKnowledgeList =
-                _savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
-            chosenKnowledgeList.add(chosenKnowledge);
-            tempPath.add(node);
-          }
-        // case FractalTacitKnowledge():
-        //   DerivationPath tempPath = DerivationPath();
-        //   List<TacitKnowledge> chosenKnowledgeList = [];
-        //   for (int node in _derivationPath) {
-        //     List<TacitKnowledge> levelKnowledgeList =
-        //         _savedDerivedPathKnowledge[tempPath]!;
-        //     TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
-        //     chosenKnowledgeList.add(chosenKnowledge);
-        //     tempPath.add(node);
-        //   }
-        case HashVizTacitKnowledge():
-          DerivationPath tempPath = DerivationPath();
-          List<TacitKnowledge> chosenKnowledgeList = [];
-          for (int node in _derivationPath) {
-            List<TacitKnowledge> levelKnowledgeList =
-                _savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
-            chosenKnowledgeList.add(chosenKnowledge);
-            tempPath.add(node);
-          }
+      DerivationPath tempPath = DerivationPath();
+      List<TacitKnowledge> chosenKnowledgeList = [];
+      for (int node in _derivationPath) {
+        List<TacitKnowledge> levelKnowledgeList =
+            _savedDerivedPathKnowledge[tempPath]!;
+        TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
+        chosenKnowledgeList.add(chosenKnowledge);
+        tempPath.add(node);
       }
       _isFinished = true;
     } else {
@@ -317,24 +292,21 @@ class GreatWall {
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledHashVizPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledHashVizPalettes;
-        // case FractalTacitKnowledge():
-        //   List<FractalTacitKnowledge> shuffledFractalPalettes = [
-        //     for (final arityIdx in _shuffledArityIndexes)
-        //       FractalTacitKnowledge(
-        //         config: tacitKnowledge.configs,
-        //         param: TacitKnowledgeParam(
-        //           name: 'fractalParam',
-        //           initialState: _currentHash,
-        //           adjustmentValue: Uint8List.fromList([arityIdx]),
-        //         ),
-        //       )
-        //   ];
-        //   _savedDerivedPathKnowledge[_derivationPath.copy()] =
-        //       shuffledFractalPalettes;
-        //   _shuffledCurrentLevelKnowledgePalettes = shuffledFractalPalettes;
-        // case HashVizTacitKnowledge():
-        //   List<FractalTacitKnowledge> shuffledFractalPalettes = [];
-        //   shuffledPalettes = shuffledFractalPalettes;
+        case FractalTacitKnowledge():
+          List<FractalTacitKnowledge> shuffledFractalPalettes = [
+            for (final arityIdx in _shuffledArityIndexes)
+              FractalTacitKnowledge(
+                configs: tacitKnowledge.configs,
+                param: TacitKnowledgeParam(
+                  name: 'fractalParam',
+                  initialState: currentHash,
+                  adjustmentValue: Uint8List.fromList([arityIdx]),
+                ),
+              )
+          ];
+          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+              shuffledFractalPalettes;
+          _shuffledCurrentLevelKnowledgePalettes = shuffledFractalPalettes;
       }
     }
     return _shuffledCurrentLevelKnowledgePalettes;

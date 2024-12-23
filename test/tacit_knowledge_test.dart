@@ -40,9 +40,9 @@ void main() {
       late TacitKnowledgeParam formosaExpectedParam;
       late FormosaTacitKnowledge formosaTacitKnowledge;
 
-      // late Map<String, dynamic> fractalExpectedConfigs;
-      // late TacitKnowledgeParam fractalExpectedParam;
-      // late FractalTacitKnowledge fractalTacitKnowledge;
+      late Map<String, dynamic> fractalExpectedConfigs;
+      late TacitKnowledgeParam fractalExpectedParam;
+      late FractalTacitKnowledge fractalTacitKnowledge;
 
       late Map<String, dynamic> hashvizExpectedConfigs;
       late TacitKnowledgeParam hashvizExpectedParam;
@@ -60,44 +60,6 @@ void main() {
           param: formosaExpectedParam,
         );
 
-        // fractalExpectedConfigs = {
-        //   'fractalSet': 'burningship',
-        //   'colorScheme': 'gray',
-        //   'xMin': 0,
-        //   'xMax': 0,
-        //   'yMin': 0,
-        //   'yMax': 0,
-        //   'width': 2,
-        //   'height': 2,
-        //   'escapeRadius': 4,
-        //   'maxIteration': 100,
-        // };
-        // fractalExpectedParam = TacitKnowledgeParam(
-        //   name: 'realParam',
-        //   initialState: Uint8List(128),
-        //   adjustmentValue: Uint8List.fromList([0]),
-        // );
-        hashvizExpectedConfigs = {
-          'size': 16,
-          'isSymmetric': false,
-          'numColors': 3,
-        };
-        hashvizExpectedParam = TacitKnowledgeParam(
-          name: 'hashvizParam',
-          initialState:  Uint8List(128),
-          adjustmentValue:  Uint8List.fromList([1, 2, 3]),
-        );
-
-        formosaTacitKnowledge = FormosaTacitKnowledge(
-          configs:  formosaExpectedConfigs,
-          param:  formosaExpectedParam,
-        );
-
-        // fractalTacitKnowledge = FractalTacitKnowledge(
-        //   configs: fractalExpectedConfigs,
-        //   param: fractalExpectedParam,
-        // );
-
         hashvizExpectedConfigs = {'hashvizSize': 16};
         hashvizExpectedParam = TacitKnowledgeParam(
           name: 'hashvizParam',
@@ -107,6 +69,29 @@ void main() {
         hashvizTacitKnowledge = HashVizTacitKnowledge(
           configs: hashvizExpectedConfigs,
           param: hashvizExpectedParam,
+        );
+
+        fractalExpectedConfigs = {
+          'funcType': 'burningship',
+          'xMin': -2.5,
+          'xMax': 2.0,
+          'yMin': -2.0,
+          'yMax': 0.8,
+          'realP': 2.0,
+          'imagP': 0.0,
+          'width': 1024,
+          'height': 1024,
+          'escapeRadius': 4,
+          'maxIters': 30,
+        };
+        fractalExpectedParam = TacitKnowledgeParam(
+          name: 'realParam',
+          initialState: Uint8List(128),
+          adjustmentValue: Uint8List.fromList([0]),
+        );
+        fractalTacitKnowledge = FractalTacitKnowledge(
+          configs: fractalExpectedConfigs,
+          param: fractalExpectedParam,
         );
       });
 
@@ -118,6 +103,11 @@ void main() {
       test('could use HashVizTacitKnowledge constructor', () {
         expect(hashvizTacitKnowledge.configs, hashvizExpectedConfigs);
         expect(hashvizTacitKnowledge.param, hashvizExpectedParam);
+      });
+
+      test('could use FractalTacitKnowledge constructor', () {
+        expect(fractalTacitKnowledge.configs, fractalExpectedConfigs);
+        expect(fractalTacitKnowledge.param, fractalExpectedParam);
       });
 
       test('could be able to return underline knowledge', () {
@@ -137,6 +127,7 @@ void main() {
           1, 2, 2, 0, 2, 0, 2, 2, 0, 2, 0, 2, 2, 1, 0, 1, 0, 1, 2, 
           2, 2, 1, 1, 1, 1, 2, 2, 2, 1, 0, 1, 2, 0, 0, 1, 0, 1, 2, 
           1, 1, 2, 1, 0, 1, 0, 0, 2]);
+        expect(fractalTacitKnowledge.knowledge, isNotNull);
       });
 
       test('with not provided param return null', () {
@@ -145,21 +136,22 @@ void main() {
           configs: formosaExpectedConfigs,
         );
 
-        // fractalExpectedConfigs = {
-        //   'fractalSet': 'burningship',
-        //   'colorScheme': 'gray',
-        //   'xMin': 0,
-        //   'xMax': 0,
-        //   'yMin': 0,
-        //   'yMax': 0,
-        //   'width': 2,
-        //   'height': 2,
-        //   'escapeRadius': 4,
-        //   'maxIteration': 100,
-        // };
-        // fractalTacitKnowledge = FractalTacitKnowledge(
-        //   configs: fractalExpectedConfigs,
-        // );
+        fractalExpectedConfigs = {
+          'funcType': 'burningship',
+          'xMin': -2.5,
+          'xMax': 2.0,
+          'yMin': -2.0,
+          'yMax': 0.8,
+          'realP': 2.0,
+          'imagP': 0.0,
+          'width': 1024,
+          'height': 1024,
+          'escapeRadius': 4,
+          'maxIters': 30,
+        };
+        fractalTacitKnowledge = FractalTacitKnowledge(
+          configs: fractalExpectedConfigs,
+        );
 
         hashvizExpectedConfigs = {'hashvizSize': 16};
         hashvizTacitKnowledge = HashVizTacitKnowledge(
@@ -168,8 +160,8 @@ void main() {
 
         expect(formosaTacitKnowledge.knowledge, isNull);
         expect(hashvizTacitKnowledge.knowledge, isNull);
+        expect(fractalTacitKnowledge.knowledge, isNull);
       });
     },
-    // skip: 'The implementation of knowledge generator still under development.',
   );
 }

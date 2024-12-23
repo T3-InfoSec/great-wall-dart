@@ -8,10 +8,6 @@ void main() {
   group('GreatWall()', () {
     late GreatWall greatwallProtocol;
 
-    // late Map<String, dynamic> fractalExpectedConfigs;
-    // late TacitKnowledgeParam fractalExpectedParam;
-    // late FractalTacitKnowledge fractalTacitKnowledge;
-
     setUp(() {
       Map<String, dynamic> configs = {'formosaTheme': FormosaTheme.bip39};
 

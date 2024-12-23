@@ -3,6 +3,7 @@
 
 import 'dart:typed_data';
 
+import 'package:fractal/fractal.dart';
 import 'package:hashlib/hashlib.dart';
 import 'package:t3_crypto_objects/crypto_objects.dart';
 import 'package:t3_hashviz/hashviz.dart';
@@ -100,64 +101,63 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
   }
 }
 
-/// A class that can be instantiated to create a formosa tacit knowledge.
-// final class FractalTacitKnowledge implements TacitKnowledge {
-//   late Fractal _knowledgeGenerator;
-//
-//   @override
-//   Map<String, dynamic> configs;
-//
-//   @override
-//   TacitKnowledgeParam? param;
-//
-//   FractalTacitKnowledge({required this.configs, this.param});
-//
-//   /// Returns a 1D or 3D fractal image.
-//   ///
-//   /// Returns the image that represents the actual tacit knowledge of the
-//   /// [FractalTacitKnowledge] tacit knowledge or `null` if the [param] is
-//   /// not provided. Throws on [Exception] if the [TacitKnowledge.configs]
-//   /// is empty because this will generate an insecure [TacitKnowledge].
-//   @override
-//   List<dynamic>? get knowledge {
-//     if (configs.isEmpty) {
-//       throw Exception(
-//         'The configs param is empty which is insecure argument. Please,'
-//         ' to get a correct and secure tacit knowledge, provide the'
-//         ' TacitKnowledge implementation with the correct configs argument.',
-//       );
-//     }
-//
-//     if (param == null) {
-//       return null;
-//     }
-//
-//     // NOTE: Inverting the order of digits to minimize Benford's law bias.
-//     String realParam = '2.${int.parse(param!.value.reversed.join())}';
-//     String imaginaryParam = '0.${int.parse(param!.value.reversed.join())}';
-//     Map<String, double> params = {
-//       'realParam': double.parse(realParam),
-//       'imaginaryParam': double.parse(imaginaryParam)
-//     };
-//
-//     _knowledgeGenerator.imagePixels = _knowledgeGenerator.update(
-//       fractalSet: configs['fractalSet'],
-//       colorScheme: configs['colorScheme'],
-//       xMin: configs['xMin'],
-//       xMax: configs['xMax'],
-//       yMin: configs['yMin'],
-//       yMax: configs['yMax'],
-//       realParam: params['realParam'],
-//       imaginaryParam: params['imaginaryParam'],
-//       width: configs['width'],
-//       height: configs['height'],
-//       escapeRadius: configs['escapeRadius'],
-//       maxIteration: configs['maxIteration'],
-//     );
-//
-//     return _knowledgeGenerator.imagePixels;
-//   }
-// }
+/// A class that can be instantiated to create a fractal tacit knowledge.
+final class FractalTacitKnowledge implements TacitKnowledge {
+  late Fractal _knowledgeGenerator;
+
+  @override
+  Map<String, dynamic> configs;
+
+  @override
+  TacitKnowledgeParam? param;
+
+  FractalTacitKnowledge({required this.configs, this.param});
+
+  /// Returns an static fractal image.
+  ///
+  /// Returns the image that represents the actual tacit knowledge of the
+  /// [FractalTacitKnowledge] tacit knowledge or `null` if the [param] is
+  /// not provided. Throws on [Exception] if the [TacitKnowledge.configs]
+  /// is empty because this will generate an insecure [TacitKnowledge].
+  @override
+  Uint8List? get knowledge {
+    if (configs.isEmpty) {
+      throw Exception(
+        'The configs param is empty which is insecure argument. Please,'
+        ' to get a correct and secure tacit knowledge, provide the'
+        ' TacitKnowledge implementation with the correct configs argument.',
+      );
+    }
+
+    if (param == null) {
+      return null;
+    }
+
+    // NOTE: Inverting the order of digits to minimize Benford's law bias.
+    String realParam = '2.${int.parse(param!.value.reversed.join())}';
+    String imaginaryParam = '0.${int.parse(param!.value.reversed.join())}';
+    Map<String, double> params = {
+      'realParam': double.parse(realParam),
+      'imaginaryParam': double.parse(imaginaryParam)
+    };
+    _knowledgeGenerator = Fractal(
+      xMin: configs['xMin'] ?? -2.5,
+      xMax: configs['xMax'] ?? 2.0,
+      yMin: configs['yMin'] ?? -2.0,
+      yMax: configs['yMax'] ?? 0.8,
+      realP: params['realParam']!,
+      imagP: params['imaginaryParam']!,
+      width: configs['width'] ?? 1024,
+      height: configs['height'] ?? 1024,
+      escapeRadius: configs['escapeRadius'] ?? 4,
+      maxIters: configs['maxIters'] ?? 30,
+    );
+
+    _knowledgeGenerator.update();
+
+    return _knowledgeGenerator.imagePixels;
+  }
+}
 
 /// A class that can be instantiated to create a formosa tacit knowledge.
 final class HashVizTacitKnowledge implements TacitKnowledge {

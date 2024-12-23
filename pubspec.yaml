@@ -19,6 +19,10 @@ dependencies:
     git:
       url: git@github.com:T3-InfoSec/t3-hashviz-dart.git
       ref: development
+  fractal:
+    git:
+      url: git@github.com:T3-InfoSec/t3-fractals-dart.git
+      ref: fix/import-the-fractal-class-into-the-dart-module
   t3_crypto_objects:
     git:
       url: git@github.com:T3-InfoSec/t3-crypto-objects-dart.git

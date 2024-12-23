@@ -4,13 +4,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:great_wall/src/cryptographic/domain/pa0.dart';
-import 'package:great_wall/src/cryptographic/domain/sa0.dart';
-import 'package:great_wall/src/cryptographic/domain/sa1.dart';
-import 'package:great_wall/src/cryptographic/domain/sa2.dart';
-import 'package:great_wall/src/cryptographic/domain/sa3.dart';
-import 'package:great_wall/src/cryptographic/domain/node.dart';
-import 'package:great_wall/src/cryptographic/service/argon2_derivation_service.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
 
 import 'tacit_knowledge_impl.dart';
 import 'utils.dart';
@@ -88,7 +82,7 @@ class GreatWall {
   /// Get the result of the protocol derivation process.
   ///
   /// The result requires calling [finishDerivation] first.
-  Uint8List? get derivationHashResult => (isFinished) ? _currentNode.hash : null;
+  Uint8List? get derivationHashResult => (isFinished) ? _currentNode.value : null;
 
   /// Get the current level of the protocol derivation process.
   int get derivationLevel => _currentLevel;
@@ -119,10 +113,10 @@ class GreatWall {
   /// Set the value of the [pa0] that you need to hash it by using
   /// [GreatWall] protocol.
   // TODO: Make sure the password match one of the formosa theme.
-  set sa0(Pa0 pa0) {
+  set sa0(Sa0 sa0) {
     initialDerivation();
-    _sa0.from(pa0);
-    _currentNode = Node(_sa0.seed); // TODO: Review the need for the use of node before tacit derivation
+    _sa0 = sa0;
+    _currentNode = Node(_sa0.formosa.value, nodeDepth: 1); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.
@@ -182,11 +176,10 @@ class GreatWall {
 
   /// Reset the [GreatWall] protocol derivation process to its initial state.
   void initialDerivation() {
-    _sa0 = Sa0();
+    _sa0 = Sa0(Formosa(Uint8List(128), FormosaTheme.bip39));
     _sa1 = Sa1();
     _sa2 = Sa2();
     _sa3 = Sa3();
-    _currentNode = Node(_sa0.seed); // TODO: Review the need for the use of node before derivation
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
     _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
@@ -213,19 +206,19 @@ class GreatWall {
         _derivationPath.add(choiceNumber);
 
         if (_savedDerivedStates.containsKey(_derivationPath.copy())) {
-          _currentNode.hash = _savedDerivedStates[_derivationPath]!;
+          _currentNode.value = _savedDerivedStates[_derivationPath]!;
         } else {
-          _currentNode.hash = Uint8List.fromList(
-            _currentNode.hash + [_shuffledArityIndexes[choiceNumber - 1]],
+          _currentNode.value = Uint8List.fromList(
+            _currentNode.value + [_shuffledArityIndexes[choiceNumber - 1]],
           );
-          _currentNode.hash = argon2derivationService.deriveWithModerateMemory(_currentNode.hash);
-          _savedDerivedStates[_derivationPath.copy()] = _currentNode.hash;
+          _currentNode.value = argon2derivationService.deriveWithModerateMemory(_currentNode).value;
+          _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
         }
 
-        generateLevelKnowledgePalettes(_currentNode.hash);
+        generateLevelKnowledgePalettes(_currentNode.value);
       } else {
         _returnDerivationOneLevelBack();
-        generateLevelKnowledgePalettes(_currentNode.hash);
+        generateLevelKnowledgePalettes(_currentNode.value);
       }
     } else {
       print(
@@ -252,7 +245,7 @@ class GreatWall {
 
   Uint8List getSelectedNode(Uint8List currentHash, int choiceNumber) {
     Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
-    return argon2derivationService.deriveWithModerateMemory(hash);
+    return argon2derivationService.deriveWithModerateMemory(EntropyBytes(hash)).value;
   }
 
   /// Generates palettes of knowledge for the current derivation level.
@@ -328,26 +321,26 @@ class GreatWall {
   /// level-specific knowledge palettes.
   void _makeExplicitDerivation() {
     _sa1.from(_sa0);
-    _currentNode.hash = _sa1.seed; // TODO: Review the need for the use of node before derivation
+    _currentNode.value = _sa1.value; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
     _sa2.from(_timeLockPuzzleParam, _sa1);
-    _currentNode.hash = _sa2.seed; // TODO: Review the need for the use of node before derivation
+    _currentNode.value = _sa2.value; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
     _sa3.from(_sa0, _sa2);
-    _currentNode.hash = _sa3.seed;
-    _savedDerivedStates[_derivationPath.copy()] = _currentNode.hash;
+    _currentNode.value = _sa3.value;
+    _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
 
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;
-    generateLevelKnowledgePalettes(_currentNode.hash);
+    generateLevelKnowledgePalettes(_currentNode.value);
   }
 
   /// Go back one level to the previous derivation state.
@@ -359,7 +352,7 @@ class GreatWall {
     _currentLevel -= 1;
     _derivationPath.pop();
 
-    _currentNode.hash = _savedDerivedStates[_derivationPath]!;
+    _currentNode.value = _savedDerivedStates[_derivationPath]!;
   }
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].

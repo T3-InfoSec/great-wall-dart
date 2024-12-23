@@ -1,5 +1,5 @@
 import 'package:great_wall/great_wall.dart';
-import 'package:t3_formosa/formosa.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
 
 void main() {
   Map<String, dynamic> formosaConfigs = {'formosaTheme': FormosaTheme.bip39};
@@ -48,8 +48,7 @@ void main() {
     // derivation process.
     protocol.initialDerivation();
 
-    protocol.sa0 =
-        Pa0(seed: 'viboniboasmofiasbrchsprorirerugugucavehistmiinciwibowifltuor');
+    protocol.sa0 = Sa0(Formosa.fromRandomWords(wordCount: 6, formosaTheme: FormosaTheme.bip39));
 
     // Start the protocol derivation process.
     protocol.startDerivation();

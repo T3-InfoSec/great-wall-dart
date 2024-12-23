@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:great_wall/great_wall.dart';
-import 'package:t3_formosa/formosa.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -21,6 +21,7 @@ void main() {
         timeLockPuzzleParam: 1,
         tacitKnowledge: FormosaTacitKnowledge(configs: configs),
       );
+      greatwallProtocol.sa0 = Sa0(Formosa(Uint8List(128), FormosaTheme.bip39));
     });
 
     test('should use constructor', () {
@@ -29,7 +30,7 @@ void main() {
       expect(greatwallProtocol.treeArity, 3);
       expect(greatwallProtocol.treeDepth, 5);
       expect(greatwallProtocol.timeLockPuzzleParam, 1);
-      expect(greatwallProtocol.currentNode.hash, Uint8List(128));
+      expect(greatwallProtocol.currentNode.value, Uint8List(128));
       expect(greatwallProtocol.derivationLevel, 0);
       expect(greatwallProtocol.derivationHashResult, isNull);
       expect(greatwallProtocol.isCanceled, isFalse);
@@ -51,7 +52,7 @@ void main() {
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationHashResult, isNull);
-      expect(greatwallProtocol.currentNode.hash, [
+      expect(greatwallProtocol.currentNode.value, [
         167, 249, 103, 124, 188, 123, 51, 168, 247, 61, 208, 84, 232, 40, 39, 6,
         1, 241, 91, 103, 231, 157, 236, 101, 146, 108, 180, 102, 54, 232, 180, 175,
         80, 139, 99, 120, 219, 3, 29, 254, 254, 160, 164, 115, 230, 195, 33, 223,
@@ -76,7 +77,7 @@ void main() {
       expect(greatwallProtocol.isFinished, isFalse);
       expect(greatwallProtocol.isInitialized, isTrue);
       expect(greatwallProtocol.derivationHashResult, isNull);
-      expect(greatwallProtocol.currentNode.hash, [167, 249, 103, 124, 188, 123, 51, 168,
+      expect(greatwallProtocol.currentNode.value, [167, 249, 103, 124, 188, 123, 51, 168,
       247, 61, 208, 84, 232, 40, 39, 6, 1, 241, 91, 103, 231, 157, 236, 101, 146, 108, 180,
       102, 54, 232, 180, 175, 80, 139, 99, 120, 219, 3, 29, 254, 254, 160, 164, 115, 230,
       195, 33, 223, 43, 236, 123, 37, 100, 5, 105, 1, 113, 57, 117, 51, 53, 112, 36, 197,
@@ -89,7 +90,7 @@ void main() {
     test('could using tacit knowledge derivation', () {
       greatwallProtocol.startDerivation();
       greatwallProtocol.makeTacitDerivation(choiceNumber: 0);
-      expect(greatwallProtocol.currentNode.hash, [167, 249, 103, 124, 188, 123, 51, 168, 247,
+      expect(greatwallProtocol.currentNode.value, [167, 249, 103, 124, 188, 123, 51, 168, 247,
       61, 208, 84, 232, 40, 39, 6, 1, 241, 91, 103, 231, 157, 236, 101, 146, 108, 180, 102, 54,
       232, 180, 175, 80, 139, 99, 120, 219, 3, 29, 254, 254, 160, 164, 115, 230, 195, 33, 223,
       43, 236, 123, 37, 100, 5, 105, 1, 113, 57, 117, 51, 53, 112, 36, 197, 219, 166, 15, 101,

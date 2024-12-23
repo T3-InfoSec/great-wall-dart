@@ -1,6 +1,5 @@
 import 'package:great_wall/great_wall.dart';
-import 'package:great_wall/src/cryptographic/domain/pa0.dart';
-import 'package:t3_formosa/formosa.dart';
+import 'package:t3_crypto_objects/crypto_objects.dart';
 
 void main() {
   Map<String, dynamic> formosaConfigs = {'formosaTheme': FormosaTheme.bip39};
@@ -24,8 +23,7 @@ void main() {
   greatwallProtocolWithFormosa.initialDerivation();
   greatwallProtocolWithHashViz.initialDerivation();
 
-  greatwallProtocolWithFormosa.sa0 =
-      Pa0(seed: 'viboniboasmofiasbrchsprorirerugugucavehistmiinciwibowifltuor');
+  greatwallProtocolWithFormosa.sa0 = Sa0(Formosa.fromRandomWords(wordCount: 6, formosaTheme: FormosaTheme.bip39));
 
   // Start the protocol derivation process.
   greatwallProtocolWithFormosa.startDerivation();

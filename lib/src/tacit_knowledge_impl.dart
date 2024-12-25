@@ -1,6 +1,7 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:hashlib/hashlib.dart';
@@ -10,8 +11,7 @@ import 'package:t3_hashviz/hashviz.dart';
 /// A tacit knowledge param that can be passed for any tacit knowledge
 /// type as a parameter to tweak (in a tacit way) the tacit knowledge.
 final class TacitKnowledgeParam {
-  static final Uint8List argon2Salt = Uint8List(32);
-  static final int bytesCount = 4;
+  static final Uint8List argon2Salt = Uint8List(32);  // change for dynamic fractal
 
   final String name;
   final Uint8List initialState;
@@ -24,14 +24,18 @@ final class TacitKnowledgeParam {
   });
 
   /// Get the value that represents the param.
-  Uint8List get value => _computeValue();
+  Uint8List value({String? suffix, int sliceSize=16}) => _computeValue(suffix, sliceSize: sliceSize);
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
   /// jth candidate L_(i+1), the state resulting from appending bytes of j
   /// (here, branch_idx_bytes to current state L_i and hashing it)
   // TODO: Enhance the docs.
-  Uint8List _computeValue() {
+  Uint8List _computeValue(String? suffix, {int sliceSize = 16}) {
+    Uint8List salt = argon2Salt;
+    if(suffix != null){
+      salt = Uint8List.fromList(suffix.runes.map((charCode) => charCode & 0xFF).toList());
+    }
     Argon2 argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -39,17 +43,17 @@ final class TacitKnowledgeParam {
       iterations: 3,
       parallelism: 1,
       memorySizeKB: 10 * 1024,
-      salt: argon2Salt,
+      salt: salt,
     );
 
     Uint8List nextStateCandidate = Uint8List.fromList(
-      argon2Algorithm.convert(initialState).bytes + adjustmentValue,
+      initialState + adjustmentValue,
     );
 
     return argon2Algorithm
         .convert(nextStateCandidate)
         .bytes
-        .sublist(0, bytesCount);
+        .sublist(0, sliceSize);
   }
 }
 
@@ -93,7 +97,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
       return null;
     }
 
-    _knowledgeGenerator = Formosa(param!.value, configs['formosaTheme']!);
+    _knowledgeGenerator = Formosa(param!.value(sliceSize: 4), configs['formosaTheme']!);
     String knowledge = _knowledgeGenerator.mnemonic;
 
     return knowledge;
@@ -192,7 +196,7 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
     }
 
     _knowledgeGenerator = Hashviz(
-        hashToVisualize: param!.value.toString(),
+        hashToVisualize: param!.value().toString(),  // here we do not need to do anything with entropy
         visualizationSize: configs['hashvizSize']!,
         isSymmetric: configs['isSymmetric'] ?? true,
         numColors: configs['numColors'] ?? 3);
@@ -200,4 +204,27 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
 
     return knowledge;
   }
+}
+
+final class DynamicFractalTacitKnowledge implements TacitKnowledge {
+  @override
+  Map<String, dynamic> configs;
+
+  @override
+  TacitKnowledgeParam? param;
+
+  DynamicFractalTacitKnowledge({required this.configs, this.param});
+
+  @override
+  Object? get knowledge {  // change for dynamic fractal
+    Uint8List realParamEntropy = param!.value(suffix: "realP");
+    Uint8List imaginaryParamEntropy = param!.value(suffix: "imagP");
+
+
+    String realParam = '2.$realParamEntropy';
+    String imaginaryParam = '0.$imaginaryParamEntropy';
+
+    return Point(double.parse(realParam), double.parse(imaginaryParam)); // new exponent
+  }
+
 }

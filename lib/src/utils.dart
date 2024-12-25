@@ -1,8 +1,12 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
+import 'package:t3_crypto_objects/crypto_objects.dart';
+
 /// A path representation of a traversed nodes in a tree.
-class DerivationPath<N extends int> extends Iterable<N> {
+class DerivationPath<N extends EntropyBytes> extends Iterable<N> { // we will have binary data instead of int
+
+
   final List<N> _nodesList;
 
   DerivationPath({

@@ -30,23 +30,23 @@ void main() {
 
   print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
   greatwallProtocolWithFormosa.makeTacitDerivation(
-    choiceNumber: 1,
+    choice: "1",
   ); // Choose the first palette
   print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
   greatwallProtocolWithFormosa.makeTacitDerivation(
-    choiceNumber: 2,
+    choice: "2",
   ); // Choose the second palette
   print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
   greatwallProtocolWithFormosa.makeTacitDerivation(
-    choiceNumber: 3,
+    choice: "3",
   ); // Choose the third palette
   print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
   greatwallProtocolWithFormosa.makeTacitDerivation(
-    choiceNumber: 1,
+    choice: "1",
   ); // Choose the first palette
   print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
   greatwallProtocolWithFormosa.makeTacitDerivation(
-    choiceNumber: 2,
+    choice: "2",
   ); // Choose the second palette
 
   // Finish the protocol derivation process.

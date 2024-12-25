@@ -28,13 +28,13 @@ class GreatWall {
   late Node _currentNode;
   late int _currentLevel;
   late List<int> _shuffledArityIndexes;
-  late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
+  late Map<EntropyBytes, TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
   final TacitKnowledge _tacitKnowledge;
 
   final DerivationPath _derivationPath = DerivationPath();
-  final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge =
+  final Map<DerivationPath, EntropyBytes> _savedDerivedStates = {};
+  final Map<DerivationPath, Map<EntropyBytes, TacitKnowledge>> _savedDerivedPathKnowledge =
       {};
 
   // Protocol control fields
@@ -77,7 +77,7 @@ class GreatWall {
 
   /// Get the tacit knowledge palettes of current level.
   List<TacitKnowledge> get currentLevelKnowledgePalettes =>
-      _shuffledCurrentLevelKnowledgePalettes;
+      _shuffledCurrentLevelKnowledgePalettes.entries.map((entry) => entry.value).toList();
 
   /// Get the result of the protocol derivation process.
   ///
@@ -91,7 +91,7 @@ class GreatWall {
   /// process.
   TacitKnowledge get derivationTacitKnowledge => _tacitKnowledge;
 
-  Map<DerivationPath, Uint8List> get savedDerivedStates => _savedDerivedStates;
+  Map<DerivationPath, EntropyBytes> get savedDerivedStates => _savedDerivedStates;
 
   set derivationTacitKnowledge(TacitKnowledge tacitKnowledge) {
     tacitKnowledge = tacitKnowledge;
@@ -156,18 +156,18 @@ class GreatWall {
   ///
   /// The finishing requirements are that the protocol is correctly started
   /// and initialized and the required steps of tacit derivation are filled.
-  void finishDerivation() {
+  void finishDerivation() {  // todo: this method is useless or incomplete
     if (isStarted && isInitialized && _currentLevel == treeDepth + 1) {
       TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
       switch (tacitKnowledge) {
         case FormosaTacitKnowledge():
-          DerivationPath tempPath = DerivationPath();
-          List<TacitKnowledge> chosenKnowledgeList = [];
-          for (int node in _derivationPath) {
-            List<TacitKnowledge> levelKnowledgeList =
+          DerivationPath tempPath = DerivationPath(); // empty derivation path
+          List<TacitKnowledge> chosenKnowledgeList = []; // empty list of chosen knowledge
+          for (EntropyBytes node in _derivationPath) { // we go through the derivation path of the user one final time
+            Map<EntropyBytes, TacitKnowledge> levelKnowledgeList =
                 _savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[node]!;
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
@@ -184,19 +184,36 @@ class GreatWall {
         case HashVizTacitKnowledge():
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
-          for (int node in _derivationPath) {
-            List<TacitKnowledge> levelKnowledgeList =
-                _savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
+          for (EntropyBytes node in _derivationPath) {
+            Map<EntropyBytes, TacitKnowledge> levelKnowledgeList =
+            _savedDerivedPathKnowledge[tempPath]!;
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[node]!;
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
+        case DynamicFractalTacitKnowledge():
+          DerivationPath tempPath = DerivationPath();
+          List<TacitKnowledge> chosenKnowledgeList = [];
+          for (EntropyBytes node in _derivationPath) {
+            Map<EntropyBytes, TacitKnowledge> levelKnowledgeList =
+            _savedDerivedPathKnowledge[tempPath]!;
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[node]!;
+            chosenKnowledgeList.add(chosenKnowledge);
+            tempPath.add(node);
+          }
+
       }
       _isFinished = true;
     } else {
       print('Derivation does not started yet or not completed.');
       _isFinished = false;
     }
+  }
+
+  EntropyBytes _computeHash(String data) {
+    Uint8List adjustedData = Uint8List.fromList(data.runes.map((charCode) => charCode & 0xFF).toList());
+    EntropyBytes hash = EntropyBytes(adjustedData);
+    return argon2derivationService.deriveWithModerateMemory(hash);
   }
 
   /// Reset the [GreatWall] protocol derivation process to its initial state.
@@ -207,7 +224,7 @@ class GreatWall {
     _sa3 = Sa3();
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
-    _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
+    _shuffledCurrentLevelKnowledgePalettes = {};
 
     derivationTacitKnowledge = _tacitKnowledge;
     _derivationPath.clear();
@@ -215,29 +232,33 @@ class GreatWall {
     _savedDerivedPathKnowledge.clear();
 
     _isInitialized = true;
+    _isStarted = false;
+    _isCanceled = false;
+    _isFinished = false;
   }
 
-  /// Drive the [_currentNode] from the user choice [choiceNumber].
+  /// Drive the [_currentNode] from the user choice [choice].
   ///
-  /// If [choiceNumber] is 0, the protocol will go back one level to its
+  /// If [choice] is 0, the protocol will go back one level to its
   /// previous state, if it is greater 0 the protocol will update the state
   /// depending on this choice.
-  void makeTacitDerivation({required int choiceNumber}) {
+  void makeTacitDerivation({required String choice}) {
     if (isStarted &&
         !isCanceled &&
-        _savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
-      if (choiceNumber > 0) {
+        _savedDerivedPathKnowledge.containsKey(_derivationPath)) {
+      if (choice != "0") {
         _currentLevel += 1;
-        _derivationPath.add(choiceNumber);
+        EntropyBytes choiceHash = _computeHash(choice);
+        _derivationPath.add(choiceHash);
 
-        if (_savedDerivedStates.containsKey(_derivationPath.copy())) {
-          _currentNode.value = _savedDerivedStates[_derivationPath]!;
+        if (_savedDerivedStates.containsKey(_derivationPath)) {
+          _currentNode.value = _savedDerivedStates[_derivationPath]!.toBytes();
         } else {
           _currentNode.value = Uint8List.fromList(
-            _currentNode.value + [_shuffledArityIndexes[choiceNumber - 1]],
+            _currentNode.value + choiceHash.toBytes()
           );
           _currentNode.value = argon2derivationService.deriveWithModerateMemory(_currentNode).value;
-          _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
+          _savedDerivedStates[_derivationPath] = EntropyBytes(_currentNode.value);
         }
 
         generateLevelKnowledgePalettes(_currentNode.value);
@@ -267,9 +288,10 @@ class GreatWall {
       _isStarted = false;
     }
   }
-
-  Uint8List getSelectedNode(Uint8List currentHash, int choiceNumber) {
-    Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
+  // todo: cleanup needed, the following method is not used
+  Uint8List getSelectedNode(Uint8List currentHash, String choiceNumber) {
+    EntropyBytes choiceHash = _computeHash(choiceNumber);
+    Uint8List hash = Uint8List.fromList(currentHash + choiceHash.toBytes());
     return argon2derivationService.deriveWithModerateMemory(EntropyBytes(hash)).value;
   }
 
@@ -278,8 +300,11 @@ class GreatWall {
   /// If the current path has saved palettes, it uses them. Otherwise,
   /// creates and saves a list with length [GreatWall.treeArity] of shuffled
   /// palettes of [TacitKnowledge]. Returns the list of shuffled palettes.
-  List<TacitKnowledge> generateLevelKnowledgePalettes(Uint8List currentHash) {
+  List<TacitKnowledge> generateLevelKnowledgePalettes([Uint8List? currentHash, String selectedPoint = '0']) {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
+    if(currentHash == null) {
+      throw Exception('The current hash is null. This is an invalid argument.');
+    }
 
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
       _shuffledCurrentLevelKnowledgePalettes =
@@ -288,32 +313,35 @@ class GreatWall {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {
         case FormosaTacitKnowledge():
-          List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
-            for (final arityIdx in _shuffledArityIndexes)
-              FormosaTacitKnowledge(
+          Map<EntropyBytes, TacitKnowledge> shuffledFormosaPalettes = {};
+            for (final arityIdx in _shuffledArityIndexes) {
+              EntropyBytes choiceHash = _computeHash(arityIdx.toString());
+              shuffledFormosaPalettes[choiceHash] = FormosaTacitKnowledge(
                 configs: tacitKnowledge.configs,
                 param: TacitKnowledgeParam(
                   name: 'formosaParam',
                   initialState: currentHash,
-                  adjustmentValue: Uint8List.fromList([arityIdx]),
+                  adjustmentValue: choiceHash.toBytes(),
                 ),
-              )
-          ];
-          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+              );
+            }
+          _savedDerivedPathKnowledge[_derivationPath] =
               shuffledFormosaPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledFormosaPalettes;
         case HashVizTacitKnowledge():
-          List<HashVizTacitKnowledge> shuffledHashVizPalettes = [
+          Map<EntropyBytes, HashVizTacitKnowledge> shuffledHashVizPalettes = {};
             for (final arityIdx in _shuffledArityIndexes)
-              HashVizTacitKnowledge(
-                configs: tacitKnowledge.configs,
-                param: TacitKnowledgeParam(
-                  name: 'hashvizParam',
-                  initialState: currentHash,
-                  adjustmentValue: Uint8List.fromList([arityIdx]),
-                ),
-              )
-          ];
+              {
+                EntropyBytes choiceHash = _computeHash(arityIdx.toString());
+                shuffledHashVizPalettes[choiceHash]=  HashVizTacitKnowledge(
+                  configs: tacitKnowledge.configs,
+                  param: TacitKnowledgeParam(
+                    name: 'hashvizParam',
+                    initialState: currentHash,
+                    adjustmentValue: choiceHash.toBytes(),
+                  ),
+                );
+              }
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledHashVizPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledHashVizPalettes;
@@ -335,9 +363,23 @@ class GreatWall {
         // case HashVizTacitKnowledge():
         //   List<FractalTacitKnowledge> shuffledFractalPalettes = [];
         //   shuffledPalettes = shuffledFractalPalettes;
+
+        case DynamicFractalTacitKnowledge():
+          Map<EntropyBytes, DynamicFractalTacitKnowledge> shuffledDynamicFractalPalettes = {};
+          EntropyBytes choiceHash = _computeHash(selectedPoint.toString());
+          shuffledDynamicFractalPalettes[choiceHash] = DynamicFractalTacitKnowledge(
+                configs: tacitKnowledge.configs,
+                param: TacitKnowledgeParam(
+                  name: 'dynamicFractalParam',
+                  initialState: currentHash,
+                  adjustmentValue: choiceHash.toBytes(),
+                ),
+              );
+          _savedDerivedPathKnowledge[_derivationPath] = shuffledDynamicFractalPalettes;
+          _shuffledCurrentLevelKnowledgePalettes = shuffledDynamicFractalPalettes;
       }
     }
-    return _shuffledCurrentLevelKnowledgePalettes;
+    return _shuffledCurrentLevelKnowledgePalettes.entries.map((entry) => entry.value).toList();
   }
 
   /// Performs the explicit derivation process, updating seeds and hashes.
@@ -364,7 +406,7 @@ class GreatWall {
 
     _sa3.from(_sa0, _sa2);
     _currentNode.value = _sa3.value;
-    _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
+    _savedDerivedStates[_derivationPath.copy()] = EntropyBytes(_currentNode.value);
 
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;
@@ -380,7 +422,7 @@ class GreatWall {
     _currentLevel -= 1;
     _derivationPath.pop();
 
-    _currentNode.value = _savedDerivedStates[_derivationPath]!;
+    _currentNode.value = _savedDerivedStates[_derivationPath]!.toBytes();
   }
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].

@@ -159,6 +159,75 @@ final class FractalTacitKnowledge implements TacitKnowledge {
   }
 }
 
+/// A class that can be instantiated to create a fractal tacit knowledge.
+final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
+  late Fractal _knowledgeGenerator;
+
+  @override
+  Map<String, dynamic> configs;
+
+  @override
+  TacitKnowledgeParam? param;
+
+  AnimatedFractalTacitKnowledge({required this.configs, this.param});
+
+  /// Returns an static fractal image.
+  ///
+  /// Returns the image that represents the actual tacit knowledge of the
+  /// [FractalTacitKnowledge] tacit knowledge or `null` if the [param] is
+  /// not provided. Throws on [Exception] if the [TacitKnowledge.configs]
+  /// is empty because this will generate an insecure [TacitKnowledge].
+  @override
+  Future<List<Uint8List>> get knowledge {
+    if (configs.isEmpty) {
+      throw Exception(
+        'The configs param is empty which is insecure argument. Please,'
+        ' to get a correct and secure tacit knowledge, provide the'
+        ' TacitKnowledge implementation with the correct configs argument.',
+      );
+    }
+    if (param?.value == null || param!.value.isEmpty) {
+      throw Exception(
+          'Param value is empty or null. Cannot generate knowledge.');
+    }
+
+    double phaseOffset =
+        param!.value.isNotEmpty ? param!.value[0].toDouble() : 0.0;
+    double frequencyK =
+        param!.value.length > 1 ? param!.value[1].toDouble() : 0.0;
+    double frequencyL =
+        param!.value.length > 2 ? param!.value[2].toDouble() : 0.0;
+
+    Map<String, double> params = {
+      'phaseOffset': phaseOffset,
+      'frequencyK': frequencyK,
+      'frequencyL': frequencyL,
+    };
+
+    _knowledgeGenerator = Fractal(
+      funcType: Fractal.burningShip,
+      width: configs['width'] ?? 300,
+      height: configs['height'] ?? 300,
+      xMin: configs['xMin'] ?? -2.5,
+      xMax: configs['xMax'] ?? 2.0,
+      yMin: configs['yMin'] ?? -2.0,
+      yMax: configs['yMax'] ?? 0.8,
+      escapeRadius: configs['escapeRadius'] ?? 4,
+      maxIters: configs['maxIters'] ?? 30,
+    );
+
+    _knowledgeGenerator.update();
+
+    return _knowledgeGenerator.generateAnimation(
+        n: configs['n'],
+        A: configs['A'],
+        B: configs['B'],
+        phi: params['phaseOffset'] ?? 0.0,
+        k: params['frequencyK'] ?? 0.0,
+        l: params['frequencyL'] ?? 0.0);
+  }
+}
+
 /// A class that can be instantiated to create a formosa tacit knowledge.
 final class HashVizTacitKnowledge implements TacitKnowledge {
   late Hashviz _knowledgeGenerator;

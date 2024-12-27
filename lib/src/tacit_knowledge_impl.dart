@@ -194,9 +194,9 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
     double phaseOffset =
         param!.value.isNotEmpty ? param!.value[0].toDouble() : 0.0;
     double frequencyK =
-        param!.value.length > 1 ? param!.value[1].toDouble() : 0.0;
+        param!.value.length > 1 ? param!.value[1].toDouble() : 1;
     double frequencyL =
-        param!.value.length > 2 ? param!.value[2].toDouble() : 0.0;
+        param!.value.length > 2 ? param!.value[2].toDouble() : 1;
 
     Map<String, double> params = {
       'phaseOffset': phaseOffset,
@@ -223,8 +223,8 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
         A: configs['A'],
         B: configs['B'],
         phi: params['phaseOffset'] ?? 0.0,
-        k: params['frequencyK'] ?? 0.0,
-        l: params['frequencyL'] ?? 0.0);
+        k: params['frequencyK'] ?? 1,
+        l: params['frequencyL'] ?? 1);
   }
 }
 

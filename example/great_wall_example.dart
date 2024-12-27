@@ -43,23 +43,11 @@ void main() {
   );
 
   Map<String, dynamic> animatedFractalConfigs = {
-    'funcType': 'burningship',
-    'xMin': -2.5,
-    'xMax': 2.0,
-    'yMin': -2.0,
-    'yMax': 0.8,
-    'realP': 2.0,
-    'imagP': 0.0,
-    'width': 500,
-    'height': 500,
-    'escapeRadius': 4,
-    'maxIters': 30,
-    'n': 30,
+    'n': 15,
     'A': 0.25,
     'B': 0.25,
-    'phaseOffset': pi / 4,
-    'frequencyK': 1,
-    'frequencyL': 1
+    'width': 500,
+    'height': 500,
   };
 
   GreatWall greatwallProtocolWithAnimatedFractal = GreatWall(

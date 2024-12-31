@@ -23,7 +23,7 @@ dependencies:
   fractal:
     git:
       url: git@github.com:T3-InfoSec/t3-fractals-dart.git
-      ref: fix--improvement-on-fractal-animation
+      ref: issue26_improvement-on-fractal-animation
   t3_crypto_objects:
     git:
       url: git@github.com:T3-InfoSec/t3-crypto-objects-dart.git

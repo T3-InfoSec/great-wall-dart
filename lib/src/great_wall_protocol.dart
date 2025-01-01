@@ -301,6 +301,21 @@ class GreatWall {
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledHashVizPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledHashVizPalettes;
+        case FractalTacitKnowledge():
+          List<FractalTacitKnowledge> shuffledFractalPalettes = [
+            for (final arityIdx in _shuffledArityIndexes)
+              FractalTacitKnowledge(
+                configs: tacitKnowledge.configs,
+                param: TacitKnowledgeParam(
+                  name: 'fractalParam',
+                  initialState: currentHash,
+                  adjustmentValue: Uint8List.fromList([arityIdx]),
+                ),
+              )
+          ];
+          _savedDerivedPathKnowledge[_derivationPath.copy()] =
+              shuffledFractalPalettes;
+          _shuffledCurrentLevelKnowledgePalettes = shuffledFractalPalettes;
         case AnimatedFractalTacitKnowledge():
           List<AnimatedFractalTacitKnowledge> shuffledAnimatedFractalPalettes =
               [
@@ -317,21 +332,6 @@ class GreatWall {
               shuffledAnimatedFractalPalettes;
           _shuffledCurrentLevelKnowledgePalettes =
               shuffledAnimatedFractalPalettes;
-        case FractalTacitKnowledge():
-          List<FractalTacitKnowledge> shuffledFractalPalettes = [
-            for (final arityIdx in _shuffledArityIndexes)
-              FractalTacitKnowledge(
-                configs: tacitKnowledge.configs,
-                param: TacitKnowledgeParam(
-                  name: 'fractalParam',
-                  initialState: currentHash,
-                  adjustmentValue: Uint8List.fromList([arityIdx]),
-                ),
-              )
-          ];
-          _savedDerivedPathKnowledge[_derivationPath.copy()] =
-              shuffledFractalPalettes;
-          _shuffledCurrentLevelKnowledgePalettes = shuffledFractalPalettes;
       }
     }
     return _shuffledCurrentLevelKnowledgePalettes;

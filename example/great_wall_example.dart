@@ -59,8 +59,8 @@ void main() {
   var protocols = List.of([
     // greatwallProtocolWithFormosa,
     // greatwallProtocolWithHashViz,
-    // greatwallProtocolWithFractal,
-    greatwallProtocolWithAnimatedFractal
+    greatwallProtocolWithFractal,
+    // greatwallProtocolWithAnimatedFractal
   ]);
   for (var protocol in protocols) {
     // Call the following if you need to explicitly re-initializing the protocol

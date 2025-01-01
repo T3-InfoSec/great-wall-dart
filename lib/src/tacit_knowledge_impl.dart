@@ -120,7 +120,7 @@ final class FractalTacitKnowledge implements TacitKnowledge {
   /// not provided. Throws on [Exception] if the [TacitKnowledge.configs]
   /// is empty because this will generate an insecure [TacitKnowledge].
   @override
-  Uint8List? get knowledge {
+  Future<Uint8List?> get knowledge async {
     if (configs.isEmpty) {
       throw Exception(
         'The configs param is empty which is insecure argument. Please,'
@@ -155,7 +155,9 @@ final class FractalTacitKnowledge implements TacitKnowledge {
 
     _knowledgeGenerator.update();
 
-    return _knowledgeGenerator.imagePixels;
+    Uint8List? imagePixels = await _knowledgeGenerator.burningshipSet();
+
+    return imagePixels;
   }
 }
 

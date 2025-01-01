@@ -120,17 +120,13 @@ final class FractalTacitKnowledge implements TacitKnowledge {
   /// not provided. Throws on [Exception] if the [TacitKnowledge.configs]
   /// is empty because this will generate an insecure [TacitKnowledge].
   @override
-  Future<Uint8List?> get knowledge async {
+  Future<Uint8List> get knowledge async {
     if (configs.isEmpty) {
       throw Exception(
         'The configs param is empty which is insecure argument. Please,'
         ' to get a correct and secure tacit knowledge, provide the'
         ' TacitKnowledge implementation with the correct configs argument.',
       );
-    }
-
-    if (param == null) {
-      return null;
     }
 
     // NOTE: Inverting the order of digits to minimize Benford's law bias.
@@ -155,9 +151,10 @@ final class FractalTacitKnowledge implements TacitKnowledge {
 
     _knowledgeGenerator.update();
 
-    Uint8List? imagePixels = await _knowledgeGenerator.burningshipSet();
+    Future<Uint8List> imagePixels = _knowledgeGenerator.burningshipSet();
+    Uint8List frames = await imagePixels;
 
-    return imagePixels;
+    return frames;
   }
 }
 
@@ -224,9 +221,9 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
         n: configs['n'],
         A: configs['A'],
         B: configs['B'],
-        phi: params['phaseOffset'] ?? 0.0,
-        k: params['frequencyK'] ?? 1,
-        l: params['frequencyL'] ?? 1);
+        phi: params['phaseOffset']!,
+        k: params['frequencyK']!,
+        l: params['frequencyL']!);
   }
 }
 

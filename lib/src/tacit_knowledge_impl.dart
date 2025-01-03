@@ -15,7 +15,7 @@ final class TacitKnowledgeParam {
 
   final String name;
   final Uint8List initialState;
-  final Uint8List adjustmentValue;
+  final Uint8List adjustmentValue; // we receive a hash instead of a int as Uint8list
 
   TacitKnowledgeParam({
     required this.name,

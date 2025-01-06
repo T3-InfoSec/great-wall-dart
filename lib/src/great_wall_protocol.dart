@@ -4,6 +4,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:t3_crypto_objects/crypto_objects.dart';
 
 import 'tacit_knowledge_impl.dart';
@@ -171,7 +172,11 @@ class GreatWall {
             // print('levelKnowledgeList, $levelKnowledgeList');
             // print('node, ${node.hashCode}');
             // print('levelKnowledgeList[node], ${levelKnowledgeList[node]}');
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node]!;
+            // TacitKnowledge chosenKnowledge = levelKnowledgeList[node]!;
+            var matchedKey = levelKnowledgeList.keys.firstWhere(
+                    (key) => ListEquality().equals(key, node)
+            );
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[matchedKey]!;
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
@@ -191,7 +196,10 @@ class GreatWall {
           for (Uint8List node in derivationPath) {
             Map<Uint8List, TacitKnowledge> levelKnowledgeList =
             savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node]!;
+            var matchedKey = levelKnowledgeList.keys.firstWhere(
+                    (key) => ListEquality().equals(key, node)
+            );
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[matchedKey]!;
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
@@ -201,7 +209,10 @@ class GreatWall {
           for (Uint8List node in derivationPath) {
             Map<Uint8List, TacitKnowledge> levelKnowledgeList =
             savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node]!;
+            var matchedKey = levelKnowledgeList.keys.firstWhere(
+                    (key) => ListEquality().equals(key, node)
+            );
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[matchedKey]!;
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
@@ -247,7 +258,6 @@ class GreatWall {
   /// previous state, if it is greater 0 the protocol will update the state
   /// depending on this choice.
   void makeTacitDerivation({required String choice}) {
-    print('choice: $choice');
     if (isStarted &&
         !isCanceled &&
         savedDerivedPathKnowledge.containsKey(derivationPath)) {
@@ -272,7 +282,6 @@ class GreatWall {
         generateLevelKnowledgePalettes(_currentNode.value);
       }
     } else {
-      // print("savedDerivedPathKnowledge, $savedDerivedPathKnowledge");
       print(
         'Derivation does not started yet. Please, start the derivation'
         ' process first.',
@@ -444,7 +453,7 @@ class GreatWall {
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].
   void _shuffleArityIndexes() {
     _shuffledArityIndexes = [for (var idx = 1; idx <= treeArity; idx++) idx];
-
+    print(_shuffledArityIndexes);
     _shuffledArityIndexes.shuffle(Random.secure());
   }
 }

@@ -136,6 +136,8 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       'realParam': double.parse(realParam),
       'imaginaryParam': double.parse(imaginaryParam)
     };
+
+    print(params);
     _knowledgeGenerator = Fractal(
       xMin: configs['xMin'] ?? -2.5,
       xMax: configs['xMax'] ?? 2.0,
@@ -190,21 +192,25 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
           'Param value is empty or null. Cannot generate knowledge.');
     }
 
-    double phaseOffset =
-        param!.value.isNotEmpty ? param!.value[0].toDouble() : 0.0;
-    double frequencyK =
-        param!.value.length > 1 ? param!.value[1].toDouble() : 1;
-    double frequencyL =
-        param!.value.length > 2 ? param!.value[2].toDouble() : 1;
+    String phaseOffset = '1.${int.parse(param!.value.reversed.join())}';
+    String frequencyK = '1.${int.parse(param!.value.reversed.join())}';
+    String realParam = '2.${int.parse(param!.value.reversed.join())}';
+    String imaginaryParam = '0.${int.parse(param!.value.reversed.join())}';
 
     Map<String, double> params = {
-      'phaseOffset': phaseOffset,
-      'frequencyK': frequencyK,
-      'frequencyL': frequencyL,
+      'phaseOffset': 3 * double.parse(phaseOffset),
+      'frequencyK': double.parse(frequencyK),
+      'frequencyL': double.parse(frequencyK) + 0.2,
+      'realParam': double.parse(realParam),
+      'imaginaryParam': double.parse(imaginaryParam)
     };
+
+    print(params);
 
     _knowledgeGenerator = Fractal(
       funcType: Fractal.burningShip,
+      realP: params['realParam']!,
+      imagP: params['imaginaryParam']!,
       width: configs['width'] ?? 300,
       height: configs['height'] ?? 300,
       xMin: configs['xMin'] ?? -2.5,

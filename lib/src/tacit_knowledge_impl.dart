@@ -137,7 +137,6 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       'imaginaryParam': double.parse(imaginaryParam)
     };
 
-    print(params);
     _knowledgeGenerator = Fractal(
       xMin: configs['xMin'] ?? -2.5,
       xMax: configs['xMax'] ?? 2.0,
@@ -204,8 +203,6 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
       'realParam': double.parse(realParam),
       'imaginaryParam': double.parse(imaginaryParam)
     };
-
-    print(params);
 
     _knowledgeGenerator = Fractal(
       funcType: Fractal.burningShip,

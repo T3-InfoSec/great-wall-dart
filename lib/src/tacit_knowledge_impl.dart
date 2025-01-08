@@ -204,12 +204,12 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
 
     // Generate random values for the multipliers and additions
     double phaseMultiplier = _generateRandomInRange(1, 6);
-    double frequencyAddition = _generateRandomInRange(0, 1);
+    double frequencyMultiplier = _generateRandomInRange(0.45, 1.5);
 
     // Calculate parameters
     double phaseOffset = baseValue * phaseMultiplier;
     double frequencyK = 1 + baseValue;
-    double frequencyL = frequencyK + frequencyAddition;
+    double frequencyL = frequencyK * frequencyMultiplier;
     double realParam = 2 + baseValue;
     double imaginaryParam = baseValue;
 

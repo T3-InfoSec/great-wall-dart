@@ -2,6 +2,7 @@
 // Copyright (c) 2024, ...
 
 import 'dart:typed_data';
+import 'dart:math';
 
 import 'package:fractal/fractal.dart';
 import 'package:hashlib/hashlib.dart';
@@ -171,6 +172,12 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
 
   AnimatedFractalTacitKnowledge({required this.configs, this.param});
 
+  /// Helper function to generate random numbers in a range
+  double _generateRandomInRange(double min, double max) {
+    final random = Random();
+    return min + random.nextDouble() * (max - min);
+  }
+
   /// Returns an static fractal image.
   ///
   /// Returns the image that represents the actual tacit knowledge of the
@@ -191,18 +198,30 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
           'Param value is empty or null. Cannot generate knowledge.');
     }
 
-    String phaseOffset = '1.${int.parse(param!.value.reversed.join())}';
-    String frequencyK = '1.${int.parse(param!.value.reversed.join())}';
-    String realParam = '2.${int.parse(param!.value.reversed.join())}';
-    String imaginaryParam = '0.${int.parse(param!.value.reversed.join())}';
+    // Extract reversed value as a base value
+    String reversedValue = param!.value.reversed.join();
+    double baseValue = double.parse('0.$reversedValue');
+
+    // Generate random values for the multipliers and additions
+    double phaseMultiplier = _generateRandomInRange(1, 6);
+    double frequencyAddition = _generateRandomInRange(0, 1);
+
+    // Calculate parameters
+    double phaseOffset = baseValue * phaseMultiplier;
+    double frequencyK = 1 + baseValue;
+    double frequencyL = frequencyK + frequencyAddition;
+    double realParam = 2 + baseValue;
+    double imaginaryParam = baseValue;
 
     Map<String, double> params = {
-      'phaseOffset': 3 * double.parse(phaseOffset),
-      'frequencyK': double.parse(frequencyK),
-      'frequencyL': double.parse(frequencyK) + 0.2,
-      'realParam': double.parse(realParam),
-      'imaginaryParam': double.parse(imaginaryParam)
+      'phaseOffset': phaseOffset,
+      'frequencyK': frequencyK,
+      'frequencyL': frequencyL,
+      'realParam': realParam,
+      'imaginaryParam': imaginaryParam
     };
+
+    print(params);
 
     _knowledgeGenerator = Fractal(
       funcType: Fractal.burningShip,

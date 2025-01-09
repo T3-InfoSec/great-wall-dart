@@ -2,7 +2,6 @@
 // Copyright (c) 2024, ...
 
 import 'dart:typed_data';
-import 'dart:math';
 
 import 'package:fractal/fractal.dart';
 import 'package:hashlib/hashlib.dart';
@@ -172,12 +171,6 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
 
   AnimatedFractalTacitKnowledge({required this.configs, this.param});
 
-  /// Helper function to generate random numbers in a range
-  double _generateRandomInRange(double min, double max) {
-    final random = Random();
-    return min + random.nextDouble() * (max - min);
-  }
-
   /// Returns an static fractal image.
   ///
   /// Returns the image that represents the actual tacit knowledge of the
@@ -201,15 +194,12 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
     // Extract reversed value as a base value
     String reversedValue = param!.value.reversed.join();
     double baseValue = double.parse('0.$reversedValue');
-
+    double frequencyK = baseValue * 10;
+    double frequencyL = double.parse((baseValue * 100).toString().substring(1));
     // Generate random values for the multipliers and additions
-    double phaseMultiplier = _generateRandomInRange(1, 6);
-    double frequencyMultiplier = _generateRandomInRange(0.45, 1.5);
 
     // Calculate parameters
-    double phaseOffset = baseValue * phaseMultiplier;
-    double frequencyK = 1 + baseValue;
-    double frequencyL = frequencyK * frequencyMultiplier;
+    double phaseOffset = baseValue * 10;
     double realParam = 2 + baseValue;
     double imaginaryParam = baseValue;
 

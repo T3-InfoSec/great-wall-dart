@@ -11,11 +11,11 @@ import 'package:t3_hashviz/hashviz.dart';
 /// A tacit knowledge param that can be passed for any tacit knowledge
 /// type as a parameter to tweak (in a tacit way) the tacit knowledge.
 final class TacitKnowledgeParam {
-  static final Uint8List argon2Salt = Uint8List(32);  // change for dynamic fractal
+  static final Uint8List argon2Salt = Uint8List(32);
 
   final String name;
   final Uint8List initialState;
-  final Uint8List adjustmentValue; // we receive a hash instead of a int as Uint8list
+  final Uint8List adjustmentValue;
 
   TacitKnowledgeParam({
     required this.name,
@@ -196,7 +196,7 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
     }
 
     _knowledgeGenerator = Hashviz(
-        hashToVisualize: param!.value().toString(),  // here we do not need to do anything with entropy
+        hashToVisualize: param!.value().toString(),
         visualizationSize: configs['hashvizSize']!,
         isSymmetric: configs['isSymmetric'] ?? true,
         numColors: configs['numColors'] ?? 3);
@@ -216,7 +216,7 @@ final class DynamicFractalTacitKnowledge implements TacitKnowledge {
   DynamicFractalTacitKnowledge({required this.configs, this.param});
 
   @override
-  Object? get knowledge {  // change for dynamic fractal
+  Object? get knowledge {
     Uint8List realParamEntropy = param!.value(suffix: "realP");
     Uint8List imaginaryParamEntropy = param!.value(suffix: "imagP");
 
@@ -224,7 +224,7 @@ final class DynamicFractalTacitKnowledge implements TacitKnowledge {
     String realParam = '2.$realParamEntropy';
     String imaginaryParam = '0.$imaginaryParamEntropy';
 
-    return Point(double.parse(realParam), double.parse(imaginaryParam)); // new exponent
+    return Point(double.parse(realParam), double.parse(imaginaryParam));
   }
 
 }

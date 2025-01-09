@@ -3,8 +3,6 @@
 
 import 'dart:typed_data';
 
-import 'package:t3_crypto_objects/crypto_objects.dart';
-
 /// A path representation of a traversed nodes in a tree.
 class DerivationPath<N extends Uint8List> extends Iterable<N> { // we will have binary data instead of int
 

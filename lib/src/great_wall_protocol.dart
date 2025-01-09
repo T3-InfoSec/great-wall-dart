@@ -35,7 +35,7 @@ class GreatWall {
 
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, Map<Uint8List, TacitKnowledge>> _savedDerivedPathKnowledge = // list of hash of the index as string, index string hash, knowledge
+  final Map<DerivationPath, Map<Uint8List, TacitKnowledge>> _savedDerivedPathKnowledge =
       {};
 
   // Protocol control fields
@@ -163,9 +163,9 @@ class GreatWall {
 
       switch (tacitKnowledge) {
         case FormosaTacitKnowledge():
-          DerivationPath tempPath = DerivationPath(); // empty derivation path
-          List<TacitKnowledge> chosenKnowledgeList = []; // empty list of chosen knowledge
-          for (Uint8List node in _derivationPath) { // we go through the derivation path of the user one final time
+          DerivationPath tempPath = DerivationPath();
+          List<TacitKnowledge> chosenKnowledgeList = [];
+          for (Uint8List node in _derivationPath) {
             Map<Uint8List, TacitKnowledge> levelKnowledgeList =
                 _savedDerivedPathKnowledge[tempPath.copy()]!;
             var matchedKey = levelKnowledgeList.keys.firstWhere(

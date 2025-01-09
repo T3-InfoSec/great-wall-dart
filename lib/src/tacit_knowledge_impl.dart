@@ -194,12 +194,12 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
     // Extract reversed value as a base value
     String reversedValue = param!.value.reversed.join();
     double baseValue = double.parse('0.$reversedValue');
-    double frequencyK = baseValue * 10;
-    double frequencyL = double.parse((baseValue * 100).toString().substring(1));
-    // Generate random values for the multipliers and additions
+    double frequencyK = (baseValue * 10) % 4;
+    double frequencyL =
+        (double.parse((baseValue * 100).toString().substring(1))) % 4;
 
     // Calculate parameters
-    double phaseOffset = baseValue * 10;
+    double phaseOffset = (baseValue * 10) % 6.28;
     double realParam = 2 + baseValue;
     double imaginaryParam = baseValue;
 

@@ -4,6 +4,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:t3_crypto_objects/crypto_objects.dart';
 
 import 'tacit_knowledge_impl.dart';
@@ -28,13 +29,13 @@ class GreatWall {
   late Node _currentNode;
   late int _currentLevel;
   late List<int> _shuffledArityIndexes;
-  late List<TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
+  late Map<Uint8List, TacitKnowledge> _shuffledCurrentLevelKnowledgePalettes;
 
   final TacitKnowledge _tacitKnowledge;
 
   final DerivationPath _derivationPath = DerivationPath();
   final Map<DerivationPath, Uint8List> _savedDerivedStates = {};
-  final Map<DerivationPath, List<TacitKnowledge>> _savedDerivedPathKnowledge =
+  final Map<DerivationPath, Map<Uint8List, TacitKnowledge>> _savedDerivedPathKnowledge =
       {};
 
   // Protocol control fields
@@ -77,7 +78,7 @@ class GreatWall {
 
   /// Get the tacit knowledge palettes of current level.
   List<TacitKnowledge> get currentLevelKnowledgePalettes =>
-      _shuffledCurrentLevelKnowledgePalettes;
+      _shuffledCurrentLevelKnowledgePalettes.entries.map((entry) => entry.value).toList();
 
   /// Get the result of the protocol derivation process.
   ///
@@ -156,7 +157,7 @@ class GreatWall {
   ///
   /// The finishing requirements are that the protocol is correctly started
   /// and initialized and the required steps of tacit derivation are filled.
-  void finishDerivation() {
+  void finishDerivation() {  // todo: this method is useless or incomplete
     if (isStarted && isInitialized && _currentLevel == treeDepth + 1) {
       TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
@@ -164,10 +165,13 @@ class GreatWall {
         case FormosaTacitKnowledge():
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
-          for (int node in _derivationPath) {
-            List<TacitKnowledge> levelKnowledgeList =
-                _savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
+          for (Uint8List node in _derivationPath) {
+            Map<Uint8List, TacitKnowledge> levelKnowledgeList =
+                _savedDerivedPathKnowledge[tempPath.copy()]!;
+            var matchedKey = levelKnowledgeList.keys.firstWhere(
+                    (key) => ListEquality().equals(key, node)
+            );
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[matchedKey]!;
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
@@ -184,19 +188,33 @@ class GreatWall {
         case HashVizTacitKnowledge():
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
-          for (int node in _derivationPath) {
-            List<TacitKnowledge> levelKnowledgeList =
-                _savedDerivedPathKnowledge[tempPath]!;
-            TacitKnowledge chosenKnowledge = levelKnowledgeList[node - 1];
+          for (Uint8List node in _derivationPath) {
+            Map<Uint8List, TacitKnowledge> levelKnowledgeList =
+            _savedDerivedPathKnowledge[tempPath]!;
+            var matchedKey = levelKnowledgeList.keys.firstWhere(
+                    (key) => ListEquality().equals(key, node)
+            );
+            TacitKnowledge chosenKnowledge = levelKnowledgeList[matchedKey]!;
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
+        case DynamicFractalTacitKnowledge():
+          DerivationPath tempPath = DerivationPath();
+          for (Uint8List node in _derivationPath) {
+            tempPath.add(node);
+          }
+
       }
       _isFinished = true;
     } else {
       print('Derivation does not started yet or not completed.');
       _isFinished = false;
     }
+  }
+
+  Uint8List _computeHash(String data) {
+    Uint8List adjustedData = Uint8List.fromList(data.runes.map((charCode) => charCode & 0xFF).toList());
+    return argon2derivationService.deriveWithModerateMemory(EntropyBytes(adjustedData)).toBytes();
   }
 
   /// Reset the [GreatWall] protocol derivation process to its initial state.
@@ -207,7 +225,7 @@ class GreatWall {
     _sa3 = Sa3();
     _currentLevel = 0;
     _shuffledArityIndexes = <int>[];
-    _shuffledCurrentLevelKnowledgePalettes = <TacitKnowledge>[];
+    _shuffledCurrentLevelKnowledgePalettes = {};
 
     derivationTacitKnowledge = _tacitKnowledge;
     _derivationPath.clear();
@@ -215,26 +233,31 @@ class GreatWall {
     _savedDerivedPathKnowledge.clear();
 
     _isInitialized = true;
+    _isStarted = false;
+    _isCanceled = false;
+    _isFinished = false;
+    print('initialization completed');
   }
 
-  /// Drive the [_currentNode] from the user choice [choiceNumber].
+  /// Drive the [_currentNode] from the user choice [choice].
   ///
-  /// If [choiceNumber] is 0, the protocol will go back one level to its
+  /// If [choice] is 0, the protocol will go back one level to its
   /// previous state, if it is greater 0 the protocol will update the state
   /// depending on this choice.
-  void makeTacitDerivation({required int choiceNumber}) {
+  void makeTacitDerivation({required String choice}) {
     if (isStarted &&
         !isCanceled &&
-        _savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
-      if (choiceNumber > 0) {
+        _savedDerivedPathKnowledge.containsKey(_derivationPath)) {
+      if (choice != "0") {
         _currentLevel += 1;
-        _derivationPath.add(choiceNumber);
+        Uint8List choiceHash = _computeHash(choice);
+        _derivationPath.add(choiceHash);
 
-        if (_savedDerivedStates.containsKey(_derivationPath.copy())) {
-          _currentNode.value = _savedDerivedStates[_derivationPath]!;
+        if (_savedDerivedStates.containsKey(_derivationPath)) {
+          _currentNode.value = _savedDerivedStates[_derivationPath.copy()]!;
         } else {
           _currentNode.value = Uint8List.fromList(
-            _currentNode.value + [_shuffledArityIndexes[choiceNumber - 1]],
+            _currentNode.value + choiceHash
           );
           _currentNode.value = argon2derivationService.deriveWithModerateMemory(_currentNode).value;
           _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
@@ -267,9 +290,10 @@ class GreatWall {
       _isStarted = false;
     }
   }
-
-  Uint8List getSelectedNode(Uint8List currentHash, int choiceNumber) {
-    Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
+  // todo: cleanup needed, the following method is not used
+  Uint8List getSelectedNode(Uint8List currentHash, String choiceNumber) {
+    Uint8List choiceHash = _computeHash(choiceNumber);
+    Uint8List hash = Uint8List.fromList(currentHash + choiceHash);
     return argon2derivationService.deriveWithModerateMemory(EntropyBytes(hash)).value;
   }
 
@@ -278,42 +302,48 @@ class GreatWall {
   /// If the current path has saved palettes, it uses them. Otherwise,
   /// creates and saves a list with length [GreatWall.treeArity] of shuffled
   /// palettes of [TacitKnowledge]. Returns the list of shuffled palettes.
-  List<TacitKnowledge> generateLevelKnowledgePalettes(Uint8List currentHash) {
+  List<TacitKnowledge> generateLevelKnowledgePalettes([Uint8List? currentHash, String selectedPoint = '0']) {
     TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
+    if(currentHash == null) {
+      throw Exception('The current hash is null. This is an invalid argument.');
+    }
 
     if (_savedDerivedPathKnowledge.containsKey(_derivationPath.copy())) {
       _shuffledCurrentLevelKnowledgePalettes =
-          _savedDerivedPathKnowledge[_derivationPath]!;
+           _savedDerivedPathKnowledge[_derivationPath.copy()]!;
     } else {
       _shuffleArityIndexes();
       switch (tacitKnowledge) {
         case FormosaTacitKnowledge():
-          List<FormosaTacitKnowledge> shuffledFormosaPalettes = [
-            for (final arityIdx in _shuffledArityIndexes)
-              FormosaTacitKnowledge(
+          Map<Uint8List, TacitKnowledge> shuffledFormosaPalettes = {};
+            for (final arityIdx in _shuffledArityIndexes) {
+              Uint8List choiceHash = _computeHash(arityIdx.toString());
+              shuffledFormosaPalettes[choiceHash] = FormosaTacitKnowledge(
                 configs: tacitKnowledge.configs,
                 param: TacitKnowledgeParam(
                   name: 'formosaParam',
                   initialState: currentHash,
-                  adjustmentValue: Uint8List.fromList([arityIdx]),
+                  adjustmentValue: choiceHash,
                 ),
-              )
-          ];
+              );
+            }
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledFormosaPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledFormosaPalettes;
         case HashVizTacitKnowledge():
-          List<HashVizTacitKnowledge> shuffledHashVizPalettes = [
+          Map<Uint8List, HashVizTacitKnowledge> shuffledHashVizPalettes = {};
             for (final arityIdx in _shuffledArityIndexes)
-              HashVizTacitKnowledge(
-                configs: tacitKnowledge.configs,
-                param: TacitKnowledgeParam(
-                  name: 'hashvizParam',
-                  initialState: currentHash,
-                  adjustmentValue: Uint8List.fromList([arityIdx]),
-                ),
-              )
-          ];
+              {
+                Uint8List choiceHash = _computeHash(arityIdx.toString());
+                shuffledHashVizPalettes[choiceHash]=  HashVizTacitKnowledge(
+                  configs: tacitKnowledge.configs,
+                  param: TacitKnowledgeParam(
+                    name: 'hashvizParam',
+                    initialState: currentHash,
+                    adjustmentValue: choiceHash,
+                  ),
+                );
+              }
           _savedDerivedPathKnowledge[_derivationPath.copy()] =
               shuffledHashVizPalettes;
           _shuffledCurrentLevelKnowledgePalettes = shuffledHashVizPalettes;
@@ -335,9 +365,30 @@ class GreatWall {
         // case HashVizTacitKnowledge():
         //   List<FractalTacitKnowledge> shuffledFractalPalettes = [];
         //   shuffledPalettes = shuffledFractalPalettes;
+
+        case DynamicFractalTacitKnowledge():
+          Map<Uint8List, DynamicFractalTacitKnowledge> shuffledDynamicFractalPalettes = {};
+          Uint8List choiceHash = _computeHash(selectedPoint.toString());
+          shuffledDynamicFractalPalettes[choiceHash] = DynamicFractalTacitKnowledge(
+                configs: tacitKnowledge.configs,
+                param: TacitKnowledgeParam(
+                  name: 'dynamicFractalParam',
+                  initialState: currentHash,
+                  adjustmentValue: choiceHash,
+                ),
+              );
+          _savedDerivedPathKnowledge[_derivationPath.copy()] = shuffledDynamicFractalPalettes;
+          _shuffledCurrentLevelKnowledgePalettes = shuffledDynamicFractalPalettes;
       }
     }
-    return _shuffledCurrentLevelKnowledgePalettes;
+    if(_shuffledCurrentLevelKnowledgePalettes.isEmpty) {
+      return [];
+    }
+    List<TacitKnowledge> knowledgePalettes = [];
+    _shuffledCurrentLevelKnowledgePalettes.forEach((key, value) {
+      knowledgePalettes.add(value);
+    });
+    return knowledgePalettes;
   }
 
   /// Performs the explicit derivation process, updating seeds and hashes.
@@ -365,7 +416,6 @@ class GreatWall {
     _sa3.from(_sa0, _sa2);
     _currentNode.value = _sa3.value;
     _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
-
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;
     generateLevelKnowledgePalettes(_currentNode.value);
@@ -380,13 +430,12 @@ class GreatWall {
     _currentLevel -= 1;
     _derivationPath.pop();
 
-    _currentNode.value = _savedDerivedStates[_derivationPath]!;
+    _currentNode.value = _savedDerivedStates[_derivationPath.copy()]!;
   }
 
   /// Fill and shuffles a list with numbers in range [GreatWall.treeArity].
   void _shuffleArityIndexes() {
-    _shuffledArityIndexes = [for (var idx = 0; idx < treeArity; idx++) idx];
-
+    _shuffledArityIndexes = [for (var idx = 1; idx <= treeArity; idx++) idx];
     _shuffledArityIndexes.shuffle(Random.secure());
   }
 }

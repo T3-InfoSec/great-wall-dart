@@ -349,14 +349,14 @@ class GreatWall {
   /// level-specific knowledge palettes.
   void _makeExplicitDerivation() {
     _sa1.from(_sa0);
-    _currentNode.value = _sa1.value; // TODO: Review the need for the use of node before derivation
+    _currentNode.value = _sa1.value;
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
     _sa2.from(_timeLockPuzzleParam, _sa1);
-    _currentNode.value = _sa2.value; // TODO: Review the need for the use of node before derivation
+    _currentNode.value = _sa2.value;
     if (_isCanceled) {
       print('Derivation canceled');
       return;

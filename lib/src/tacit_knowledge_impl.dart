@@ -24,7 +24,8 @@ final class TacitKnowledgeParam {
   });
 
   /// Get the value that represents the param.
-  Uint8List value({String? suffix, int sliceSize=16}) => _computeValue(suffix, sliceSize: sliceSize);
+  Uint8List value({String? suffix, int sliceSize = 16}) =>
+      _computeValue(suffix, sliceSize: sliceSize);
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
@@ -33,8 +34,9 @@ final class TacitKnowledgeParam {
   // TODO: Enhance the docs.
   Uint8List _computeValue(String? suffix, {int sliceSize = 16}) {
     Uint8List salt = argon2Salt;
-    if(suffix != null){
-      salt = Uint8List.fromList(suffix.runes.map((charCode) => charCode & 0xFF).toList());
+    if (suffix != null) {
+      salt = Uint8List.fromList(
+          suffix.runes.map((charCode) => charCode & 0xFF).toList());
     }
     Argon2 argon2Algorithm = Argon2(
       version: Argon2Version.v13,
@@ -97,7 +99,8 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
       return null;
     }
 
-    _knowledgeGenerator = Formosa(param!.value(sliceSize: 4), configs['formosaTheme']!);
+    _knowledgeGenerator =
+        Formosa(param!.value(sliceSize: 4), configs['formosaTheme']!);
     String knowledge = _knowledgeGenerator.mnemonic;
 
     return knowledge;
@@ -216,15 +219,15 @@ final class DynamicFractalTacitKnowledge implements TacitKnowledge {
   DynamicFractalTacitKnowledge({required this.configs, this.param});
 
   @override
-  Object? get knowledge {
-    Uint8List realParamEntropy = param!.value(suffix: "realP");
-    Uint8List imaginaryParamEntropy = param!.value(suffix: "imagP");
+  Point? get knowledge {
+    Uint8List realParamEntropy = param!.value(suffix: "realParameter");
+    Uint8List imaginaryParamEntropy = param!.value(suffix: "imagParameter");
 
-
-    String realParam = '2.$realParamEntropy';
-    String imaginaryParam = '0.$imaginaryParamEntropy';
+    String realParam =
+        '2.${ByteData.view(realParamEntropy.buffer).getUint32(0)}';
+    String imaginaryParam =
+        '0.${ByteData.view(imaginaryParamEntropy.buffer).getUint32(0)}';
 
     return Point(double.parse(realParam), double.parse(imaginaryParam));
   }
-
 }

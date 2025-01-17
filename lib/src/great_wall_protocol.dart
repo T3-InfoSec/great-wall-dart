@@ -1,6 +1,7 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -18,7 +19,8 @@ import 'utils.dart';
 // TODO: Complete the library-level documentation comments.
 class GreatWall {
   static final int bytesCount = 4;
-  static final Argon2DerivationService argon2derivationService = Argon2DerivationService();
+  static final Argon2DerivationService argon2derivationService =
+      Argon2DerivationService();
 
   // Protocol derivation states
   late Sa0 _sa0;
@@ -47,6 +49,10 @@ class GreatWall {
   final int _treeArity;
   final int _treeDepth;
   final int _timeLockPuzzleParam;
+
+  // Sa1 intermediateStates controller
+  final StreamController<List<Sa1i>> _intermediateStatesController =
+      StreamController<List<Sa1i>>.broadcast();
 
   /// Create and initialize a [GreatWall] protocol instance.
   ///
@@ -82,7 +88,8 @@ class GreatWall {
   /// Get the result of the protocol derivation process.
   ///
   /// The result requires calling [finishDerivation] first.
-  Uint8List? get derivationHashResult => (isFinished) ? _currentNode.value : null;
+  Uint8List? get derivationHashResult =>
+      (isFinished) ? _currentNode.value : null;
 
   /// Get the current level of the protocol derivation process.
   int get derivationLevel => _currentLevel;
@@ -92,6 +99,10 @@ class GreatWall {
   TacitKnowledge get derivationTacitKnowledge => _tacitKnowledge;
 
   Map<DerivationPath, Uint8List> get savedDerivedStates => _savedDerivedStates;
+
+  /// Exposes the stream of intermediate states.
+  Stream<List<Sa1i>> get intermediateStatesStream =>
+      _intermediateStatesController.stream;
 
   set derivationTacitKnowledge(TacitKnowledge tacitKnowledge) {
     tacitKnowledge = tacitKnowledge;
@@ -116,7 +127,9 @@ class GreatWall {
   set sa0(Sa0 sa0) {
     initialDerivation();
     _sa0 = sa0;
-    _currentNode = Node(_sa0.formosa.value, nodeDepth: 1); // TODO: Review the need for the use of node before tacit derivation
+    _currentNode = Node(_sa0.formosa.value,
+        nodeDepth:
+            1); // TODO: Review the need for the use of node before tacit derivation
   }
 
   /// Get the param of the memory hard hashing process.
@@ -236,7 +249,9 @@ class GreatWall {
           _currentNode.value = Uint8List.fromList(
             _currentNode.value + [_shuffledArityIndexes[choiceNumber - 1]],
           );
-          _currentNode.value = argon2derivationService.deriveWithModerateMemory(_currentNode).value;
+          _currentNode.value = argon2derivationService
+              .moderateMemoryDerivation(_currentNode)
+              .value;
           _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
         }
 
@@ -260,6 +275,10 @@ class GreatWall {
   /// start flag can later be checked using [GreatWall.isStarted].
   void startDerivation() {
     if (isInitialized) {
+      _sa1.intermediateStatesStream.listen((List<Sa1i> states) {
+        _intermediateStatesController.add(states);
+print('GreatWall: Emitiendo estados intermedios: ${states.length}');
+      });
       _makeExplicitDerivation();
       _isStarted = true;
     } else {
@@ -269,8 +288,11 @@ class GreatWall {
   }
 
   Uint8List getSelectedNode(Uint8List currentHash, int choiceNumber) {
-    Uint8List hash = Uint8List.fromList(currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
-    return argon2derivationService.deriveWithModerateMemory(EntropyBytes(hash)).value;
+    Uint8List hash = Uint8List.fromList(
+        currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
+    return argon2derivationService
+        .moderateMemoryDerivation(EntropyBytes(hash))
+        .value;
   }
 
   /// Generates palettes of knowledge for the current derivation level.
@@ -349,14 +371,16 @@ class GreatWall {
   /// level-specific knowledge palettes.
   void _makeExplicitDerivation() {
     _sa1.from(_sa0);
-    _currentNode.value = _sa1.value; // TODO: Review the need for the use of node before derivation
+    _currentNode.value = _sa1
+        .value; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;
     }
 
     _sa2.from(_timeLockPuzzleParam, _sa1);
-    _currentNode.value = _sa2.value; // TODO: Review the need for the use of node before derivation
+    _currentNode.value = _sa2
+        .value; // TODO: Review the need for the use of node before derivation
     if (_isCanceled) {
       print('Derivation canceled');
       return;

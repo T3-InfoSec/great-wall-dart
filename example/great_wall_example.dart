@@ -1,7 +1,7 @@
 import 'package:great_wall/great_wall.dart';
 import 'package:t3_crypto_objects/crypto_objects.dart';
 
-void main() {
+Future<void> main() async {
   Map<String, dynamic> formosaConfigs = {'formosaTheme': FormosaTheme.bip39};
   GreatWall greatwallProtocolWithFormosa = GreatWall(
     treeArity: 3,
@@ -24,6 +24,11 @@ void main() {
   greatwallProtocolWithHashViz.initialDerivation();
 
   greatwallProtocolWithFormosa.sa0 = Sa0(Formosa.fromRandomWords(wordCount: 6, formosaTheme: FormosaTheme.bip39));
+
+  // Subscribe to changes in intermediateStates of Sa1
+  greatwallProtocolWithFormosa.intermediateStatesStream.listen((List<Sa1i> intermediateStates) {
+    print("Intermediate states length: ${intermediateStates.length}");
+  });
 
   // Start the protocol derivation process.
   greatwallProtocolWithFormosa.startDerivation();

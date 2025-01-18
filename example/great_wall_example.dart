@@ -31,7 +31,7 @@ Future<void> main() async {
   });
 
   // Start the protocol derivation process.
-  greatwallProtocolWithFormosa.startDerivation();
+  await greatwallProtocolWithFormosa.startDerivation();
 
   print(greatwallProtocolWithFormosa.currentLevelKnowledgePalettes);
   greatwallProtocolWithFormosa.makeTacitDerivation(

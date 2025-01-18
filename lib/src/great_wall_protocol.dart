@@ -273,16 +273,15 @@ class GreatWall {
   /// If the derivation is initialized, then the derivation process will be
   /// start. Otherwise, logs a message and sets start flag to `false`. The
   /// start flag can later be checked using [GreatWall.isStarted].
-  void startDerivation() {
+  Future<void> startDerivation() async {
     if (isInitialized) {
       _sa1.intermediateStatesStream.listen((List<Sa1i> states) {
         _intermediateStatesController.add(states);
-print('GreatWall: Emitiendo estados intermedios: ${states.length}');
       });
-      _makeExplicitDerivation();
+      await _makeExplicitDerivation();
       _isStarted = true;
     } else {
-      print('Derivation does not initialized yet.');
+      print('Derivation is not initialized yet.');
       _isStarted = false;
     }
   }
@@ -369,26 +368,24 @@ print('GreatWall: Emitiendo estados intermedios: ${states.length}');
   /// [GreatWall.currentHash] with new values after each step. Saves the
   /// final hash state and increments the current level. Generates
   /// level-specific knowledge palettes.
-  void _makeExplicitDerivation() {
-    _sa1.from(_sa0);
-    _currentNode.value = _sa1
-        .value; // TODO: Review the need for the use of node before derivation
-    if (_isCanceled) {
-      print('Derivation canceled');
-      return;
-    }
+Future<void> _makeExplicitDerivation() async {
+  _sa1.from(_sa0);
+  _currentNode.value = _sa1.value; // TODO: Revisar la necesidad de este uso antes de derivar
+  if (_isCanceled) {
+    print('Derivation canceled');
+    return;
+  }
 
-    _sa2.from(_timeLockPuzzleParam, _sa1);
-    _currentNode.value = _sa2
-        .value; // TODO: Review the need for the use of node before derivation
-    if (_isCanceled) {
-      print('Derivation canceled');
-      return;
-    }
+  await _sa2.from(_timeLockPuzzleParam, _sa1);
+  _currentNode.value = _sa2.value; // TODO: Revisar la necesidad de este uso antes de derivar
+  if (_isCanceled) {
+    print('Derivation canceled');
+    return;
+  }
 
-    _sa3.from(_sa0, _sa2);
-    _currentNode.value = _sa3.value;
-    _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
+  await Future(() => _sa3.from(_sa0, _sa2));
+  _currentNode.value = _sa3.value;
+  _savedDerivedStates[_derivationPath.copy()] = _currentNode.value;
 
     // Prepare the level 1 of tacit derivation process.
     _currentLevel += 1;

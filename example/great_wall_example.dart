@@ -20,11 +20,13 @@ Future<void> main() async {
 
   // Call the following if you need to explicitly re-initializing the protocol
   // derivation process.
-  greatwallProtocolWithFormosa.initialDerivation();
-  greatwallProtocolWithHashViz.initialDerivation();
+  greatwallProtocolWithFormosa.resetDerivation();
+  greatwallProtocolWithHashViz.resetDerivation();
 
-  greatwallProtocolWithFormosa.sa0 = Sa0(Formosa.fromRandomWords(wordCount: 6, formosaTheme: FormosaTheme.bip39));
-
+  greatwallProtocolWithFormosa.initializeDerivation(
+    Sa0(Formosa.fromRandomWords(wordCount: 6, formosaTheme: FormosaTheme.bip39)), []
+  );
+  
   // Subscribe to changes in intermediateStates of Sa1
   greatwallProtocolWithFormosa.intermediateStatesStream.listen((List<Sa1i> intermediateStates) {
     print("Intermediate states length: ${intermediateStates.length}");

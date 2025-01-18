@@ -75,7 +75,7 @@ class GreatWall {
         _treeDepth = treeDepth.abs(),
         _timeLockPuzzleParam = timeLockPuzzleParam.abs(),
         _tacitKnowledge = tacitKnowledge {
-    initialDerivation();
+    resetDerivation();
   }
 
   /// Get the current node state of the protocol derivation process.
@@ -121,17 +121,6 @@ class GreatWall {
   /// Check if the protocol derivation process started correctly.
   bool get isStarted => _isStarted;
 
-  /// Set the value of the [pa0] that you need to hash it by using
-  /// [GreatWall] protocol.
-  // TODO: Make sure the password match one of the formosa theme.
-  set sa0(Sa0 sa0) {
-    initialDerivation();
-    _sa0 = sa0;
-    _currentNode = Node(_sa0.formosa.value,
-        nodeDepth:
-            1); // TODO: Review the need for the use of node before tacit derivation
-  }
-
   /// Get the param of the memory hard hashing process.
   int get timeLockPuzzleParam => _timeLockPuzzleParam;
 
@@ -140,6 +129,19 @@ class GreatWall {
 
   /// Get the tree depth of the derivation process.
   int get treeDepth => _treeDepth;
+
+  /// Initialize the value of the [sa0] that you need to hash
+  /// [GreatWall] protocol.
+  void initializeDerivation(Sa0 sa0, List<Sa1i> intermediateStates) {
+    resetDerivation();
+    _sa0 = sa0;
+    _sa1.from(sa0);
+    _sa1.intermediateStates = intermediateStates;
+
+    _currentNode = Node(_sa0.formosa.value,
+        nodeDepth:
+            1); // TODO: Review the need for the use of node before tacit derivation
+  }
 
   /// Cancel the current running derivation process.
   ///
@@ -213,7 +215,7 @@ class GreatWall {
   }
 
   /// Reset the [GreatWall] protocol derivation process to its initial state.
-  void initialDerivation() {
+  void resetDerivation() {
     _sa0 = Sa0(Formosa(Uint8List(128), FormosaTheme.bip39));
     _sa1 = Sa1();
     _sa2 = Sa2();
@@ -369,7 +371,6 @@ class GreatWall {
   /// final hash state and increments the current level. Generates
   /// level-specific knowledge palettes.
 Future<void> _makeExplicitDerivation() async {
-  _sa1.from(_sa0);
   _currentNode.value = _sa1.value; // TODO: Revisar la necesidad de este uso antes de derivar
   if (_isCanceled) {
     print('Derivation canceled');

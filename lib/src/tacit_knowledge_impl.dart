@@ -212,6 +212,8 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
       'imaginaryParam': double.parse(imaginaryParam)
     };
 
+    print('params $params');
+    print('configs $configs');
     _knowledgeGenerator = Fractal(
       funcType: Fractal.burningShip,
       realP: params['realParam']!,

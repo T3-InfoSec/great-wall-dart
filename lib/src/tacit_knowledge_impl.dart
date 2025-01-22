@@ -156,8 +156,6 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       height: configs['height'] ?? 300,
     );
 
-    _knowledgeGenerator.update();
-
     Future<Uint8List> imagePixels = _knowledgeGenerator.burningshipSet();
     Uint8List frames = await imagePixels;
 
@@ -221,8 +219,6 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
       width: configs['width'] ?? 300,
       height: configs['height'] ?? 300,
     );
-
-    _knowledgeGenerator.update();
 
     return _knowledgeGenerator.generateAnimation(
         n: configs['n'],

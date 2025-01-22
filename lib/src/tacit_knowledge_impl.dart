@@ -1,6 +1,7 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:fractal/fractal.dart';
@@ -12,7 +13,6 @@ import 'package:t3_hashviz/hashviz.dart';
 /// type as a parameter to tweak (in a tacit way) the tacit knowledge.
 final class TacitKnowledgeParam {
   static final Uint8List argon2Salt = Uint8List(32);
-  static final int bytesCount = 4;
 
   final String name;
   final Uint8List initialState;
@@ -25,14 +25,20 @@ final class TacitKnowledgeParam {
   });
 
   /// Get the value that represents the param.
-  Uint8List get value => _computeValue();
+  Uint8List value({String? suffix, int sliceSize = 16}) =>
+      _computeValue(suffix, sliceSize: sliceSize);
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
   /// jth candidate L_(i+1), the state resulting from appending bytes of j
   /// (here, branch_idx_bytes to current state L_i and hashing it)
   // TODO: Enhance the docs.
-  Uint8List _computeValue() {
+  Uint8List _computeValue(String? suffix, {int sliceSize = 16}) {
+    Uint8List salt = argon2Salt;
+    if (suffix != null) {
+      salt = Uint8List.fromList(
+          suffix.runes.map((charCode) => charCode & 0xFF).toList());
+    }
     Argon2 argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -40,17 +46,17 @@ final class TacitKnowledgeParam {
       iterations: 3,
       parallelism: 1,
       memorySizeKB: 10 * 1024,
-      salt: argon2Salt,
+      salt: salt,
     );
 
     Uint8List nextStateCandidate = Uint8List.fromList(
-      argon2Algorithm.convert(initialState).bytes + adjustmentValue,
+      initialState + adjustmentValue,
     );
 
     return argon2Algorithm
         .convert(nextStateCandidate)
         .bytes
-        .sublist(0, bytesCount);
+        .sublist(0, sliceSize);
   }
 }
 
@@ -94,7 +100,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
       return null;
     }
 
-    _knowledgeGenerator = Formosa(param!.value, configs['formosaTheme']!);
+    _knowledgeGenerator = Formosa(param!.value(), configs['formosaTheme']!);
     String knowledge = _knowledgeGenerator.mnemonic;
 
     return knowledge;
@@ -120,7 +126,7 @@ final class FractalTacitKnowledge implements TacitKnowledge {
   /// not provided. Throws on [Exception] if the [TacitKnowledge.configs]
   /// is empty because this will generate an insecure [TacitKnowledge].
   @override
-  Uint8List? get knowledge {
+  Future<Uint8List> get knowledge async {
     if (configs.isEmpty) {
       throw Exception(
         'The configs param is empty which is insecure argument. Please,'
@@ -129,33 +135,101 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       );
     }
 
-    if (param == null) {
-      return null;
-    }
-
     // NOTE: Inverting the order of digits to minimize Benford's law bias.
-    String realParam = '2.${int.parse(param!.value.reversed.join())}';
-    String imaginaryParam = '0.${int.parse(param!.value.reversed.join())}';
+    Uint8List realParamEntropy = param!.value(suffix: "realParameter");
+    Uint8List imaginaryParamEntropy = param!.value(suffix: "imagParameter");
+
+    String realParam =
+        '2.${ByteData.view(realParamEntropy.buffer).getUint32(0)}';
+    String imaginaryParam =
+        '0.${ByteData.view(imaginaryParamEntropy.buffer).getUint32(0)}';
+
     Map<String, double> params = {
       'realParam': double.parse(realParam),
       'imaginaryParam': double.parse(imaginaryParam)
     };
+
     _knowledgeGenerator = Fractal(
-      xMin: configs['xMin'] ?? -2.5,
-      xMax: configs['xMax'] ?? 2.0,
-      yMin: configs['yMin'] ?? -2.0,
-      yMax: configs['yMax'] ?? 0.8,
       realP: params['realParam']!,
       imagP: params['imaginaryParam']!,
-      width: configs['width'] ?? 1024,
-      height: configs['height'] ?? 1024,
-      escapeRadius: configs['escapeRadius'] ?? 4,
-      maxIters: configs['maxIters'] ?? 30,
+      width: configs['width'] ?? 300,
+      height: configs['height'] ?? 300,
     );
 
-    _knowledgeGenerator.update();
+    Future<Uint8List> imagePixels = _knowledgeGenerator.burningshipSet();
+    Uint8List frames = await imagePixels;
 
-    return _knowledgeGenerator.imagePixels;
+    return frames;
+  }
+}
+
+/// A class that can be instantiated to create a fractal tacit knowledge.
+final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
+  late Fractal _knowledgeGenerator;
+
+  @override
+  Map<String, dynamic> configs;
+
+  @override
+  TacitKnowledgeParam? param;
+
+  AnimatedFractalTacitKnowledge({required this.configs, this.param});
+
+  /// Returns an static fractal image.
+  ///
+  /// Returns the image that represents the actual tacit knowledge of the
+  /// [FractalTacitKnowledge] tacit knowledge or `null` if the [param] is
+  /// not provided. Throws on [Exception] if the [TacitKnowledge.configs]
+  /// is empty because this will generate an insecure [TacitKnowledge].
+  @override
+  Future<List<Uint8List>> get knowledge {
+    if (configs.isEmpty) {
+      throw Exception(
+        'The configs param is empty which is insecure argument. Please,'
+        ' to get a correct and secure tacit knowledge, provide the'
+        ' TacitKnowledge implementation with the correct configs argument.',
+      );
+    }
+    if (param == null) {
+      throw Exception(
+          'Param value is empty or null. Cannot generate knowledge.');
+    }
+
+    // Extract reversed value as a base value
+    Uint8List realParamEntropy = param!.value(suffix: "realParameter");
+    Uint8List imaginaryParamEntropy = param!.value(suffix: "imagParameter");
+
+    String realParam =
+        '2.${ByteData.view(realParamEntropy.buffer).getUint32(0)}';
+    String imaginaryParam =
+        '0.${ByteData.view(imaginaryParamEntropy.buffer).getUint32(0)}';
+
+    Map<String, double> params = {
+      'phaseOffset': pi / 4,
+      'frequencyK': 2,
+      'frequencyL': 2,
+      'realParam': double.parse(realParam),
+      'imaginaryParam': double.parse(imaginaryParam)
+    };
+
+    print('params $params');
+    print('configs $configs');
+
+    _knowledgeGenerator = Fractal(
+      funcType: Fractal.burningShip,
+      realP: params['realParam']!,
+      imagP: params['imaginaryParam']!,
+      width: configs['width'] ?? 300,
+      height: configs['height'] ?? 300,
+    );
+
+    return _knowledgeGenerator.generateAnimation(
+        n: configs['n'],
+        A: configs['A'],
+        B: configs['B'],
+        phi: params['phaseOffset']!,
+        k: params['frequencyK']!,
+        l: params['frequencyL']!);
   }
 }
 

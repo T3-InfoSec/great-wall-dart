@@ -11,6 +11,7 @@ void main() {
   );
 
   Map<String, dynamic> hashvizConfigs = {'hashvizSize': 16};
+
   GreatWall greatwallProtocolWithHashViz = GreatWall(
     treeArity: 3,
     treeDepth: 4,
@@ -31,6 +32,7 @@ void main() {
     'escapeRadius': 4,
     'maxIters': 30,
   };
+
   GreatWall greatwallProtocolWithFractal = GreatWall(
     treeArity: 3,
     treeDepth: 4,
@@ -38,17 +40,35 @@ void main() {
     tacitKnowledge: FractalTacitKnowledge(configs: fractalConfigs),
   );
 
+  Map<String, dynamic> animatedFractalConfigs = {
+    'n': 15,
+    'A': 0.25,
+    'B': 0.25,
+    'width': 500,
+    'height': 500,
+  };
+
+  GreatWall greatwallProtocolWithAnimatedFractal = GreatWall(
+    treeArity: 3,
+    treeDepth: 4,
+    timeLockPuzzleParam: 1,
+    tacitKnowledge:
+        AnimatedFractalTacitKnowledge(configs: animatedFractalConfigs),
+  );
+
   var protocols = List.of([
-    greatwallProtocolWithFormosa, 
-    // greatwallProtocolWithHashViz, 
-    // greatwallProtocolWithFractal
-    ]);
+    // greatwallProtocolWithFormosa,
+    // greatwallProtocolWithHashViz,
+    // greatwallProtocolWithFractal,
+    greatwallProtocolWithAnimatedFractal
+  ]);
   for (var protocol in protocols) {
     // Call the following if you need to explicitly re-initializing the protocol
     // derivation process.
     protocol.initialDerivation();
 
-    protocol.sa0 = Sa0(Formosa.fromRandomWords(wordCount: 6, formosaTheme: FormosaTheme.bip39));
+    protocol.sa0 = Sa0(Formosa.fromRandomWords(
+        wordCount: 6, formosaTheme: FormosaTheme.bip39));
 
     // Start the protocol derivation process.
     protocol.startDerivation();
@@ -67,7 +87,7 @@ void main() {
     }
     protocol.makeTacitDerivation(
       choiceNumber: 2,
-    ); 
+    );
 
     print("Derivation level ${protocol.derivationLevel}");
     for (var tacitKnowledge in protocol.currentLevelKnowledgePalettes) {

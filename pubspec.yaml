@@ -15,6 +15,7 @@ dependencies:
   convert: ^3.1.2
   cryptography: ^2.7.0
   hashlib: ^1.16.0
+  image: ^3.0.1
   t3_hashviz:
     git:
       url: git@github.com:T3-InfoSec/t3-hashviz-dart.git
@@ -22,7 +23,7 @@ dependencies:
   fractal:
     git:
       url: git@github.com:T3-InfoSec/t3-fractals-dart.git
-      ref: fix/import-the-fractal-class-into-the-dart-module
+      ref: issue26_improvement-on-fractal-animation
   t3_crypto_objects:
     git:
       url: git@github.com:T3-InfoSec/t3-crypto-objects-dart.git

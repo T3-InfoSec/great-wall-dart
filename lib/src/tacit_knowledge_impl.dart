@@ -1,6 +1,7 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:fractal/fractal.dart';
@@ -12,7 +13,6 @@ import 'package:t3_hashviz/hashviz.dart';
 /// type as a parameter to tweak (in a tacit way) the tacit knowledge.
 final class TacitKnowledgeParam {
   static final Uint8List argon2Salt = Uint8List(32);
-  static final int bytesCount = 4;
 
   final String name;
   final Uint8List initialState;
@@ -25,14 +25,20 @@ final class TacitKnowledgeParam {
   });
 
   /// Get the value that represents the param.
-  Uint8List get value => _computeValue();
+  Uint8List value({String? suffix, int sliceSize = 16}) =>
+      _computeValue(suffix, sliceSize: sliceSize);
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
   /// jth candidate L_(i+1), the state resulting from appending bytes of j
   /// (here, branch_idx_bytes to current state L_i and hashing it)
   // TODO: Enhance the docs.
-  Uint8List _computeValue() {
+  Uint8List _computeValue(String? suffix, {int sliceSize = 16}) {
+    Uint8List salt = argon2Salt;
+    if (suffix != null) {
+      salt = Uint8List.fromList(
+          suffix.runes.map((charCode) => charCode & 0xFF).toList());
+    }
     Argon2 argon2Algorithm = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
@@ -40,17 +46,17 @@ final class TacitKnowledgeParam {
       iterations: 3,
       parallelism: 1,
       memorySizeKB: 10 * 1024,
-      salt: argon2Salt,
+      salt: salt,
     );
 
     Uint8List nextStateCandidate = Uint8List.fromList(
-      argon2Algorithm.convert(initialState).bytes + adjustmentValue,
+      initialState + adjustmentValue,
     );
 
     return argon2Algorithm
         .convert(nextStateCandidate)
         .bytes
-        .sublist(0, bytesCount);
+        .sublist(0, sliceSize);
   }
 }
 
@@ -94,7 +100,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
       return null;
     }
 
-    _knowledgeGenerator = Formosa(param!.value, configs['formosaTheme']!);
+    _knowledgeGenerator = Formosa(param!.value(), configs['formosaTheme']!);
     String knowledge = _knowledgeGenerator.mnemonic;
 
     return knowledge;
@@ -130,8 +136,14 @@ final class FractalTacitKnowledge implements TacitKnowledge {
     }
 
     // NOTE: Inverting the order of digits to minimize Benford's law bias.
-    String realParam = '2.${int.parse(param!.value.reversed.join())}';
-    String imaginaryParam = '0.${int.parse(param!.value.reversed.join())}';
+    Uint8List realParamEntropy = param!.value(suffix: "realParameter");
+    Uint8List imaginaryParamEntropy = param!.value(suffix: "imagParameter");
+
+    String realParam =
+        '2.${ByteData.view(realParamEntropy.buffer).getUint32(0)}';
+    String imaginaryParam =
+        '0.${ByteData.view(imaginaryParamEntropy.buffer).getUint32(0)}';
+
     Map<String, double> params = {
       'realParam': double.parse(realParam),
       'imaginaryParam': double.parse(imaginaryParam)
@@ -186,29 +198,26 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
         ' TacitKnowledge implementation with the correct configs argument.',
       );
     }
-    if (param?.value == null || param!.value.isEmpty) {
+    if (param == null) {
       throw Exception(
           'Param value is empty or null. Cannot generate knowledge.');
     }
 
     // Extract reversed value as a base value
-    String reversedValue = param!.value.reversed.join();
-    double baseValue = double.parse('0.$reversedValue');
-    double frequencyK = (baseValue * 10) % 4;
-    double frequencyL =
-        (double.parse((baseValue * 100).toString().substring(1))) % 4;
+    Uint8List realParamEntropy = param!.value(suffix: "realParameter");
+    Uint8List imaginaryParamEntropy = param!.value(suffix: "imagParameter");
 
-    // Calculate parameters
-    double phaseOffset = (baseValue * 10) % 6.28;
-    double realParam = 2 + baseValue;
-    double imaginaryParam = baseValue;
+    String realParam =
+        '2.${ByteData.view(realParamEntropy.buffer).getUint32(0)}';
+    String imaginaryParam =
+        '0.${ByteData.view(imaginaryParamEntropy.buffer).getUint32(0)}';
 
     Map<String, double> params = {
-      'phaseOffset': phaseOffset,
-      'frequencyK': frequencyK,
-      'frequencyL': frequencyL,
-      'realParam': realParam,
-      'imaginaryParam': imaginaryParam
+      'phaseOffset': pi / 4,
+      'frequencyK': 3,
+      'frequencyL': 2,
+      'realParam': double.parse(realParam),
+      'imaginaryParam': double.parse(imaginaryParam)
     };
 
     print(params);

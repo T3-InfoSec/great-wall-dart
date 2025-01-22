@@ -214,6 +214,7 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
 
     print('params $params');
     print('configs $configs');
+
     _knowledgeGenerator = Fractal(
       funcType: Fractal.burningShip,
       realP: params['realParam']!,

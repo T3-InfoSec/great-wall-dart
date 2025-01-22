@@ -206,7 +206,7 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
 
     Map<String, double> params = {
       'phaseOffset': pi / 4,
-      'frequencyK': 3,
+      'frequencyK': 2,
       'frequencyL': 2,
       'realParam': double.parse(realParam),
       'imaginaryParam': double.parse(imaginaryParam)

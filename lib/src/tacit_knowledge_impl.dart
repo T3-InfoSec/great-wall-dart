@@ -156,8 +156,8 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       yMax: configs['yMax'] ?? 0.8,
       realP: params['realParam']!,
       imagP: params['imaginaryParam']!,
-      width: configs['width'] ?? 1024,
-      height: configs['height'] ?? 1024,
+      width: configs['width'] ?? 300,
+      height: configs['height'] ?? 300,
       escapeRadius: configs['escapeRadius'] ?? 4,
       maxIters: configs['maxIters'] ?? 30,
     );

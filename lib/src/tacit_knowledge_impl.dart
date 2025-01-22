@@ -150,16 +150,10 @@ final class FractalTacitKnowledge implements TacitKnowledge {
     };
 
     _knowledgeGenerator = Fractal(
-      xMin: configs['xMin'] ?? -2.5,
-      xMax: configs['xMax'] ?? 2.0,
-      yMin: configs['yMin'] ?? -2.0,
-      yMax: configs['yMax'] ?? 0.8,
       realP: params['realParam']!,
       imagP: params['imaginaryParam']!,
       width: configs['width'] ?? 300,
       height: configs['height'] ?? 300,
-      escapeRadius: configs['escapeRadius'] ?? 4,
-      maxIters: configs['maxIters'] ?? 30,
     );
 
     _knowledgeGenerator.update();
@@ -226,12 +220,6 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
       imagP: params['imaginaryParam']!,
       width: configs['width'] ?? 300,
       height: configs['height'] ?? 300,
-      xMin: configs['xMin'] ?? -2.5,
-      xMax: configs['xMax'] ?? 2.0,
-      yMin: configs['yMin'] ?? -2.0,
-      yMax: configs['yMax'] ?? 0.8,
-      escapeRadius: configs['escapeRadius'] ?? 4,
-      maxIters: configs['maxIters'] ?? 30,
     );
 
     _knowledgeGenerator.update();

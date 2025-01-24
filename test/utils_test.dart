@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:great_wall/src/utils.dart';
 import 'package:test/test.dart';
 
@@ -5,20 +7,25 @@ void main() {
   group('DerivationPath()', () {
     late DerivationPath derivationPath;
     late DerivationPath emptyDerivationPath;
+    List<Choice> nodesList = [];
 
     setUp(() {
-      derivationPath = DerivationPath(nodesList: [1, 2, 3]);
+      for (int i = 0; i < 4; i++) {
+        nodesList.add(Choice(Uint8List(i + 1)));
+      }
+      derivationPath =
+          DerivationPath(nodesList: [nodesList[0], nodesList[1], nodesList[2]]);
       emptyDerivationPath = DerivationPath();
     });
 
     test('could use constructor', () {
       expect(derivationPath.isEmpty, isFalse);
       expect(emptyDerivationPath.isEmpty, isTrue);
-      expect(derivationPath.first, 1);
-      expect(derivationPath.last, 3);
-      expect(derivationPath[0], 1);
-      expect(derivationPath[1], 2);
-      expect(derivationPath[2], 3);
+      expect(derivationPath.first, nodesList[0]);
+      expect(derivationPath.last, nodesList[2]);
+      expect(derivationPath[0], nodesList[0]);
+      expect(derivationPath[1], nodesList[1]);
+      expect(derivationPath[2], nodesList[2]);
     });
 
     test('could get its length', () {
@@ -29,14 +36,15 @@ void main() {
     });
 
     test('could add node path to its path', () {
-      derivationPath.add(4);
-      expect(derivationPath, [1, 2, 3, 4]);
+      derivationPath.add(nodesList[3]);
+      expect(derivationPath,
+          [nodesList[0], nodesList[1], nodesList[2], nodesList[3]]);
     });
 
     test('could pop last node path from its path', () {
       derivationPath.pop();
       emptyDerivationPath.pop();
-      expect(derivationPath, [1, 2]);
+      expect(derivationPath, [nodesList[0], nodesList[1]]);
       expect(emptyDerivationPath, []);
     });
 
@@ -48,8 +56,10 @@ void main() {
     });
 
     test('could equal another paths with same value nodes', () {
-      DerivationPath newDerivationPath = DerivationPath(nodesList: [1, 2]);
-      DerivationPath sameDerivationPath = DerivationPath(nodesList: [1, 2, 3]);
+      DerivationPath newDerivationPath =
+          DerivationPath(nodesList: [nodesList[0], nodesList[1]]);
+      DerivationPath sameDerivationPath =
+          DerivationPath(nodesList: [nodesList[0], nodesList[1], nodesList[2]]);
 
       expect(newDerivationPath, isA<DerivationPath>());
       expect(sameDerivationPath, isA<DerivationPath>());

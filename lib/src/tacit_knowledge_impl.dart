@@ -156,7 +156,12 @@ final class FractalTacitKnowledge implements TacitKnowledge {
       height: configs['height'] ?? 300,
     );
 
-    Future<Uint8List> imagePixels = _knowledgeGenerator.burningshipSet();
+    Future<Uint8List> imagePixels = _knowledgeGenerator.burningshipSet(
+        realP: params['realParam']!,
+        imagP: params['imaginaryParam']!,
+        width: configs['width'] ?? 300,
+        height: configs['height'] ?? 300);
+
     Uint8List frames = await imagePixels;
 
     return frames;
@@ -214,6 +219,7 @@ final class AnimatedFractalTacitKnowledge implements TacitKnowledge {
 
     print('params $params');
     print('configs $configs');
+
     _knowledgeGenerator = Fractal(
       funcType: Fractal.burningShip,
       realP: params['realParam']!,

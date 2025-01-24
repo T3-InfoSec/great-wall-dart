@@ -166,15 +166,43 @@ class GreatWall {
       TacitKnowledge tacitKnowledge = derivationTacitKnowledge;
 
       switch (tacitKnowledge) {
-        case FormosaTacitKnowledge() ||
-              HashVizTacitKnowledge() ||
-              DynamicFractalTacitKnowledge():
+        case FormosaTacitKnowledge() || HashVizTacitKnowledge():
           DerivationPath tempPath = DerivationPath();
           List<TacitKnowledge> chosenKnowledgeList = [];
+          // print("derivation path $_derivationPath");
+          // print("printing nodes");
+          // for (Choice node in _derivationPath) {
+          //   print(node.value);
+          // }
+          // print("savedDerivedPAth ${_savedDerivedPathKnowledge[tempPath]}");
           for (Choice node in _derivationPath) {
             Map<Choice, TacitKnowledge> levelKnowledgeList =
                 _savedDerivedPathKnowledge[tempPath]!;
+            // print('node.value ${node.value}');
+            // print(
+            //     "levelknowledgeList ${levelKnowledgeList.entries.first.value}");
             TacitKnowledge chosenKnowledge = levelKnowledgeList[node]!;
+            chosenKnowledgeList.add(chosenKnowledge);
+            tempPath.add(node);
+          }
+
+        case DynamicFractalTacitKnowledge():
+          DerivationPath tempPath = DerivationPath();
+          List<TacitKnowledge> chosenKnowledgeList = [];
+          // print("derivation path $_derivationPath");
+          // print("printing nodes");
+          // for (Choice node in _derivationPath) {
+          //   print(node.value);
+          // }
+          // print("savedDerivedPAth ${_savedDerivedPathKnowledge[tempPath]}");
+          for (Choice node in _derivationPath) {
+            Map<Choice, TacitKnowledge> levelKnowledgeList =
+                _savedDerivedPathKnowledge[tempPath]!;
+            // print('node.value ${node.value}');
+            // print(
+            //     "levelknowledgeList ${levelKnowledgeList.entries.first.key.value}");
+            TacitKnowledge chosenKnowledge =
+                levelKnowledgeList.entries.first.value;
             chosenKnowledgeList.add(chosenKnowledge);
             tempPath.add(node);
           }
@@ -279,10 +307,10 @@ class GreatWall {
     }
   }
 
-  Uint8List getSelectedNode(Uint8List currentHash, int choiceNumber) {
+  Uint8List getSelectedNode(Uint8List currentHash, String choice) {
     // Todo: might need later
-    Uint8List hash = Uint8List.fromList(
-        currentHash + [_shuffledArityIndexes[choiceNumber - 1]]);
+    Uint8List choiceHash = computeHash(choice);
+    Uint8List hash = Uint8List.fromList(currentHash + choiceHash);
     return argon2derivationService
         .deriveWithModerateMemory(EntropyBytes(hash))
         .value;
@@ -363,7 +391,7 @@ class GreatWall {
           Map<Choice, DynamicFractalTacitKnowledge>
               shuffledDynamicFractalPalettes = {};
           Choice choiceHash = Choice(computeHash(selectedPoint.toString()));
-          shuffledDynamicFractalPalettes[choiceHash] =
+          shuffledDynamicFractalPalettes[Choice(computeHash(0.toString()))] =
               DynamicFractalTacitKnowledge(
             configs: tacitKnowledge.configs,
             param: TacitKnowledgeParam(

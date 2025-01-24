@@ -8,3 +8,4 @@ library;
 
 export 'src/great_wall_protocol.dart';
 export 'src/tacit_knowledge_impl.dart';
+export 'src/utils.dart';

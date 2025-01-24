@@ -219,7 +219,7 @@ final class DynamicFractalTacitKnowledge implements TacitKnowledge {
   DynamicFractalTacitKnowledge({required this.configs, this.param});
 
   @override
-  Point? get knowledge {
+  Point<double> get knowledge {
     Uint8List realParamEntropy = param!.value(suffix: "realParameter");
     Uint8List imaginaryParamEntropy = param!.value(suffix: "imagParameter");
 

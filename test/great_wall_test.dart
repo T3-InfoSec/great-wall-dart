@@ -69,14 +69,8 @@ void main() {
       Map<Choice, TacitKnowledge> knowledgePalettes =
           greatwallProtocol.currentLevelKnowledgePalettes;
       expect(knowledgePalettes.length, greatwallProtocol.treeArity);
-      // List<Uint8List> choiceHashes = [];
-      print(knowledgePalettes);
-      print(knowledgePalettes.length);
       for(int i = 1; i <= knowledgePalettes.length;i++){
         Choice hash = Choice(greatwallProtocol.computeHash(i.toString()));
-        print(i);
-        print(hash);
-        print(knowledgePalettes[hash]);
         expect(knowledgePalettes[hash], isA<FormosaTacitKnowledge>());
       }
       // expect(knowledgePalettes[1], isA<FormosaTacitKnowledge>());

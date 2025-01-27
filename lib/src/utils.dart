@@ -1,12 +1,8 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
-import 'dart:typed_data';
-
 /// A path representation of a traversed nodes in a tree.
-class DerivationPath<N extends Uint8List> extends Iterable<N> { // we will have binary data instead of int
-
-
+class DerivationPath<N extends int> extends Iterable<N> {
   final List<N> _nodesList;
 
   DerivationPath({
@@ -30,20 +26,15 @@ class DerivationPath<N extends Uint8List> extends Iterable<N> { // we will have 
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is DerivationPath &&
-              runtimeType == other.runtimeType &&
-              _listsAreEqual(_nodesList, other._nodesList as List<N>);
-
-
-
-  bool _listsAreEqual(List<N> a, List<N> b) {
-    if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
+  bool operator ==(Object other) {
+    if (other is DerivationPath) {
+      if (_nodesList.length != other._nodesList.length) return false;
+      for (int i = 0; i < _nodesList.length; i++) {
+        if (_nodesList[i] != other._nodesList[i]) return false;
+      }
+      return true;
     }
-    return true;
+    return false;
   }
 
   N operator [](int index) => _nodesList[index];

@@ -1,7 +1,6 @@
 // TODO: Complete the copyright.
 // Copyright (c) 2024, ...
 
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:t3_crypto_objects/crypto_objects.dart';
@@ -11,8 +10,10 @@ import 'package:t3_hashviz/hashviz.dart';
 /// type as a parameter to tweak (in a tacit way) the tacit knowledge.
 final class TacitKnowledgeParam {
   static final Uint8List argon2Salt = Uint8List(32);
-  
+  static final int bytesCount = 4;
+
   final Argon2DerivationService argon2derivationService = Argon2DerivationService();
+
 
   final String name;
   final Uint8List initialState;
@@ -25,28 +26,23 @@ final class TacitKnowledgeParam {
   });
 
   /// Get the value that represents the param.
-  Uint8List value({String? suffix, int sliceSize=16}) => _computeValue(suffix, sliceSize: sliceSize);
+  Uint8List get value => _computeValue();
 
   /// Get a valid tacit knowledge value from provided adjustment params.
   ///
   /// jth candidate L_(i+1), the state resulting from appending bytes of j
   /// (here, branch_idx_bytes to current state L_i and hashing it)
   // TODO: Enhance the docs.
-  Uint8List _computeValue(String? suffix, {int sliceSize = 16}) {
-    Uint8List nextStateCandidate = Uint8List.fromList(
-      initialState + adjustmentValue,
-    );
-    EntropyBytes entropy;
-    if(suffix != null){
-      Uint8List salt = Uint8List.fromList(suffix.runes.map((charCode) => charCode & 0xFF).toList());
-      entropy = argon2derivationService.deriveWithModerateMemory(3, EntropyBytes(nextStateCandidate), salt: salt);
-    } else {
-      entropy = argon2derivationService.deriveWithModerateMemory(3, EntropyBytes(nextStateCandidate));
-    }
+  Uint8List _computeValue() {
 
-    return entropy
+    Uint8List nextStateCandidate = Uint8List.fromList(
+      argon2derivationService.deriveWithModerateMemory(3, EntropyBytes(initialState)).value + adjustmentValue,
+    );
+
+    return argon2derivationService
+        .deriveWithModerateMemory(3, EntropyBytes(nextStateCandidate))
         .value
-        .sublist(0, sliceSize);
+        .sublist(0, bytesCount);
   }
 }
 
@@ -90,7 +86,7 @@ final class FormosaTacitKnowledge implements TacitKnowledge {
       return null;
     }
 
-    _knowledgeGenerator = Formosa(param!.value(sliceSize: 4), configs['formosaTheme']!);
+    _knowledgeGenerator = Formosa(param!.value, configs['formosaTheme']!);
     String knowledge = _knowledgeGenerator.mnemonic;
 
     return knowledge;
@@ -189,7 +185,7 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
     }
 
     _knowledgeGenerator = Hashviz(
-        hashToVisualize: param!.value().toString(),
+        hashToVisualize: param!.value.toString(),
         visualizationSize: configs['hashvizSize']!,
         isSymmetric: configs['isSymmetric'] ?? true,
         numColors: configs['numColors'] ?? 3);
@@ -197,27 +193,4 @@ final class HashVizTacitKnowledge implements TacitKnowledge {
 
     return knowledge;
   }
-}
-
-final class DynamicFractalTacitKnowledge implements TacitKnowledge {
-  @override
-  Map<String, dynamic> configs;
-
-  @override
-  TacitKnowledgeParam? param;
-
-  DynamicFractalTacitKnowledge({required this.configs, this.param});
-
-  @override
-  Object? get knowledge {
-    Uint8List realParamEntropy = param!.value(suffix: "realP");
-    Uint8List imaginaryParamEntropy = param!.value(suffix: "imagP");
-
-
-    String realParam = '2.$realParamEntropy';
-    String imaginaryParam = '0.$imaginaryParamEntropy';
-
-    return Point(double.parse(realParam), double.parse(imaginaryParam));
-  }
-
 }

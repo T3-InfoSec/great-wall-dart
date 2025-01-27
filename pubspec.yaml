@@ -22,4 +22,4 @@ dependencies:
   t3_crypto_objects:
     git:
       url: git@github.com:T3-InfoSec/t3-crypto-objects-dart.git
-      ref: parameterize_iterations_deriveWithModerateMemory
+      ref: development

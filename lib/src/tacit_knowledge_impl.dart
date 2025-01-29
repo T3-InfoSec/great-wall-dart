@@ -3,7 +3,6 @@
 
 import 'dart:typed_data';
 
-import 'package:hashlib/hashlib.dart';
 import 'package:t3_crypto_objects/crypto_objects.dart';
 import 'package:t3_hashviz/hashviz.dart';
 
@@ -12,6 +11,9 @@ import 'package:t3_hashviz/hashviz.dart';
 final class TacitKnowledgeParam {
   static final Uint8List argon2Salt = Uint8List(32);
   static final int bytesCount = 4;
+
+  final Argon2DerivationService argon2derivationService = Argon2DerivationService();
+
 
   final String name;
   final Uint8List initialState;
@@ -32,23 +34,14 @@ final class TacitKnowledgeParam {
   /// (here, branch_idx_bytes to current state L_i and hashing it)
   // TODO: Enhance the docs.
   Uint8List _computeValue() {
-    Argon2 argon2Algorithm = Argon2(
-      version: Argon2Version.v13,
-      type: Argon2Type.argon2i,
-      hashLength: 128,
-      iterations: 3,
-      parallelism: 1,
-      memorySizeKB: 10 * 1024,
-      salt: argon2Salt,
-    );
 
     Uint8List nextStateCandidate = Uint8List.fromList(
-      argon2Algorithm.convert(initialState).bytes + adjustmentValue,
+      argon2derivationService.deriveWithModerateMemory(3, EntropyBytes(initialState)).value + adjustmentValue,
     );
 
-    return argon2Algorithm
-        .convert(nextStateCandidate)
-        .bytes
+    return argon2derivationService
+        .deriveWithModerateMemory(3, EntropyBytes(nextStateCandidate))
+        .value
         .sublist(0, bytesCount);
   }
 }
